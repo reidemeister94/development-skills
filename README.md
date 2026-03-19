@@ -1,5 +1,10 @@
 # ⚙️ Development Skills
 
+[![GitHub stars](https://img.shields.io/github/stars/reidemeister94/development-skills?style=flat-square)](https://github.com/reidemeister94/development-skills/stargazers)
+[![GitHub license](https://img.shields.io/github/license/reidemeister94/development-skills?style=flat-square)](https://github.com/reidemeister94/development-skills/blob/main/LICENSE)
+[![Version](https://img.shields.io/badge/version-0.0.1-blue?style=flat-square)](https://github.com/reidemeister94/development-skills/releases)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-blueviolet?style=flat-square)](https://docs.anthropic.com/en/docs/claude-code)
+
 **A structured development workflow that makes Claude Code produce staff-engineer-quality code.**
 
 Without structure, Claude Code skips verification, doesn't plan, writes before thinking, and never reviews its own work. This plugin enforces a 7-phase workflow with specialized subagents — brainstorming analyst, TDD implementer, test verifier, and staff-engineer reviewer — running in isolated contexts so your main conversation stays clean.
