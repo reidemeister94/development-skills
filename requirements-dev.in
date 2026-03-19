@@ -1,0 +1,4 @@
+commitizen==4.*
+pre-commit==4.*
+ruff==0.*
+uv==0.*
