@@ -4,7 +4,7 @@
 
 Without structure, Claude Code skips verification, doesn't plan, writes before thinking, and never reviews its own work. This plugin enforces a 7-phase workflow with specialized subagents — brainstorming analyst, TDD implementer, test verifier, and staff-engineer reviewer — running in isolated contexts so your main conversation stays clean.
 
-Built from months of real production work. Every rule exists because we hit the failure mode it prevents.
+Built from months of real production work, grounded in the [official Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code) and distilled knowledge from projects like [superpowers](https://github.com/obra/superpowers), [claude-code-tips](https://github.com/ykdojo/claude-code-tips), and [Agent-Skills-for-Context-Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering). Every rule exists because we hit the failure mode it prevents.
 
 ## 📦 Quick Start
 
@@ -13,6 +13,27 @@ claude install-plugin github:reidemeister94/development-skills
 ```
 
 Give Claude a task — the plugin activates automatically.
+
+---
+
+## 🎯 Core Pillars
+
+These aren't aspirational — they're enforced at every decision point in the workflow.
+
+**🧠 Critical thinking is always on.** The model evaluates every request for flaws, contradictions, wrong assumptions, and symptom-vs-root-cause confusion. If something doesn't add up, it stops and says so — even if the developer sounds confident. Confidence ≠ correctness.
+
+**✨ Maximize simplicity, minimize complexity.** All else being equal, simpler is better. A small improvement that adds ugly complexity is not worth it. Removing something and getting equal or better results is a simplification win. The staff reviewer's primary mandate is simplification.
+
+**📐 All signal, zero noise.** Code, docs, logs, comments — everything must earn its place. Comments explain WHY, not WHAT. Don't comment self-evident code. Don't add features nobody asked for. Don't over-engineer for hypothetical futures.
+
+**💾 Offload everything to disk.** Context windows are ephemeral — compaction erases discoveries. The plugin continuously persists knowledge to structured markdown files so nothing is lost:
+- **Plans** (`docs/plans/`) — task checklist, implementation log, verification results, review audit trail. The single persistent document for a workflow.
+- **Chronicles** (`docs/chronicles/`) — project snapshots capturing WHY changes happened, what the user communicated, decisions made, discoveries. Months later, a developer or model reads a chronicle and understands the full context.
+- **CLAUDE.md** — project-wide knowledge promoted from discoveries. A cheat sheet, not a novel.
+
+**🔬 Maximize final code quality.** The refactoring objective at every phase: make the project clear, descriptive, efficient, performant, reliable, robust, and maintainable. TDD discipline (RED → GREEN → REFACTOR), anti-hallucination verification, and independent staff review ensure the output meets production standards.
+
+**⚡ Efficient context usage.** Progressive disclosure loads only what's needed. Subagents run in isolated contexts — their token usage doesn't bloat your conversation. Research, implementation, testing, and review each happen in separate token budgets.
 
 ---
 
@@ -122,7 +143,7 @@ Each language skill provides verification commands, implementation rules, a `pat
 - Plan file on disk with status + remaining phases
 - Auto-resume: `core-dev` checks for in-progress plans first
 
-**Chronicles** — the WHY layer:
+**Three layers of knowledge:**
 ```
 Code + Git  = WHAT changed
 Plan docs   = HOW it was implemented
