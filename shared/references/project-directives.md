@@ -4,7 +4,7 @@ These directives are injected into the project's CLAUDE.md on first plugin trigg
 
 ---
 
-## MANDATORY: Read Before Any Task - Directives and guidelines for working on this project (v7.0.2)
+## MANDATORY: Read Before Any Task - Directives and guidelines for working on this project (v0.0.1)
 
 You are building a growing understanding of this project across conversations. Every task you complete is an opportunity to make the next task faster, more accurate, and less ambiguous. **Treat documentation as a first-class output of every task, not an afterthought.**
 

@@ -14,7 +14,7 @@ allowed-tools: Glob, Read, Bash, Task, Skill, EnterPlanMode, Edit, Write
 1. Read the project's `CLAUDE.md` (at the project root). If it doesn't exist, create it.
 2. Search for the heading `## MANDATORY: Read Before Any Task - Directives and guidelines for working on this project`.
 3. **If found** → skip (already set up).
-4. **If not found** → read `shared/references/project-directives.md` (use Glob to find `**/project-directives.md` if path is unknown). Append everything **after the `---` separator** (the actual directives, starting from `## MANDATORY: Read Before Any Task - Directives and guidelines for working on this project`) to the bottom of the project's `CLAUDE.md`. Preserve any existing content. Include `<!-- development-skills v7.0.1 directives -->` as the first line of the appended block so future plugin versions can detect and update stale content.
+4. **If not found** → read `shared/references/project-directives.md` (use Glob to find `**/project-directives.md` if path is unknown). Append everything **after the `---` separator** (the actual directives, starting from `## MANDATORY: Read Before Any Task - Directives and guidelines for working on this project`) to the bottom of the project's `CLAUDE.md`. Preserve any existing content. Include `<!-- development-skills v0.0.1 directives -->` as the first line of the appended block so future plugin versions can detect and update stale content.
 5. Announce: "Project directives added to CLAUDE.md."
 This runs once per project — the heading itself is the detection mechanism.
 
