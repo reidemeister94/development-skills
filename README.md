@@ -14,7 +14,8 @@ Built from months of real production work, grounded in the [official Claude Code
 ## 📦 Quick Start
 
 ```bash
-claude install-plugin github:reidemeister94/development-skills
+/plugin marketplace add reidemeister94/development-skills
+/plugin install development-skills@development-skills-marketplace
 ```
 
 Give Claude a task — the plugin activates automatically.

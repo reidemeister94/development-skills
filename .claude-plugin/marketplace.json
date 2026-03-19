@@ -1,0 +1,15 @@
+{
+  "name": "development-skills-marketplace",
+  "description": "Marketplace for the Development Skills plugin",
+  "owner": {
+    "name": "reidemeister"
+  },
+  "plugins": [
+    {
+      "name": "development-skills",
+      "description": "Structured development workflow with 7-phase quality gates, subagent orchestration, and multi-language support",
+      "version": "0.0.1",
+      "source": "./"
+    }
+  ]
+}
