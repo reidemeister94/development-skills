@@ -1,17 +1,17 @@
-# ⚙️ Development Skills
+# Development Skills
 
 [![GitHub stars](https://img.shields.io/github/stars/reidemeister94/development-skills?style=flat-square)](https://github.com/reidemeister94/development-skills/stargazers)
 [![GitHub license](https://img.shields.io/github/license/reidemeister94/development-skills?style=flat-square)](https://github.com/reidemeister94/development-skills/blob/main/LICENSE)
 [![Version](https://img.shields.io/badge/version-0.0.1-blue?style=flat-square)](https://github.com/reidemeister94/development-skills/releases)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-blueviolet?style=flat-square)](https://docs.anthropic.com/en/docs/claude-code)
 
-**A structured development workflow that makes Claude Code produce staff-engineer-quality code.**
+A Claude Code plugin that enforces a structured development workflow: 7-phase quality gates, specialized subagents, and multi-language support.
 
 Without structure, Claude Code skips verification, doesn't plan, writes before thinking, and never reviews its own work. This plugin enforces a 7-phase workflow with specialized subagents — brainstorming analyst, TDD implementer, test verifier, and staff-engineer reviewer — running in isolated contexts so your main conversation stays clean.
 
-Built from months of real production work, grounded in the [official Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code) and distilled knowledge from projects like [superpowers](https://github.com/obra/superpowers), [claude-code-tips](https://github.com/ykdojo/claude-code-tips), and [Agent-Skills-for-Context-Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering). Every rule exists because we hit the failure mode it prevents.
+Built from months of production use, grounded in the [official Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code) and distilled knowledge from projects like [superpowers](https://github.com/obra/superpowers), [claude-code-tips](https://github.com/ykdojo/claude-code-tips), and [Agent-Skills-for-Context-Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering). Every rule exists because we hit the failure mode it prevents.
 
-## 📦 Quick Start
+## Quick Start
 
 ```bash
 /plugin marketplace add reidemeister94/development-skills
@@ -22,28 +22,28 @@ Give Claude a task — the plugin activates automatically.
 
 ---
 
-## 🎯 Core Pillars
+## Core Pillars
 
 These aren't aspirational — they're enforced at every decision point in the workflow.
 
-**🧠 Critical thinking is always on.** The model evaluates every request for flaws, contradictions, wrong assumptions, and symptom-vs-root-cause confusion. If something doesn't add up, it stops and says so — even if the developer sounds confident. Confidence ≠ correctness.
+**Critical thinking is always on.** The model evaluates every request for flaws, contradictions, wrong assumptions, and symptom-vs-root-cause confusion. If something doesn't add up, it stops and says so.
 
-**✨ Maximize simplicity, minimize complexity.** All else being equal, simpler is better. A small improvement that adds ugly complexity is not worth it. Removing something and getting equal or better results is a simplification win. The staff reviewer's primary mandate is simplification.
+**Maximize simplicity, minimize complexity.** All else being equal, simpler is better. A small improvement that adds ugly complexity is not worth it. The staff reviewer's primary mandate is simplification.
 
-**📐 All signal, zero noise.** Code, docs, logs, comments — everything must earn its place. Comments explain WHY, not WHAT. Don't comment self-evident code. Don't add features nobody asked for. Don't over-engineer for hypothetical futures.
+**All signal, zero noise.** Code, docs, logs, comments — everything must earn its place. Comments explain WHY, not WHAT. Don't comment self-evident code. Don't add features nobody asked for.
 
-**💾 Offload everything to disk.** Context windows are ephemeral — compaction erases discoveries. The plugin continuously persists knowledge to structured markdown files so nothing is lost:
-- **Plans** (`docs/plans/`) — task checklist, implementation log, verification results, review audit trail. The single persistent document for a workflow.
-- **Chronicles** (`docs/chronicles/`) — project snapshots capturing WHY changes happened, what the user communicated, decisions made, discoveries. Months later, a developer or model reads a chronicle and understands the full context.
+**Offload everything to disk.** Context windows are ephemeral — compaction erases discoveries. The plugin persists knowledge to structured markdown files:
+- **Plans** (`docs/plans/`) — task checklist, implementation log, verification results, review audit trail.
+- **Chronicles** (`docs/chronicles/`) — project snapshots capturing WHY changes happened, decisions made, discoveries.
 - **CLAUDE.md** — project-wide knowledge promoted from discoveries. A cheat sheet, not a novel.
 
-**🔬 Maximize final code quality.** The refactoring objective at every phase: make the project clear, descriptive, efficient, performant, reliable, robust, and maintainable. TDD discipline (RED → GREEN → REFACTOR), anti-hallucination verification, and independent staff review ensure the output meets production standards.
+**Maximize final code quality.** TDD discipline (RED -> GREEN -> REFACTOR), anti-hallucination verification, and independent staff review at every phase.
 
-**⚡ Efficient context usage.** Progressive disclosure loads only what's needed. Subagents run in isolated contexts — their token usage doesn't bloat your conversation. Research, implementation, testing, and review each happen in separate token budgets.
+**Efficient context usage.** Progressive disclosure loads only what's needed. Subagents run in isolated contexts — their token usage doesn't bloat your conversation.
 
 ---
 
-## 🔄 The 7-Phase Workflow
+## The 7-Phase Workflow
 
 Every task goes through gated phases. No skipping, no shortcuts.
 
@@ -57,11 +57,11 @@ Every task goes through gated phases. No skipping, no shortcuts.
 | 6 | **Staff Review** — spec compliance + code quality, iterate until approved | `STAFF REVIEW: APPROVED` |
 | 7 | **Finalize** — chronicle, docs alignment, CLAUDE.md updates | `WORKFLOW COMPLETE` |
 
-**Lightweight mode** kicks in for small tasks (≤3 files, single approach, reversible) — same gates, less ceremony.
+**Lightweight mode** kicks in for small tasks (<=3 files, single approach, reversible) — same gates, less ceremony.
 
 ---
 
-## 🧠 Brainstorming Guard
+## Brainstorming Guard
 
 Before any code is written, every request is evaluated:
 
@@ -70,7 +70,7 @@ Before any code is written, every request is evaluated:
 - **Approaches** — Only one obvious way?
 - **Motivation** — Does the request state WHY?
 
-If the task is large, hard to reverse, or has multiple valid approaches → brainstorming runs in an isolated subagent: web research, codebase exploration, approach scoring, plan written to disk.
+If the task is large, hard to reverse, or has multiple valid approaches, brainstorming runs in an isolated subagent: web research, codebase exploration, approach scoring, plan written to disk.
 
 Includes a **first-principles challenge** — if the developer is solving the wrong problem, the model stops and says so.
 
@@ -78,37 +78,37 @@ Includes a **first-principles challenge** — if the developer is solving the wr
 
 ---
 
-## 🤖 Subagents
+## Subagents
 
 Token-isolated — their work doesn't bloat your conversation:
 
 | Agent | Model | Job |
 |-------|-------|-----|
 | **implementer** | Opus | All tasks in one session. TDD discipline, anti-hallucination checks, progress on disk. |
-| **staff-reviewer** | Opus | Two-stage review: spec compliance → code quality. Primary mandate: simplification. |
+| **staff-reviewer** | Opus | Two-stage review: spec compliance, then code quality. Primary mandate: simplification. |
 | **test-verifier** | Sonnet | Runs build/test/lint. Returns pass/fail summary. Verbose output stays in its context. |
 
 ---
 
-## 🛡️ Anti-Rationalization
+## Anti-Rationalization
 
 Tables at every decision point catch the model rationalizing shortcuts:
 
 | Model thinks... | Reality |
 |---|---|
 | *"Simple enough to skip planning"* | Simple-looking changes cause the hardest bugs. |
-| *"The user said exactly what to do"* | Knowing WHAT ≠ only one HOW. |
-| *"I can review my own code"* | Self-review ≠ independent evaluation. |
-| *"The developer seems confident"* | Confidence ≠ correctness. Evaluate reasoning, not tone. |
+| *"The user said exactly what to do"* | Knowing WHAT doesn't mean there's only one HOW. |
+| *"I can review my own code"* | Self-review is not independent evaluation. |
+| *"The developer seems confident"* | Confidence is not correctness. Evaluate reasoning, not tone. |
 
 ---
 
-## 🗣️ Skills
+## Skills
 
 | Skill | Trigger | Description |
 |-------|---------|-------------|
 | **core-dev** | Auto | Workflow router: brainstorming guard, language detection, mode selection |
-| **brainstorming** | `/brainstorming` | Critical evaluation in isolated subagent → researched plan + options |
+| **brainstorming** | `/brainstorming` | Critical evaluation in isolated subagent, researched plan + options |
 | **python-dev** | `/python-dev` | Pydantic, FastAPI, asyncpg, pytest, ruff |
 | **java-dev** | `/java-dev` | Records, Streams, Spring Boot, Maven/Gradle |
 | **typescript-dev** | `/typescript-dev` | Zod, Express, Fastify, vitest/jest (backend/CLI) |
@@ -124,21 +124,21 @@ Tables at every decision point catch the model rationalizing shortcuts:
 
 ---
 
-## 🌐 Language Support
+## Language Support
 
-Each language skill provides verification commands, implementation rules, a `patterns.md` with code examples and anti-patterns, and a quality checklist. The patterns files are designed to be customized for your team.
+Each language skill provides verification commands, implementation rules, a `patterns.md` with code examples and anti-patterns, and a quality checklist.
 
 | Language | Skill | Patterns |
 |----------|-------|----------|
-| 🐍 Python | `python-dev` | Pydantic, FastAPI, asyncpg, DI via lifespan, pytest |
-| ☕ Java | `java-dev` | Records, Streams, Spring Boot, constructor injection |
-| 🔷 TypeScript | `typescript-dev` | Zod, strict mode, ESM, Result types |
-| 🍎 Swift | `swift-dev` | SwiftUI, async/await, actors, Codable, SPM |
-| 🖥️ Frontend | `frontend-dev` | Auto-detects: React, Next.js, Raycast, Vite |
+| Python | `python-dev` | Pydantic, FastAPI, asyncpg, DI via lifespan, pytest |
+| Java | `java-dev` | Records, Streams, Spring Boot, constructor injection |
+| TypeScript | `typescript-dev` | Zod, strict mode, ESM, Result types |
+| Swift | `swift-dev` | SwiftUI, async/await, actors, Codable, SPM |
+| Frontend | `frontend-dev` | Auto-detects: React, Next.js, Raycast, Vite |
 
 ---
 
-## 🏗️ How It Works
+## How It Works
 
 **Progressive disclosure** — minimal context overhead:
 - **L1 (always loaded):** `workflow.md` — phase sequence, gates, anti-rationalization (~70 lines)
@@ -158,7 +158,7 @@ Chronicles  = WHY it happened + full project context
 
 ---
 
-## 📁 Architecture
+## Architecture
 
 ```
 .claude-plugin/plugin.json        # Plugin metadata
@@ -186,10 +186,10 @@ scripts/                          # Plan file helper
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions welcome. The key constraint: **every change must align with the [6 behavior principles](CLAUDE.md)**. If a change would make the model more accommodating, weaken critical evaluation, or reduce planning rigor — it doesn't belong here.
 
-## 📄 License
+## License
 
 MIT
