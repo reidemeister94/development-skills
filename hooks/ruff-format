@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Runs ruff format silently. Exits 0 even if ruff is not installed.
+# Searches PATH first, then common env locations as fallback.
+
+find_ruff() {
+  command -v ruff 2>/dev/null && return
+
+  local candidates=(
+    # Active virtualenv (poetry, pdm, manual venv, etc.)
+    "${VIRTUAL_ENV}/bin/ruff"
+    "${VIRTUAL_ENV}/Scripts/ruff.exe"
+    # Active conda env
+    "${CONDA_PREFIX}/bin/ruff"
+    "${CONDA_PREFIX}/Scripts/ruff.exe"
+    # Project-local venvs
+    ".venv/bin/ruff"
+    ".venv/Scripts/ruff.exe"
+    "venv/bin/ruff"
+    "venv/Scripts/ruff.exe"
+    # User-level installs (pipx, uv tool, astral standalone installer)
+    "${HOME}/.local/bin/ruff"
+    # Cargo install
+    "${HOME}/.cargo/bin/ruff"
+    # pyenv shims
+    "${PYENV_ROOT:-${HOME}/.pyenv}/shims/ruff"
+  )
+
+  for candidate in "${candidates[@]}"; do
+    [ -n "$candidate" ] && [ -x "$candidate" ] && echo "$candidate" && return
+  done
+  return 1
+}
+
+RUFF=$(find_ruff) && "$RUFF" format --quiet . 2>/dev/null
+exit 0
