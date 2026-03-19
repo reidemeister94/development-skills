@@ -32,6 +32,7 @@ WORKFLOW STATE Verification line: `mvn test / gradle test, mvn compile / gradle 
 
 **Phase 5 Tier B additional MCP verifications:**
 - PostgreSQL MCP → Query DB state before/after
+- AS400 MCP → Query AS400/DB2 for data verification
 
 ### Implementation Rules (Phase 4)
 
@@ -45,19 +46,11 @@ WORKFLOW STATE Verification line: `mvn test / gradle test, mvn compile / gradle 
 
 ---
 
-## Anti-Rationalization (Java-Specific)
+## Java-Specific Rules
 
-Add these to the shared workflow's anti-rationalization check:
-
-| Your thought | Reality |
-|---|---|
-| "Java's type system catches everything at compile time" | The compiler catches type errors, not logic bugs, concurrency issues, or SQL injection. Verification and review are still mandatory. |
-| "Spring Boot auto-configuration handles this" | Auto-configuration can mask issues. Understand what it does before relying on it. |
-| "This is just a CRUD endpoint, no need for full workflow" | CRUD endpoints still need proper validation, error handling, and tests. Follow the workflow. |
-
-### Red Flags (Java-Specific)
-
-- Expressing satisfaction before running `mvn test` or `gradle test`
+- The compiler catches type errors, not logic bugs or concurrency issues — verification is still mandatory
+- Understand Spring Boot auto-configuration before relying on it
+- No positive claim without running `mvn test` or `gradle test`
 
 ---
 

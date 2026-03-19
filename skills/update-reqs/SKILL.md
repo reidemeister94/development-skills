@@ -58,7 +58,7 @@ Package          Current    Latest     Status
 fastapi          0.128.*    0.130.2    UPDATE → 0.130.*
 pydantic         2.12.*     2.12.1     OK (already matches)
 uvicorn          0.40.*     0.41.0     UPDATE → 0.41.*
-mypackage        (git)      -          SKIP (git dependency)
+pyinnovation     (git)      -          SKIP (git dependency)
 
 Apply updates? [y/N]
 ```

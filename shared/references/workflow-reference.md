@@ -15,14 +15,9 @@
 
 ---
 
-## Anti-Rationalization Check
+## Key Rules
 
-| Your thought | Reality |
-|---|---|
-| "This is simple enough to skip planning" | Simple-looking changes cause the hardest bugs. Follow the workflow. |
-| "TaskCreate is basically a plan" | TaskCreate tracks progress. EnterPlanMode creates the plan. NOT interchangeable. |
-| "The user didn't ask for a plan" | IRRELEVANT. The workflow requires it regardless (Phase 2). |
-| "I know the tasks, I'll start implementing" | Phase 4 REQUIRES updating the plan doc with Task Checklist BEFORE spawning implementer. |
-| "Implementation is complete, I can summarize now" | After Phase 4, you MUST continue through Phases 5, 6, 7. Do NOT stop. |
-
-**Also check your language skill's anti-rationalization table.** If you recognized your reasoning in any table, you are rationalizing. Go back and follow the workflow.
+- **Every phase is a gate.** Do NOT skip or combine phases.
+- **TaskCreate is NOT a plan.** Use EnterPlanMode for plans.
+- **After Phase 4, continue through 5, 6, 7.** Do NOT stop after implementation.
+- **No positive claim without evidence.** "Should work" is not verification.

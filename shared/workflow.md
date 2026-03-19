@@ -6,9 +6,9 @@ This workflow is **MANDATORY** for all development work. Phase instructions are 
 
 <MANDATORY-WORKFLOW>
 
-## STOP — READ THIS BEFORE DOING ANYTHING
+## Iron Rule: No Positive Claims Without Evidence
 
-**Skills vs Agents confusion?** Read `references/workflow-reference.md` for the lookup table.
+**Never say "should work", "looks good", "done", or any success claim without fresh verification output.** This applies to EVERY phase, not just Phase 5. Evidence before assertions, always.
 
 ---
 
@@ -26,9 +26,11 @@ This workflow is **MANDATORY** for all development work. Phase instructions are 
 | 4 | Implement | "SOLUTION COMPLETE" | Read `phases/phase-4-implement.md` |
 | 5 | Verify | "VERIFICATION COMPLETE" + evidence | Read `phases/phase-5-verify.md` |
 | 6 | Staff Review | "STAFF REVIEW: APPROVED" | Read `phases/phase-6-review.md` |
-| 7 | Finalize & Docs | "WORKFLOW COMPLETE" | Read `phases/phase-7-finalize.md` |
+| 7 | Finalize | "WORKFLOW COMPLETE" | Read `phases/phase-7-finalize.md` |
 
 **How to read phase files:** Use Glob to find `**/phases/phase-N-*.md` or resolve relative to this file's directory.
+
+**Skills vs Agents confusion?** Read `references/workflow-reference.md` for the lookup table.
 
 **You CANNOT:**
 - Skip or combine phases
@@ -36,18 +38,6 @@ This workflow is **MANDATORY** for all development work. Phase instructions are 
 - Start coding without explicit plan approval from the user
 - Claim completion without all gates checked
 - Stop or pause between phases (each gate leads directly to the next)
-
-**Rationalizing skipping a phase?** Read `references/workflow-reference.md` for the anti-rationalization check.
-
-### Red Flags — STOP if you notice yourself:
-
-- Using uncertain language ("should work", "probably fine")
-- About to skip a phase because you feel "confident"
-- Expressing satisfaction before running verification
-- About to summarize and stop after Phase 4 without continuing to Phases 5-6-7
-- Agreeing with the developer's approach without having considered alternatives
-
-**Also check your language skill's red flags.**
 
 **After each phase, explicitly state the gate checkpoint.**
 

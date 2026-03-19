@@ -121,7 +121,7 @@ Append the approach decision to the plan file at `[PLAN_PATH]` using Edit:
 Announce:
 > **Approach confirmed: [Approach name].** Starting development workflow.
 
-Then invoke `development-skills:core-dev` via Skill tool (no args — Pre-Step C detects the plan).
+Then invoke `development-skills:core-dev` via Skill tool (no args — Step 1 detects the active plan).
 
 ### 4c: Abandon
 

@@ -11,7 +11,9 @@
 
 **Language skills may define additional tiers** (e.g., Tier C for Xcode projects). Check your language skill's verification configuration.
 
-**Principle:** "Prove to me this works" — the verifier returns pass/fail summary with failure details.
+**Principle:** "Prove to me this works" — the verifier returns pass/fail summary with failure details. **No positive claim ("should work", "looks good", "done") without fresh verification evidence.**
+
+**Observation masking:** The verifier's verbose output (full test logs, lint output) stays in the subagent's context. Only the pass/fail summary returns to your conversation. Write full details to the plan file on disk.
 
 **Persist verification results to disk:** After the verifier returns, append a `## Verification Results` section to the plan file. Write the **full details**, not just a summary — this is the audit trail that Phase 6 (Staff Review) reads from disk. Avoids telephone-game information loss.
 

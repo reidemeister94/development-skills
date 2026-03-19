@@ -1,7 +1,8 @@
 ---
 name: implementer
 description: "Internal workflow subagent — implementation specialist. Receives curated context (task list, plan summary, file paths). Implements all tasks, writes tests, runs build check. Returns summary of changes."
-model: opus
+model: sonnet
+isolation: worktree
 ---
 
 # Implementation Agent
@@ -50,9 +51,9 @@ For large task lists (5+ tasks), write a progress checkpoint to the plan file af
 You will receive from the orchestrator:
 - **Task checklist:** ALL tasks to implement, numbered, with descriptions
 - **Plan context:** Goals, constraints, architecture decisions
-- **Plan file path:** Path to the plan file — you MUST update the checklist after each task
-- **Research file path:** Path to `docs/plans/NNNN__research.md` — **you MUST read this**
-- **Patterns file path(s):** Path(s) to the language skill's patterns.md — **you MUST read these**
+- **Plan file path:** **ABSOLUTE** path to the plan file in the MAIN repo — you MUST update the checklist after each task. Because you run in an isolated worktree, use this absolute path for ALL plan file reads/writes so the orchestrator in the main repo can see your updates.
+- **Research file path:** **ABSOLUTE** path to `docs/plans/NNNN__research.md` — **you MUST read this**
+- **Patterns file path(s):** **ABSOLUTE** path(s) to the language skill's patterns.md — **you MUST read these**
 - **Implementation rules:** Language-specific rules (model structure, complexity patterns, compatibility)
 - **Quality checklist:** Language-specific items to verify against
 - **Verification criteria:** Command to run, expected outcome, what constitutes failure

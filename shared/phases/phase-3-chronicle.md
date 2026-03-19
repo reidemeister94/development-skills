@@ -17,11 +17,7 @@
 - Change is self-evident from the code diff
 - No business context worth preserving
 
-**Anti-rationalization:**
-
-| Your thought | Reality |
-|---|---|
-| "Chronicle is just busywork" | Chronicles are the only record of WHY decisions were made. Code shows WHAT, plans show HOW. Without a chronicle, the WHY is lost in 3 months. |
+**When in doubt, create the chronicle.** The cost is ~30 seconds. The cost of a missing chronicle is losing the WHY behind a decision.
 
 ---
 

@@ -46,19 +46,11 @@ WORKFLOW STATE Verification line: `tsc --noEmit, eslint, vitest/jest`
 
 ---
 
-## Anti-Rationalization (TypeScript-Specific)
+## TypeScript-Specific Rules
 
-Add these to the shared workflow's anti-rationalization check:
-
-| Your thought | Reality |
-|---|---|
-| "TypeScript types guarantee runtime safety" | Types are erased at runtime. External data needs Zod validation. Type safety ≠ runtime safety. |
-| "I'll fix the type errors later" | Type errors indicate real problems. Fix them during implementation, not after. |
-| "The strict mode catches everything" | Strict mode catches type errors, not logic bugs, async race conditions, or API contract violations. Verification and review are still mandatory. |
-
-### Red Flags (TypeScript-Specific)
-
-- Expressing satisfaction before running `tsc --noEmit`
+- Types are erased at runtime — external data needs Zod validation
+- Fix type errors during implementation, not after
+- No positive claim without running `tsc --noEmit`
 
 ---
 

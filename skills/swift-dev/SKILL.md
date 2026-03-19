@@ -47,20 +47,11 @@ WORKFLOW STATE Verification line: `swift build, swift test, swiftlint`
 
 ---
 
-## Anti-Rationalization (Swift-Specific)
+## Swift-Specific Rules
 
-Add these to the shared workflow's anti-rationalization check:
-
-| Your thought | Reality |
-|---|---|
-| "The Swift compiler catches everything" | The compiler catches type errors, not logic bugs, architectural problems, or performance issues. Verification and review are still mandatory. |
-| "SwiftUI previews are enough verification" | Previews only prove the view compiles. They do not test business logic, async flows, or edge cases. Run `swift test`. |
-| "This is just a UI tweak, no need for the full workflow" | UI changes affect architecture (view/model boundaries), testability, and accessibility. Follow the workflow. |
-
-### Red Flags (Swift-Specific)
-
-- Expressing satisfaction before running `swift test` or `swift build`
-- Assuming the compiler will catch the issue without running verification
+- The compiler catches type errors, not logic bugs or architectural problems — verification is still mandatory
+- SwiftUI previews only prove the view compiles — run `swift test` for real verification
+- No positive claim without running `swift test` or `swift build`
 
 ---
 

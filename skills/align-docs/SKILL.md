@@ -24,12 +24,13 @@ Collect the actual state of the project by reading the filesystem. Compare again
 | Check | How |
 |-------|-----|
 | **Project structure** (CLAUDE.md) | `ls` root dirs/files → compare with the structure tree in CLAUDE.md |
-| **Plugin list + versions** (CLAUDE.md, MEMORY.md) | Read each `plugins/*/.claude-plugin/plugin.json` → compare with documented versions |
-| **Skills per plugin** (plugin READMEs) | `ls plugins/*/skills/` → compare with the skills table in each `plugins/*/README.md` |
-| **Agents per plugin** (plugin READMEs) | `ls plugins/*/agents/` → compare with the agents table in each `plugins/*/README.md` |
-| **Shared files** (plugin READMEs) | `ls plugins/*/shared/` → verify any documented architecture matches actual files |
+| **Plugin version** (CLAUDE.md, MEMORY.md) | Read `.claude-plugin/plugin.json` → compare with documented version |
+| **Skills** (README) | `ls skills/` → compare with the skills table in README.md |
+| **Agents** (README) | `ls agents/` → compare with the agents table in README.md |
+| **Shared files** (README) | `ls shared/` → verify documented architecture matches actual files |
+| **Hooks** (README) | `ls hooks/` + read `hooks/hooks.json` → compare with hooks table in README.md |
 | **Conventions & paths** (CLAUDE.md) | Verify every path/filename mentioned in CLAUDE.md actually exists |
-| **Cross-references** | Check that links between docs (e.g., "see docs/README.md") point to files that exist |
+| **Cross-references** | Check that links between docs point to files that exist |
 
 ### Step 2: Fix misalignments
 
@@ -37,11 +38,10 @@ For each mismatch found in Step 1, update the doc to match reality:
 
 | Document | Purpose | What to check |
 |----------|---------|---------------|
-| **CLAUDE.md** | Project-wide knowledge loaded every conversation | Structure tree, plugin versions, paths, conventions, references to external files |
-| **MEMORY.md** | Cross-session memory | Plugin versions, stable facts, testing iteration numbers |
-| **Plugin READMEs** | Plugin-specific docs | Skills table, agents table, architecture description, quick start commands |
+| **CLAUDE.md** | Project-wide knowledge loaded every conversation | Structure tree, version, paths, conventions |
+| **MEMORY.md** | Cross-session memory | Plugin version, stable facts, testing iteration numbers |
+| **README.md** | Public-facing docs | Skills table, agents table, hooks table, architecture description |
 | **docs/chronicles/** | Narrative records | Only update if a chronicle references something now incorrect |
-| **Other docs/** | Domain documentation | Only update if content is stale |
 
 ### Step 3: Remove noise
 

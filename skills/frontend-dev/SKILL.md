@@ -80,25 +80,13 @@ WORKFLOW STATE Verification line: `npm run build, npm run lint, npm test`
 
 ---
 
-## Anti-Rationalization (Frontend-Specific)
+## Frontend-Specific Rules
 
-Add these to the shared workflow's anti-rationalization check:
-
-| Your thought | Reality |
-|---|---|
-| "I know this is a React project, I don't need to read the pattern files" | The pattern files contain TEAM-SPECIFIC standards, not general knowledge. Read them. |
-| "Framework detection is obvious, I'll skip it" | Detection MUST be explicit and stated. Wrong detection = wrong patterns = wrong code. |
-| "I'll use the same verification commands for all frameworks" | Each framework has specific build/type-check commands. Check the table. |
-| "This framework isn't in the detection table, I'll just wing it" | If the framework isn't listed, ASK the user. Do not guess. |
-| "The pattern file for this framework doesn't exist yet, so I'll skip it" | State that the pattern file is missing and use general TypeScript + component best practices. Suggest creating the pattern file. |
-
-### Red Flags (Frontend-Specific)
-
-- Starting Phase 1 without completing Framework Detection
-- Reading only one pattern file when the detection table says to read two
-- Hardcoding Next.js patterns (Server Components, App Router) for a non-Next.js React project
-- Using `useEffect` for data fetching in a Next.js project (should use Server Components)
-- Using "use client" everywhere in a Next.js project
+- Always read ALL pattern files specified by the detection table — they contain team-specific standards
+- Framework detection MUST be explicit and stated — wrong detection = wrong patterns = wrong code
+- Each framework has specific build/type-check commands — check the verification table
+- If the framework isn't listed, ASK the user — do not guess
+- Complete framework detection BEFORE starting Phase 1
 
 ---
 

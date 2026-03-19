@@ -243,9 +243,9 @@ async def get_item(item_id: UUID, service: Service = Depends(get_service)):
 ### Setup
 
 ```python
-import logging
+from pyinnovation.utils.logging_utils import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(name="my_service", log_level=settings.log_level)
 ```
 
 ### Usage

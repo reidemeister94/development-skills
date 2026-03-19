@@ -1,195 +1,203 @@
 # Development Skills
 
-[![GitHub stars](https://img.shields.io/github/stars/reidemeister94/development-skills?style=flat-square)](https://github.com/reidemeister94/development-skills/stargazers)
-[![GitHub license](https://img.shields.io/github/license/reidemeister94/development-skills?style=flat-square)](https://github.com/reidemeister94/development-skills/blob/main/LICENSE)
-[![Version](https://img.shields.io/badge/version-0.0.1-blue?style=flat-square)](https://github.com/reidemeister94/development-skills/releases)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-blueviolet?style=flat-square)](https://docs.anthropic.com/en/docs/claude-code)
-
-A Claude Code plugin that enforces a structured development workflow: 7-phase quality gates, specialized subagents, and multi-language support.
-
-Without structure, Claude Code skips verification, doesn't plan, writes before thinking, and never reviews its own work. This plugin enforces a 7-phase workflow with specialized subagents — brainstorming analyst, TDD implementer, test verifier, and staff-engineer reviewer — running in isolated contexts so your main conversation stays clean.
-
-Built from months of production use, grounded in the [official Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code) and distilled knowledge from projects like [superpowers](https://github.com/obra/superpowers), [claude-code-tips](https://github.com/ykdojo/claude-code-tips), and [Agent-Skills-for-Context-Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering). Every rule exists because we hit the failure mode it prevents.
+Unified development workflow plugin for Claude Code. Provides a mandatory 7-phase workflow (with lightweight mode for small tasks) for all coding tasks, with language-specific and framework-specific patterns for Python, Java, TypeScript, Swift, and frontend frameworks (React, Next.js, Raycast, Vite).
 
 ## Quick Start
 
-```bash
-/plugin marketplace add reidemeister94/development-skills
-/plugin install development-skills@development-skills-marketplace
+The plugin activates automatically when Claude detects a development task. A SessionStart hook injects a lightweight context reminder at the beginning of every conversation. You can also invoke skills directly:
+
+```
+/python-dev          # Language-specific dev workflows
+/java-dev
+/typescript-dev
+/frontend-dev
+/swift-dev
+/debugging           # Systematic root-cause debugging
+/brainstorming       # Critical evaluation before implementation
+/commit              # Conventional commit messages
+/align-docs          # Align docs with current project state
+/update-precommit    # Update pre-commit hooks to latest
+/update-reqs         # Update requirements.in versions
+/update-reqs-dev     # Update requirements-dev.in versions
 ```
 
-Give Claude a task — the plugin activates automatically.
+## Prerequisites
 
----
-
-## Core Pillars
-
-These aren't aspirational — they're enforced at every decision point in the workflow.
-
-**Critical thinking is always on.** The model evaluates every request for flaws, contradictions, wrong assumptions, and symptom-vs-root-cause confusion. If something doesn't add up, it stops and says so.
-
-**Maximize simplicity, minimize complexity.** All else being equal, simpler is better. A small improvement that adds ugly complexity is not worth it. The staff reviewer's primary mandate is simplification.
-
-**All signal, zero noise.** Code, docs, logs, comments — everything must earn its place. Comments explain WHY, not WHAT. Don't comment self-evident code. Don't add features nobody asked for.
-
-**Offload everything to disk.** Context windows are ephemeral — compaction erases discoveries. The plugin persists knowledge to structured markdown files:
-- **Plans** (`docs/plans/`) — task checklist, implementation log, verification results, review audit trail.
-- **Chronicles** (`docs/chronicles/`) — project snapshots capturing WHY changes happened, decisions made, discoveries.
-- **CLAUDE.md** — project-wide knowledge promoted from discoveries. A cheat sheet, not a novel.
-
-**Maximize final code quality.** TDD discipline (RED -> GREEN -> REFACTOR), anti-hallucination verification, and independent staff review at every phase.
-
-**Efficient context usage.** Progressive disclosure loads only what's needed. Subagents run in isolated contexts — their token usage doesn't bloat your conversation.
-
----
-
-## The 7-Phase Workflow
-
-Every task goes through gated phases. No skipping, no shortcuts.
-
-| # | Phase | Gate |
-|---|-------|------|
-| 1 | **Research** — codebase + web research in isolated subagent | `RESEARCH COMPLETE` |
-| 2 | **Plan** — persisted to disk, requires your approval | User approves |
-| 3 | **Chronicle** — captures the WHY behind changes | `CHRONICLE INITIATED` |
-| 4 | **Implement** — single subagent, TDD cycles, progress on disk | `SOLUTION COMPLETE` |
-| 5 | **Verify** — test/build/lint via subagent, evidence required | `VERIFICATION COMPLETE` |
-| 6 | **Staff Review** — spec compliance + code quality, iterate until approved | `STAFF REVIEW: APPROVED` |
-| 7 | **Finalize** — chronicle, docs alignment, CLAUDE.md updates | `WORKFLOW COMPLETE` |
-
-**Lightweight mode** kicks in for small tasks (<=3 files, single approach, reversible) — same gates, less ceremony. Skips brainstorming and research subagents, saving tokens and reducing cost.
-
----
-
-## Brainstorming Guard
-
-Before any code is written, every request is evaluated:
-
-- **Scope** — More than 3 files?
-- **Reversibility** — Undoable in under 1 hour?
-- **Approaches** — Only one obvious way?
-- **Motivation** — Does the request state WHY?
-
-If the task is large, hard to reverse, or has multiple valid approaches, brainstorming runs in an isolated subagent: web research, codebase exploration, approach scoring, plan written to disk.
-
-Includes a **first-principles challenge** — if the developer is solving the wrong problem, the model stops and says so.
-
-**Default: invoke brainstorming.** The burden of proof is on skipping.
-
----
-
-## Subagents
-
-Token-isolated — their work doesn't bloat your conversation:
-
-| Agent | Model | Job |
-|-------|-------|-----|
-| **implementer** | Opus | All tasks in one session. TDD discipline, anti-hallucination checks, progress on disk. |
-| **staff-reviewer** | Opus | Two-stage review: spec compliance, then code quality. Primary mandate: simplification. |
-| **test-verifier** | Sonnet | Runs build/test/lint. Returns pass/fail summary. Verbose output stays in its context. |
-
----
-
-## Anti-Rationalization
-
-Tables at every decision point catch the model rationalizing shortcuts:
-
-| Model thinks... | Reality |
-|---|---|
-| *"Simple enough to skip planning"* | Simple-looking changes cause the hardest bugs. |
-| *"The user said exactly what to do"* | Knowing WHAT doesn't mean there's only one HOW. |
-| *"I can review my own code"* | Self-review is not independent evaluation. |
-| *"The developer seems confident"* | Confidence is not correctness. Evaluate reasoning, not tone. |
-
----
+- **`skill-creator` plugin** — Required for creating and improving Claude Code skills. This is an official plugin from the Claude marketplace. It must be enabled in your `~/.claude/settings.json` under `enabledPlugins` as `"skill-creator@claude-plugins-official": true`. The project-level `.claude/settings.json` already declares this dependency.
 
 ## Skills
 
-| Skill | Trigger | Description |
-|-------|---------|-------------|
-| **core-dev** | Auto | Workflow router: brainstorming guard, language detection, mode selection |
-| **brainstorming** | `/brainstorming` | Critical evaluation in isolated subagent, researched plan + options |
-| **python-dev** | `/python-dev` | Pydantic, FastAPI, asyncpg, pytest, ruff |
-| **java-dev** | `/java-dev` | Records, Streams, Spring Boot, Maven/Gradle |
-| **typescript-dev** | `/typescript-dev` | Zod, Express, Fastify, vitest/jest (backend/CLI) |
-| **frontend-dev** | `/frontend-dev` | Auto-detects: React, Next.js, Raycast, Vite |
-| **swift-dev** | `/swift-dev` | SwiftUI, UIKit, Vapor, SPM, XCTest |
-| **debugging** | `/debugging` | Systematic 4-phase root-cause methodology |
-| **chronicles** | Auto | Project snapshots capturing WHY behind changes |
-| **commit** | `/commit` | Conventional commits from staged changes |
-| **align-docs** | `/align-docs` | Sync all docs with current disk state |
-| **update-precommit** | `/update-precommit` | Update pre-commit hooks to latest versions |
-| **update-reqs** | `/update-reqs` | Update `requirements.in` to latest PyPI versions |
-| **update-reqs-dev** | `/update-reqs-dev` | Update `requirements-dev.in` to latest PyPI versions |
+| Skill | Invocable | Description |
+|-------|-----------|-------------|
+| `core-dev` | auto | Thin workflow router (~75 lines): checks for in-progress plans, loads brainstorming guard from `routing-rules.md`, detects language, dispatches to correct skill. |
+| `brainstorming` | `/brainstorming` | Requirements comprehension + critical evaluation: understands WHAT + WHY, proposes HOW, evaluates risks. Two modes: Full Analysis and Focused Evaluation. Standalone-capable. |
+| `python-dev` | `/python-dev` | Python patterns (Pydantic, FastAPI, asyncpg) |
+| `java-dev` | `/java-dev` | Java patterns (Records, Streams, Spring Boot) |
+| `typescript-dev` | `/typescript-dev` | Pure TypeScript patterns (Zod, Express, Fastify) -- backend, CLI, libraries only |
+| `frontend-dev` | `/frontend-dev` | Frontend framework patterns with auto-detection: React, Next.js, Raycast, Vite |
+| `swift-dev` | `/swift-dev` | Swift patterns (SwiftUI, UIKit, Vapor, SPM) |
+| `debugging` | `/debugging` | Systematic root-cause debugging: 4-phase methodology (investigate -> analyze -> hypothesize -> fix). Enhances Phase 1 for bug-fix tasks. |
+| `chronicles` | auto | Project snapshots capturing the WHY behind changes -- full user context, decisions, discoveries, project state |
+| `commit` | `/commit` | Conventional commits: analyzes staged changes and generates commit messages |
+| `align-docs` | `/align-docs` | Align all relevant docs (CLAUDE.md, MEMORY.md, chronicles) with current project status and new discoveries |
+| `update-precommit` | `/update-precommit` | Update `.pre-commit-config.yaml` hooks to latest versions from GitHub, preserving tag format |
+| `update-reqs` | `/update-reqs` | Update `requirements.in` with latest PyPI versions, preserving version specifier patterns |
+| `update-reqs-dev` | `/update-reqs-dev` | Update `requirements-dev.in` with latest PyPI versions, preserving version specifier patterns |
 
----
+### Subagents
 
-## Language Support
+Custom subagents defined in `agents/`, spawned by skills during workflow phases:
 
-Each language skill provides verification commands, implementation rules, a `patterns.md` with code examples and anti-patterns, and a quality checklist.
+| Agent | Model | Purpose |
+|-------|-------|---------|
+| `staff-reviewer` | opus | Two-stage code review: spec compliance (completeness) then code quality (simplification). Returns APPROVED, SPEC_ISSUES, or ISSUES with file:line references. |
+| `implementer` | sonnet | All-task implementation in isolated git worktree. Receives curated context (task list, plan summary, file paths). Test-first discipline, anti-poisoning verification, writes artifact trail to plan file. |
+| `test-verifier` | sonnet | Test/build/lint execution. Runs verification commands. Returns pass/fail summary with failure details. Verbose output stays in subagent context. |
 
-| Language | Skill | Patterns |
-|----------|-------|----------|
-| Python | `python-dev` | Pydantic, FastAPI, asyncpg, DI via lifespan, pytest |
-| Java | `java-dev` | Records, Streams, Spring Boot, constructor injection |
-| TypeScript | `typescript-dev` | Zod, strict mode, ESM, Result types |
-| Swift | `swift-dev` | SwiftUI, async/await, actors, Codable, SPM |
-| Frontend | `frontend-dev` | Auto-detects: React, Next.js, Raycast, Vite |
+Model tier philosophy: right-size for the task.
+- **Opus**: Judgment-heavy work -- code review, research, analysis, critical evaluation
+- **Sonnet**: Implementation and mechanical tasks -- following well-specified plans, running tests, collecting output
+- **Explore (built-in)**: Codebase exploration (runs on Haiku for speed)
 
----
+**Why Sonnet for implementation?** When the plan is well-specified (Phase 2 ensures this), implementation is primarily instruction-following, not reasoning about architecture. Sonnet handles this well at lower cost and faster speed. Opus is reserved for tasks requiring deep judgment.
 
-## How It Works
+### Frontend Framework Support
 
-**Progressive disclosure** — minimal context overhead:
-- **L1 (always loaded):** `workflow.md` — phase sequence, gates, anti-rationalization (~70 lines)
-- **L2 (on-demand):** `phases/phase-N-*.md` — detailed instructions loaded just-in-time (~300 words each)
+The `frontend-dev` skill auto-detects your framework from config files and `package.json` dependencies, then loads the appropriate pattern files:
 
-**State persistence** — survives context compaction:
-- WORKFLOW STATE block at top of plan file
-- Plan file on disk with status + remaining phases
-- Auto-resume: `core-dev` checks for in-progress plans first
+| Framework | Pattern Files Loaded |
+|-----------|---------------------|
+| Next.js | `react.md` + `nextjs.md` |
+| React + Vite | `react.md` + `vite.md` |
+| Raycast | `react.md` + `raycast.md` |
+| React (standalone) | `react.md` |
 
-**Three layers of knowledge:**
-```
-Code + Git  = WHAT changed
-Plan docs   = HOW it was implemented
-Chronicles  = WHY it happened + full project context
-```
+### Hooks
 
----
+| Hook | Trigger | Purpose |
+|------|---------|---------|
+| `SessionStart` | startup, clear, compact | Injects lightweight plugin context reminder |
+| `PostToolUse` | Edit, Write | Auto-formats the edited file using the best formatter per language |
+
+**Auto-format — best-in-class formatters per language:**
+
+| Language | Primary | Fallback | Why primary |
+|----------|---------|----------|-------------|
+| Python | ruff | — | 30x faster than Black, used by Django/FastAPI/pandas |
+| JS/TS | biome | prettier | 7-100x faster than Prettier, Rust-based linter+formatter |
+| Java | google-java-format | — | Standard standalone CLI formatter |
+| Kotlin | ktfmt | ktlint | 40% faster than ktlint, adopted by Square/Block |
+| Swift | swift-format | swiftformat | Official Apple toolchain (Xcode 16+) |
+| CSS/JSON/GraphQL | biome | prettier | Same binary as JS/TS, native support |
+| HTML/YAML/Vue | prettier | — | Biome YAML/HTML support still maturing |
 
 ## Architecture
 
-```
-.claude-plugin/plugin.json        # Plugin metadata
-skills/                           # 14 skills
-  core-dev/                       #   Workflow router + brainstorming guard
-  brainstorming/                  #   Critical evaluation + analysis subagent
-  python-dev/ java-dev/           #   Language-specific workflows
-  typescript-dev/ swift-dev/      #   + patterns.md files
-  frontend-dev/                   #   Auto-detects React, Next.js, Raycast, Vite
-  debugging/ chronicles/          #   Root-cause debugging, project snapshots
-  commit/ align-docs/             #   Conventional commits, docs sync
-  update-precommit/               #   Dependency updaters
-  update-reqs/ update-reqs-dev/
-agents/                           # 3 subagents
-  implementer.md                  #   Opus — TDD implementation
-  staff-reviewer.md               #   Opus — two-stage code review
-  test-verifier.md                #   Sonnet — build/test/lint runner
-shared/                           # Workflow engine
-  workflow.md                     #   L1: always-loaded workflow rules
-  phases/                         #   L2: on-demand phase instructions
-  references/                     #   Anti-rationalization, project directives
-hooks/                            # Auto ruff-format on Edit/Write
-scripts/                          # Plan file helper
-```
+### Shared Workflow Layer -- Progressive Disclosure
 
----
+The 7-phase workflow uses a **progressive disclosure** architecture to minimize context overhead:
 
-## Contributing
+- **`shared/workflow.md`** -- Always loaded. Contains phase sequence, gate rules, Iron Rule (no claims without evidence), compaction guide. This is the L1 (always-loaded) layer.
+- **`shared/phases/phase-N-*.md`** (~300 words avg) -- Loaded just-in-time when entering each phase. Contains detailed phase instructions. This is the L2 (on-demand) layer.
+- **`skills/core-dev/routing-rules.md`** -- Loaded on-demand by core-dev for the brainstorming guard. Keeps core-dev SKILL.md thin (~75 lines).
+- **`skills/brainstorming/templates/`** -- Research and plan file templates loaded on-demand by the analysis agent.
 
-Contributions welcome. The key constraint: **every change must align with the [6 behavior principles](CLAUDE.md)**. If a change would make the model more accommodating, weaken critical evaluation, or reduce planning rigor — it doesn't belong here.
+Each language skill provides only its language-specific configuration (verification commands, implementation rules, quality checklist items). This eliminates duplication and ensures all languages follow the same process.
 
-## License
+### Subagent-Orchestrated Workflow
 
-MIT
+The main agent acts as a **thin orchestrator** -- it holds the plan and completion status while delegating vertical execution to specialized subagents:
+
+- **Brainstorming:** The orchestrator spawns a **Task agent** for all heavy analysis (research, web search, code reading, critical evaluation). The agent's tokens stay completely isolated from the main conversation. Only the plan file on disk and a concise summary return to main context.
+- **Phase 1 (Research):** Opus subagent for codebase exploration + web searches when gaps exist
+- **Phase 2 (Plan):** Writes WORKFLOW STATE block for context recovery
+- **Phase 4 (Implementation):** **Single `implementer` subagent** in an isolated git worktree for all tasks -- curated context package (task list, plan summary, file paths). Test-first discipline with anti-poisoning verification. Observation masking: verbose outputs go to plan file on disk, only compact summaries return to conversation.
+- **Phase 5 (Verification):** `test-verifier` runs commands, returns summary. Full results persisted to plan file.
+- **Phase 6 (Staff Review):** `staff-reviewer` reads plan file (artifact trail + verification results) and patterns.md, performs two-stage review
+- **Phase 7 (Finalize):** Chronicle finalization, doc alignment, and **integration options** (merge locally, create PR, keep branch, or discard)
+
+### Workflow Modes
+
+**Full Mode (default):** All 7 phases with subagents, plan files, chronicles, and staff review. Implementation runs in an isolated git worktree. Used for non-trivial tasks.
+
+**Lightweight Mode:** For genuinely small tasks (3 files or fewer, single approach, fully reversible, no brainstorming). Collapses phases: inline research, inline plan confirmation, no chronicle, direct implementation (no worktree), inline verification, no staff review. Exits to full mode if complexity is discovered.
+
+### Workflow State Persistence
+
+Three layers ensure quality gates survive "clear context and proceed":
+
+1. **WORKFLOW STATE block** in the plan content (written at TOP of plan)
+2. **Plan file on disk** at `docs/plans/` with Status and remaining phases
+3. **Step 1 in core-dev** checks for in-progress plans FIRST (before the brainstorming guard) and resumes from correct phase
+
+### Observation Masking
+
+Tool outputs consume 80%+ of tokens in typical agent trajectories. The plugin uses **observation masking** to keep verbose outputs off the main conversation:
+
+- Implementer writes `## Implementation Log` to plan file on disk, returns only a compact summary
+- Test-verifier's verbose output stays in its subagent context; only pass/fail summary returns
+- Staff-reviewer reads plan file directly from disk instead of receiving paraphrased summaries
+- Full details are always available on disk for investigation when needed
+
+### Relationship to Native `/simplify`
+
+Claude Code has a built-in `/simplify` skill that spawns 3 parallel review agents. The plugin's staff-reviewer adds value beyond `/simplify`:
+- **Spec compliance check** (Stage 1) — did implementation match the plan?
+- **Plan-file awareness** — reads artifact trail, verification results, and clarifications from disk
+- **Team standards enforcement** — reviews against language-specific patterns.md
+
+For lightweight mode, consider using native `/simplify` instead of the full staff-reviewer.
+
+### Automatic Routing
+
+When you give Claude a development task, `core-dev` activates and evaluates:
+
+1. **Scope** -- Will this change affect more than 3 files?
+2. **Reversibility** -- Can this be fully undone in under 1 hour?
+3. **Approaches** -- Is there only one obvious way to implement this?
+4. **Motivation** -- Does the request state WHY?
+
+If the task is large, hard to reverse, has multiple valid approaches, or involves a technical decision, `brainstorming` is invoked first. Otherwise, the task goes directly to the language-specific skill (in lightweight or full mode based on scope).
+
+### Mandatory 7-Phase Workflow
+
+Defined in `shared/workflow.md`. Every language skill references and follows this sequence -- each phase is a gate:
+
+| Phase | Name | Description |
+|-------|------|-------------|
+| 1 | **Research** | Explore codebase + inline web research |
+| 2 | **Plan** | Use EnterPlanMode with WORKFLOW STATE, persist to disk |
+| 3 | **Chronicle** | Invoke `chronicles` to document context, user requirements, and objectives |
+| 4 | **Implement** | Single `implementer` subagent in isolated worktree with test-first discipline |
+| 5 | **Verify** | Delegate to `test-verifier` subagent |
+| 6 | **Staff Review** | Two-stage: spec compliance then code quality |
+| 7 | **Finalize** | Chronicle, docs, and integration (merge/PR/keep/discard) |
+
+### Brainstorming
+
+Activated for non-trivial tasks and technical decisions. Two modes:
+
+All analysis runs in an **isolated Task agent** -- tokens stay completely separate from the main conversation. The orchestrator in the main context only handles: finding the agent prompt, spawning the agent, displaying results, and routing based on user choice. After analysis, the user chooses: **Proceed** (starts dev workflow), **Adjust** (modify approach), **Standalone** (analysis only), or **Abandon**.
+
+**Full Analysis** (business requirements, new features):
+1. Comprehends WHAT the user wants and WHY
+2. Challenges the problem framing with first-principles thinking (is this the right problem?)
+3. Identifies gaps and assumptions
+4. Asks clarifying questions (zero-ambiguity policy)
+5. Performs inline web research (isolated in forked context)
+6. Proposes 1-2 approaches
+7. Critically evaluates using the analysis framework
+8. Presents final approach for user approval
+9. Writes implementation plan to `docs/plans/` if proceeding
+
+**Focused Evaluation** (specific technical decisions):
+1. Restates the decision
+2. Performs inline web research
+3. Scores complexity and applies critical analysis
+4. Delivers verdict with options
+
+Verdicts: **PROCEED**, **PROCEED WITH CHANGES**, **RECONSIDER**, or **STOP**.
+
+### Chronicles
+
+Project snapshots that capture the WHY behind changes -- full user requirements, business context, decisions made, discoveries, and project state before/after. Stored in `docs/chronicles/` with timestamps. Chronicles sit above code and plan docs in the abstraction hierarchy: code shows WHAT changed, plans show HOW, chronicles capture WHY and the full context of what happened. Not created for trivial single-line fixes.

@@ -33,6 +33,7 @@ WORKFLOW STATE Verification line: `pytest, ruff check, ruff format --check`
 
 **Phase 5 Tier B additional MCP verifications:**
 - PostgreSQL MCP → Query DB state before/after
+- AS400 MCP → Query AS400/DB2 for data verification
 
 ### Implementation Rules (Phase 4)
 
@@ -46,19 +47,11 @@ WORKFLOW STATE Verification line: `pytest, ruff check, ruff format --check`
 
 ---
 
-## Anti-Rationalization (Python-Specific)
+## Python-Specific Rules
 
-Add these to the shared workflow's anti-rationalization check:
-
-| Your thought | Reality |
-|---|---|
-| "Python's duck typing means I don't need strict types" | Type hints are mandatory. The team uses Pydantic and strict typing per patterns.md. No exceptions. |
-| "I'll add tests later" | Tests are required before Phase 5. Write them during implementation. |
-| "The type checker will catch everything" | Type checkers catch type errors, not logic bugs, race conditions, or API contract violations. Verification and review are still mandatory. |
-
-### Red Flags (Python-Specific)
-
-- Expressing satisfaction before running `pytest`
+- Type hints are mandatory — use Pydantic and strict typing per patterns.md
+- Tests are required during implementation, not after
+- No positive claim without running `pytest`
 
 ---
 

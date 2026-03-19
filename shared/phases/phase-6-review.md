@@ -4,9 +4,9 @@
 
 ## Before Spawning the Review Agent
 
-1. Run `git diff` to capture the exact changes
-2. Collect the pass/fail summary from Phase 5
-3. **If the diff exceeds ~2000 lines:** Split the review. Use the Task Checklist's per-task file list to group changes by component, then spawn separate reviewer invocations per component. Merge the results (all must pass). Do NOT send a multi-thousand-line diff to a single reviewer — it degrades review quality and risks context overflow.
+1. Run `git diff` and **write it to a temp file** if it exceeds ~500 lines. Pass the file path to the reviewer instead of inlining the diff — large diffs bloat your context and degrade review quality.
+2. Collect the pass/fail summary from Phase 5 (the full details are in the plan file — pass the path, not the content)
+3. **If the diff exceeds ~2000 lines:** Split the review. Use the Task Checklist's per-task file list to group changes by component, then spawn separate reviewer invocations per component. Merge the results (all must pass).
 
 ## Spawn the `staff-reviewer` Agent
 
@@ -57,17 +57,5 @@ If ISSUES found: fix them, re-verify (Phase 5), re-review. Iterate until APPROVE
 - `## Review Log` section appended to plan file (per-review iteration results)
 - Staff reviewer returned APPROVED
 - WORKFLOW STATE updated: `Current Phase: 7 (Finalize)`
-
-## Anti-Rationalization
-
-| Your thought | Reality |
-|---|---|
-| "The staff reviewer will just approve anyway" | If you're expecting approval, you're already biased. The reviewer exists to find what you missed. |
-| "I can review my own code instead of spawning the reviewer" | Self-review is part of the implementer's protocol. The staff review is independent evaluation — not redundant. |
-| "The task is almost done, I'll skip the review" | Phase 6 is a GATE. Implementation without review is incomplete. |
-
-### Red Flag
-
-- About to spawn a reviewer without running `/compact` first (context is likely bloated from Phase 4-5)
 
 **→ Proceed immediately to Phase 7. Read `phase-7-finalize.md`.**

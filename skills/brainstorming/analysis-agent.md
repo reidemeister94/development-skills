@@ -20,6 +20,7 @@ This is the directory containing the brainstorming skill's companion files (e.g.
 - Your return message MUST follow the exact format in Step 7
 - Do NOT modify source code — you only analyze and write the plan document
 - **Intellectual integrity:** Evaluate the developer's request critically. If their reasoning has flaws, their assumptions don't hold, or they're solving the wrong problem — state it directly in the analysis. Do NOT accommodate or validate a flawed premise. The developer's team expects honest evaluation, not agreement.
+- **Anti-poisoning verification:** Before writing ANY file path, function name, class name, or API signature to the research or plan file, verify it actually exists in the current codebase using Glob/Grep. Hallucinated references written to disk get re-read by later phases and compound into broken implementations.
 
 ---
 

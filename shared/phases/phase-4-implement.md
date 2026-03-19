@@ -20,7 +20,9 @@
 
 ## Single-Implementer Model — ONE implementer for ALL tasks
 
-The main agent acts as a **thin orchestrator**. Spawn a **single** `implementer` subagent via the Task tool with ALL tasks from the checklist. The implementer reads the codebase once and implements all tasks sequentially in the same context — no redundant reads, no lossy context transfer between agents.
+The main agent acts as a **thin orchestrator**. Spawn a **single** `implementer` subagent via the Task tool with ALL tasks from the checklist. The implementer runs in an **isolated git worktree** (configured via its `isolation: worktree` frontmatter) — all changes happen on a separate branch. If implementation fails, the worktree is discarded cleanly. If it succeeds, changes are available for review and merging in Phase 7.
+
+The implementer reads the codebase once and implements all tasks sequentially in the same context — no redundant reads, no lossy context transfer between agents.
 
 **Why one implementer:** Each task in a feature is connected. Spawning separate agents per task forces each to re-read the same research, patterns, and source files, and relies on lossy "prior task summaries" instead of direct memory. A single agent accumulates understanding naturally across tasks and the main context stays clean for follow-up questions.
 
@@ -28,9 +30,9 @@ The orchestrator curates a **single context package** for the implementer. The i
 
 1. **Full task checklist** — ALL tasks from the plan, numbered, with descriptions
 2. **Plan context** — goals, constraints, architecture decisions (summarized, not the full plan)
-3. **Plan file path** — the FULL path to the plan file. The implementer MUST update the checklist (mark `[x]` + affected files) after completing each task. This is the persistent progress tracker that survives context clearing.
-4. **Research file path** — the FULL path to `docs/plans/NNNN__research.md` (from the plan's WORKFLOW STATE `Research:` field). The implementer MUST read this before coding — it contains web research findings, codebase analysis, alternatives evaluated, anti-patterns, and sources. Do NOT summarize or inline — pass the path so the implementer reads the original file.
-5. **Patterns file path(s)** — the FULL path(s) to your language skill's `patterns.md` file(s). The implementer MUST read these before coding. Do NOT summarize or inline — pass the path(s) so the implementer reads the original file.
+3. **Plan file path** — the **ABSOLUTE** path to the plan file. CRITICAL: because the implementer runs in a worktree, all paths must be absolute to the MAIN repo so updates are visible to the orchestrator. The implementer MUST update the checklist (mark `[x]` + affected files) after completing each task.
+4. **Research file path** — the **ABSOLUTE** path to `docs/plans/NNNN__research.md` (from the plan's WORKFLOW STATE `Research:` field). The implementer MUST read this before coding. Do NOT summarize or inline — pass the path so the implementer reads the original file.
+5. **Patterns file path(s)** — the **ABSOLUTE** path(s) to your language skill's `patterns.md` file(s). The implementer MUST read these before coding. Do NOT summarize or inline — pass the path(s) so the implementer reads the original file.
 6. **Implementation rules** — the language-specific rules from your skill's "Implementation Rules" section (copy verbatim — these are short)
 7. **Quality checklist** — the language-specific checklist items from your skill's "Quality Checklist" section
 8. **Verification criteria** — command to run, expected outcome, what constitutes failure
@@ -44,6 +46,13 @@ The orchestrator curates a **single context package** for the implementer. The i
   Files: src/api/routes.py:88-95
 - [ ] Task 3: [description]
 ```
+
+## Observation Masking
+
+**Tool outputs consume 80%+ of tokens in agent trajectories.** Keep verbose outputs off the main conversation:
+- The implementer writes all reasoning to the plan file's `## Implementation Log` (on disk, not in conversation)
+- When the implementer returns, its summary tells you what completed and what needs attention. **The full details are always on disk in the plan file** — read it whenever you need specifics (failures, decisions, affected files).
+- Do NOT ask the implementer to paste full test output or file contents in its return message — those belong on disk
 
 ## Execution Rules
 

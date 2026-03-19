@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SessionStart hook for development-skills plugin
+# Injects lightweight context reminder at conversation start.
+
+set -euo pipefail
+
+PLUGIN_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+context="<development-skills-context>The development-skills plugin is active. For ANY coding, development, debugging, or analysis task it will activate automatically with:\n- Critical evaluation of the request before implementation (first-principles challenge)\n- Structured workflow: brainstorm -> plan -> implement -> verify -> review -> finalize\n- Isolated implementation in git worktrees\n- Filesystem-first persistence (plans, chronicles, research on disk)\n\nSkills available: /brainstorming, /debugging, /commit, /align-docs, /update-precommit, /update-reqs, /update-reqs-dev\n</development-skills-context>"
+
+# Claude Code hook output format
+printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$context"
+
+exit 0
