@@ -12,13 +12,7 @@ Built from months of real production work. Every rule exists because we hit the 
 claude install-plugin github:reidemeister94/development-skills
 ```
 
-Add to your project's `CLAUDE.md`:
-
-```markdown
-ALWAYS invoke the "development-skills" plugin for ALL work on this project.
-```
-
-That's it. Give Claude a task — the plugin activates automatically.
+Give Claude a task — the plugin activates automatically.
 
 ---
 
