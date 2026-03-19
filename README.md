@@ -57,7 +57,7 @@ Every task goes through gated phases. No skipping, no shortcuts.
 | 6 | **Staff Review** — spec compliance + code quality, iterate until approved | `STAFF REVIEW: APPROVED` |
 | 7 | **Finalize** — chronicle, docs alignment, CLAUDE.md updates | `WORKFLOW COMPLETE` |
 
-**Lightweight mode** kicks in for small tasks (<=3 files, single approach, reversible) — same gates, less ceremony.
+**Lightweight mode** kicks in for small tasks (<=3 files, single approach, reversible) — same gates, less ceremony. Skips brainstorming and research subagents, saving tokens and reducing cost.
 
 ---
 
