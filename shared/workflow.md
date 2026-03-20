@@ -99,7 +99,7 @@ for user in users:
 | 6 | Staff Review | "STAFF REVIEW: APPROVED" | Read `phases/phase-6-review.md` |
 | 7 | Finalize | "WORKFLOW COMPLETE" | Read `phases/phase-7-finalize.md` |
 
-**How to read phase files:** Use Glob to find `**/phases/phase-N-*.md` or resolve relative to this file's directory.
+**How to read phase files:** Phase files are in `shared/phases/` relative to the plugin root. Use `Glob("**/development-skills/shared/phases/phase-*.md")` to find them. Once found, read the specific phase file by number (e.g., `phase-1-research.md`).
 
 **Skills vs Agents confusion?** Read `references/workflow-reference.md` for the lookup table.
 

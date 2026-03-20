@@ -19,6 +19,8 @@ The plugin activates automatically when Claude detects a development task. A Ses
 /update-precommit    # Update pre-commit hooks to latest
 /update-reqs         # Update requirements.in versions
 /update-reqs-dev     # Update requirements-dev.in versions
+/produce-feedback-dev-skills   # Generate feedback report from current conversation
+/ingest-feedback-dev-skills    # Ingest feedback report and apply vetted changes
 ```
 
 ## Prerequisites
@@ -43,6 +45,13 @@ The plugin activates automatically when Claude detects a development task. A Ses
 | `update-precommit` | `/update-precommit` | Update `.pre-commit-config.yaml` hooks to latest versions from GitHub, preserving tag format |
 | `update-reqs` | `/update-reqs` | Update `requirements.in` with latest PyPI versions, preserving version specifier patterns |
 | `update-reqs-dev` | `/update-reqs-dev` | Update `requirements-dev.in` with latest PyPI versions, preserving version specifier patterns |
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `/produce-feedback-dev-skills` | Generate a factual chronicle of all plugin interactions in the current conversation. Writes to `docs/reports/`. |
+| `/ingest-feedback-dev-skills` | Ingest a feedback report and critically evaluate each friction point against Core Pillars. Default verdict is SKIP — changes must earn their place. |
 
 ### Subagents
 

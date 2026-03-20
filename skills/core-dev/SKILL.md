@@ -13,7 +13,7 @@ allowed-tools: Glob, Read, Bash, Task, Skill, EnterPlanMode, Edit, Write
 
 ## Step 1: Check for In-Progress Workflow (FIRST)
 
-Run: `bash scripts/find-plan.sh active` (use Glob to find `**/find-plan.sh` if path unknown, or check `docs/plans/` directly).
+Check `docs/plans/` for an active plan: `Grep("Status: In Progress", path="docs/plans/", glob="*.md")`. If `docs/plans/` doesn't exist, skip — no active plan.
 
 - **`ACTIVE_PLAN:`** -- in-progress workflow exists. **Skip the brainstorming guard entirely.**
   1. Read the plan file to recover full context (WORKFLOW STATE, Research path, Chronicle path)

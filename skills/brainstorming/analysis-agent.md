@@ -249,7 +249,7 @@ If PROCEED WITH CHANGES: integrate the required changes into the recommended app
 **This step persists ALL research value to disk** so it survives your isolated context being destroyed. Later workflow phases (Phase 1, Phase 4 implementers) read this file instead of repeating research.
 
 1. Create directory if needed: `mkdir -p docs/plans/`
-2. Find next plan number: Use Glob to find `**/find-plan.sh`, then run `bash [path]/find-plan.sh next` to get the next NNNN number. If the script is not found, fall back to examining `docs/plans/*.md` filenames manually (extract highest NNNN prefix, add 1; if none exist, use `0001`).
+2. Find next plan number: examine `docs/plans/*.md` filenames (extract highest NNNN prefix, add 1; if none exist, use `0001`).
 3. Determine today's date (YYYY-MM-DD format) and a brief-description slug for the plan filename — you will use these in BOTH the research file and the plan file.
 4. Write to: `docs/plans/NNNN__research.md`
 

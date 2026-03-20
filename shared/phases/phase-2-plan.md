@@ -54,7 +54,7 @@ Include:
 
 Use `ExitPlanMode` to present plan for user approval. **WAIT for user approval before any code changes.**
 
-**After approval:** Check if brainstorming already wrote a plan file to `docs/plans/` — if so, use that file (update its WORKFLOW STATE). Otherwise, get next number via `bash scripts/find-plan.sh next` (from the development-skills plugin directory) and write to `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__brief-description.md`. This file survives context clearing.
+**After approval:** Check if brainstorming already wrote a plan file to `docs/plans/` — if so, use that file (update its WORKFLOW STATE). Otherwise, find the next NNNN number by examining `docs/plans/*.md` filenames (highest prefix + 1; if none exist, use `0001`) and write to `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__brief-description.md`. This file survives context clearing.
 
 **Keep WORKFLOW STATE current:** After completing each phase, update the plan file: advance `Current Phase`, remove completed phases from `Phases remaining`. Set `Status: Completed` when Phase 7 finishes.
 

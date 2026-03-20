@@ -30,7 +30,7 @@ Collect the actual state of the project by reading the filesystem. Compare again
 | **Shared files** (README) | `ls shared/` → verify documented architecture matches actual files |
 | **Hooks** (README) | `ls hooks/` + read `hooks/hooks.json` → compare with hooks table in README.md |
 | **Conventions & paths** (CLAUDE.md) | Verify every path/filename mentioned in CLAUDE.md actually exists |
-| **Cross-references** | Check that links between docs point to files that exist |
+| **Cross-references** | Check that links between docs (e.g., "see docs/README.md") point to files that exist |
 
 ### Step 2: Fix misalignments
 
