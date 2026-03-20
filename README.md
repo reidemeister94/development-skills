@@ -51,7 +51,7 @@ Custom subagents defined in `agents/`, spawned by skills during workflow phases:
 | Agent | Model | Purpose |
 |-------|-------|---------|
 | `staff-reviewer` | opus | Two-stage code review: spec compliance (completeness) then code quality (simplification). Returns APPROVED, SPEC_ISSUES, or ISSUES with file:line references. |
-| `implementer` | sonnet | All-task implementation in isolated git worktree. Receives curated context (task list, plan summary, file paths). Test-first discipline, anti-poisoning verification, writes artifact trail to plan file. |
+| `implementer` | sonnet | All-task implementation with smart isolation (no worktree by default; worktree only for parallel orthogonal groups). Receives curated context (task list, plan summary, file paths). Test-first discipline, anti-poisoning verification, module refactoring discipline, verification honesty, writes artifact trail to plan file. |
 | `test-verifier` | sonnet | Test/build/lint execution. Runs verification commands. Returns pass/fail summary with failure details. Verbose output stays in subagent context. |
 
 Model tier philosophy: right-size for the task.
@@ -111,14 +111,14 @@ The main agent acts as a **thin orchestrator** -- it holds the plan and completi
 - **Brainstorming:** The orchestrator spawns a **Task agent** for all heavy analysis (research, web search, code reading, critical evaluation). The agent's tokens stay completely isolated from the main conversation. Only the plan file on disk and a concise summary return to main context.
 - **Phase 1 (Research):** Opus subagent for codebase exploration + web searches when gaps exist
 - **Phase 2 (Plan):** Writes WORKFLOW STATE block for context recovery
-- **Phase 4 (Implementation):** **Single `implementer` subagent** in an isolated git worktree for all tasks -- curated context package (task list, plan summary, file paths). Test-first discipline with anti-poisoning verification. Observation masking: verbose outputs go to plan file on disk, only compact summaries return to conversation.
+- **Phase 4 (Implementation):** Task dependency analysis determines execution strategy: **single agent** (default, no worktree) when tasks share files, or **N parallel agents** (each in worktree) when tasks form orthogonal groups with zero file overlap. Curated context packages, test-first discipline, anti-poisoning verification, module refactoring discipline, verification honesty. Observation masking: verbose outputs go to plan file on disk, only compact summaries return to conversation.
 - **Phase 5 (Verification):** `test-verifier` runs commands, returns summary. Full results persisted to plan file.
 - **Phase 6 (Staff Review):** `staff-reviewer` reads plan file (artifact trail + verification results) and patterns.md, performs two-stage review
 - **Phase 7 (Finalize):** Chronicle finalization, doc alignment, and **integration options** (merge locally, create PR, keep branch, or discard)
 
 ### Workflow Modes
 
-**Full Mode (default):** All 7 phases with subagents, plan files, chronicles, and staff review. Implementation runs in an isolated git worktree. Used for non-trivial tasks.
+**Full Mode (default):** All 7 phases with subagents, plan files, chronicles, and staff review. Implementation uses smart isolation: single agent in the working directory (default) or parallel agents in worktrees for orthogonal task groups. Used for non-trivial tasks.
 
 **Lightweight Mode:** For genuinely small tasks (3 files or fewer, single approach, fully reversible, no brainstorming). Collapses phases: inline research, inline plan confirmation, no chronicle, direct implementation (no worktree), inline verification, no staff review. Exits to full mode if complexity is discovered.
 
@@ -168,7 +168,7 @@ Defined in `shared/workflow.md`. Every language skill references and follows thi
 | 1 | **Research** | Explore codebase + inline web research |
 | 2 | **Plan** | Use EnterPlanMode with WORKFLOW STATE, persist to disk |
 | 3 | **Chronicle** | Invoke `chronicles` to document context, user requirements, and objectives |
-| 4 | **Implement** | Single `implementer` subagent in isolated worktree with test-first discipline |
+| 4 | **Implement** | Smart isolation: single agent (default) or N parallel agents for orthogonal task groups. Test-first discipline. |
 | 5 | **Verify** | Delegate to `test-verifier` subagent |
 | 6 | **Staff Review** | Two-stage: spec compliance then code quality |
 | 7 | **Finalize** | Chronicle, docs, and integration (merge/PR/keep/discard) |

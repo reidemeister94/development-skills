@@ -22,7 +22,18 @@ Invoke `development-skills:align-docs` via Skill tool. This ensures all project 
 
 ## 7c: Integration — How to land the changes
 
-**If the implementer ran in a worktree** (default), present these options:
+**Default (single-agent mode or parallel mode with merged branches):** Changes are already on the current branch. Ask the user:
+
+```
+Implementation complete. Would you like me to commit the changes?
+
+1. Yes, commit now
+2. No, I'll handle it myself
+```
+
+**STOP and wait for the user's choice.** Only commit if the user explicitly chooses option 1. If they choose option 1, invoke `development-skills:commit` via the Skill tool.
+
+**If changes are in an unmerged worktree branch** (rare — only if parallel merge was deferred), present these options:
 
 ```
 Implementation complete. How would you like to land the changes?
@@ -41,17 +52,6 @@ Implementation complete. How would you like to land the changes?
 | **2. Create PR** | `git push -u origin <feature-branch>` -> create PR via `gh pr create` with summary from plan file -> keep branch |
 | **3. Keep as-is** | Report branch name and worktree path. No cleanup. |
 | **4. Discard** | Confirm with user ("Type 'discard' to confirm"). Then `git checkout <base-branch>` -> `git branch -D <feature-branch>` -> cleanup worktree |
-
-**If NOT in a worktree** (lightweight mode or legacy): changes are already on the current branch. Ask the user:
-
-```
-Implementation complete. Would you like me to commit the changes?
-
-1. Yes, commit now
-2. No, I'll handle it myself
-```
-
-**STOP and wait for the user's choice.** Only commit if the user explicitly chooses option 1. If they choose option 1, invoke `development-skills:commit` via the Skill tool.
 
 ## Expected Artifacts
 - Chronicle finalized (Status: Completed) or confirmed NOT NEEDED
