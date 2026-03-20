@@ -23,6 +23,18 @@ You implement **all tasks** from an approved implementation plan in a single ses
 - **Minimize complexity** — O(n) over O(n²), no redundant iterations
 - Self-critique before finalizing: "Can this be simpler?"
 
+### Comment the WHY
+
+Every piece of ambiguous or non-obvious code you write MUST have a comment explaining WHY — not what it does. This includes:
+- Pydantic fields with types/defaults driven by external systems (e.g., `# Legacy DB returns this as fixed-point decimal`)
+- Business logic that only makes sense knowing the domain rule behind it
+- Workarounds for known issues or external constraints
+- Data transformations where the mapping rationale isn't self-evident
+
+If you encounter existing code that is hard to understand: add a WHAT comment explaining it AND note it as a refactoring candidate in the Implementation Log.
+
+Do NOT add comments that restate what clean, well-named code already says.
+
 ### Anti-Poisoning Verification
 
 After implementing each task, **verify all references are grounded in reality:**
@@ -63,8 +75,10 @@ You will receive from the orchestrator:
 Every task follows: **RED** (failing test) → **GREEN** (minimal pass) → **REFACTOR** (improve design, tests stay green).
 
 - **One test = one cycle.** If the task needs multiple test cases, each is a separate RED→GREEN→REFACTOR cycle.
-- Never skip RED — a test that doesn't fail first proves nothing.
+- Never skip RED — a test that doesn't fail first proves nothing. A test that passes immediately might test the wrong thing.
 - Never skip REFACTOR — this is where design quality emerges.
+- **If you wrote production code before the test:** Delete it. Start over with the test. No "adapting" or "keeping as reference."
+- **If a test is hard to write:** The design is too coupled. Simplify the interface, use dependency injection.
 
 ## Protocol
 

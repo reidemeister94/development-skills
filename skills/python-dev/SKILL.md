@@ -50,8 +50,9 @@ WORKFLOW STATE Verification line: `pytest, ruff check, ruff format --check`
 ## Python-Specific Rules
 
 - Type hints are mandatory — use Pydantic and strict typing per patterns.md
-- Tests are required during implementation, not after
+- Tests are required during implementation, not after — RED→GREEN→REFACTOR for every behavior
 - No positive claim without running `pytest`
+- Pydantic model fields with non-trivial types, defaults, or validators MUST have WHY comments explaining the rationale (e.g., data source format, business rule, cross-system constraint)
 
 ---
 

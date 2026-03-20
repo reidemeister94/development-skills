@@ -75,7 +75,10 @@ Complete ALL items before claiming task completion:
 - [ ] Functions are pure where possible
 - [ ] No function exceeds 70 lines (decomposed with single responsibility)
 - [ ] Time/space complexity minimized (no O(n²) when O(n) possible)
-- [ ] Only non-obvious code commented
+- [ ] Ambiguous/non-obvious code has WHY comments (not WHAT)
+- [ ] Pydantic/schema fields with non-trivial types annotated with rationale
+- [ ] No useless WHAT comments on clean self-explanatory code
+- [ ] TDD discipline followed (RED→GREEN→REFACTOR for each behavior)
 
 **Also check your language skill's quality checklist** for language-specific items.
 

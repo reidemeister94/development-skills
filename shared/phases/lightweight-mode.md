@@ -10,6 +10,8 @@ For genuinely small tasks, the full 7-phase workflow is overkill. Lightweight mo
 
 **Intellectual Integrity still applies.** Lightweight mode reduces ceremony, not critical thinking. If the developer's request has flaws, stop and say so — even for small tasks.
 
+**TDD still applies.** Even in lightweight mode, write the failing test FIRST, then the production code. RED→GREEN→REFACTOR is not ceremony — it's the foundation. The only exception: changes that are genuinely untestable (config-only, docs-only).
+
 **Lightweight Phase Sequence:**
 
 | Phase | Lightweight Behavior |
@@ -17,7 +19,7 @@ For genuinely small tasks, the full 7-phase workflow is overkill. Lightweight mo
 | 1. Research | Inline — read patterns file (Quick Reference section), quick codebase check. No subagent. |
 | 2. Plan | Inline plan summary to user. No EnterPlanMode. User confirms with "ok"/"proceed". No plan file to disk. |
 | 3. Chronicle | SKIP — not needed for small reversible changes. |
-| 4. Implement | Implement directly in main context. No implementer subagent. |
+| 4. Implement | Implement directly in main context. No implementer subagent. TDD: write failing test first, then production code. Comment the WHY on ambiguous code. |
 | 5. Verify | Run tests/build/lint inline. No test-verifier subagent. |
 | 6. Staff Review | Quick self-review: verify no regressions against quality checklist. No subagent. |
 | 7. Finalize | Ask user if they want to commit. State "WORKFLOW COMPLETE". No chronicle to finalize. |
