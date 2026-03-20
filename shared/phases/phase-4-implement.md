@@ -26,7 +26,7 @@ The implementer reads the codebase once and implements all tasks sequentially in
 
 **Why one implementer:** Each task in a feature is connected. Spawning separate agents per task forces each to re-read the same research, patterns, and source files, and relies on lossy "prior task summaries" instead of direct memory. A single agent accumulates understanding naturally across tasks and the main context stays clean for follow-up questions.
 
-The orchestrator curates a **single context package** for the implementer. The implementer's agent definition already contains stable rules (protocol, Red/Green TDD discipline, anti-poisoning checks, observation management, output format). The orchestrator passes ONLY dynamic, task-specific context:
+The orchestrator curates a **single context package** for the implementer. The implementer's agent definition already contains stable rules (protocol, Red/Green TDD discipline, WHY commenting discipline, anti-poisoning checks, observation management, output format). The orchestrator passes ONLY dynamic, task-specific context:
 
 1. **Full task checklist** — ALL tasks from the plan, numbered, with descriptions
 2. **Plan context** — goals, constraints, architecture decisions (summarized, not the full plan)

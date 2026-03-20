@@ -10,6 +10,69 @@ This workflow is **MANDATORY** for all development work. Phase instructions are 
 
 **Never say "should work", "looks good", "done", or any success claim without fresh verification output.** This applies to EVERY phase, not just Phase 5. Evidence before assertions, always.
 
+## Iron Rule: Comment the WHY, Not the WHAT
+
+**Every piece of code that is ambiguous, non-obvious, or derives from intricate logic MUST have a comment explaining WHY it exists — not what it does.** This applies everywhere: business logic, Pydantic models (field types, defaults, validators), SQL queries, configuration, API contracts, data transformations.
+
+**COMMENT the WHY when:**
+- The reason behind a choice is not self-evident (why this type? why this default? why this order?)
+- A field or parameter derives from a non-trivial, cryptic, or cross-system flow
+- A workaround exists for a known issue or external constraint
+- The business rule driving the code is not obvious from context
+- A Pydantic model field has a type or constraint that only makes sense knowing the upstream data source
+
+**DO NOT comment the WHAT when:**
+- The code is clean and self-explanatory — good naming IS the documentation
+- The comment would just restate what the code already says clearly
+
+**DO comment the WHAT (+ propose refactoring) when:**
+- The code is poorly written and understanding it requires significant mental effort
+- In this case: (1) add a comment explaining what it does, (2) propose a refactoring to make it clearer. The comment is a band-aid — the refactoring is the cure.
+
+**Examples:**
+```python
+# WHY comment (good) — explains the non-obvious reason
+price: Decimal  # Legacy DB returns price as 5-decimal fixed-point; Decimal preserves precision across currency conversions
+
+# WHAT comment on bad code (acceptable + refactor proposal)
+# Filters active users who haven't logged in for 90 days and aren't system accounts
+result = [u for u in db_users if u[3] == 1 and (now - u[7]).days > 90 and u[2] not in sys_ids]
+# TODO: Refactor — use named fields (User model) instead of tuple indexing
+
+# Unnecessary WHAT comment (remove this)
+# Loop through users  <-- adds nothing, the code is clear
+for user in users:
+```
+
+## Iron Rule: Red/Green TDD Is the Starting Point
+
+**Every implementation starts with a failing test.** Red/Green TDD is not optional, not a nice-to-have — it is the foundational discipline that governs ALL coding work in this workflow.
+
+**The cycle: RED (failing test) → GREEN (minimal pass) → REFACTOR (improve design, tests stay green).**
+
+- This applies in FULL mode (the implementer enforces it) AND in LIGHTWEIGHT mode (you enforce it yourself)
+- A test that doesn't fail first proves nothing — it might pass for the wrong reason
+- Write the test BEFORE the production code, always
+- Each behavior = one RED→GREEN→REFACTOR cycle
+- The refactor step is where design quality emerges — never skip it
+
+**Common rationalizations — recognize and reject them:**
+
+| Excuse | Reality |
+|--------|---------|
+| "Too simple to test" | Simple code breaks. Test takes 30 seconds. |
+| "I'll test after" | Tests passing immediately prove nothing — they might test the wrong thing. |
+| "I already manually tested" | Ad-hoc ≠ systematic. No record, can't re-run, can't catch regressions. |
+| "Need to explore first" | Fine. Throw away exploration code, then start fresh with TDD. |
+| "Test hard = skip test" | Hard to test = hard to use. Listen to the test — simplify the design. |
+
+**Red flags — STOP and restart with TDD if any of these happen:**
+- You wrote production code before a test
+- A test passes immediately without failing first
+- You're rationalizing "just this once"
+
+**When TDD seems impractical** (UI-heavy code, infrastructure scripts, config changes): write the closest possible automated check first. If truly untestable, document WHY in the implementation log and verify manually with evidence.
+
 ## Iron Rule: No Commits Without Explicit User Request
 
 **NEVER run `git add`, `git commit`, or `git push` unless the user explicitly asks you to commit.** "Proceed to next phase", "looks good", "proceed", or approving a plan is NOT permission to commit. Completing verification, passing review, or reaching Phase 7 is NOT permission to commit. The ONLY trigger for committing is the user saying "commit", "/commit", or explicitly choosing a commit option in Phase 7c. This rule overrides any momentum from the workflow flow.

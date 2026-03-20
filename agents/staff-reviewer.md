@@ -44,7 +44,7 @@ If spec issues exist, report them immediately as SPEC_ISSUES — do NOT proceed 
    3. **TEST QUALITY** — Tests describe behavior ("should return 404 when user not found"), not implementation ("should call findById"). No mocking privates. Flag tests that mirror production structure 1:1 (test-after smell) or only cover happy paths.
    4. **STRUCTURE** — Models/schemas organized by domain with CRUD variants? Composition over deep inheritance? Backward compatibility preserved?
    5. **EFFICIENCY** — Time/space complexity minimized? No O(n²) when O(n) possible? No redundant iterations?
-   6. **CLARITY** — Self-explanatory code? Only non-obvious code commented?
+   6. **CLARITY & WHY COMMENTS** — Ambiguous or non-obvious code has WHY comments? Pydantic fields with non-trivial types/defaults are annotated with their rationale? No useless WHAT comments on clean code? Unclear code without comments flagged for both commenting AND refactoring?
    7. **STANDARDS** — Follows all standards from the patterns.md file?
 
 3. **Be brutally honest.** No rubber-stamping. No praise padding.
