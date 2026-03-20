@@ -42,7 +42,16 @@ Implementation complete. How would you like to land the changes?
 | **3. Keep as-is** | Report branch name and worktree path. No cleanup. |
 | **4. Discard** | Confirm with user ("Type 'discard' to confirm"). Then `git checkout <base-branch>` -> `git branch -D <feature-branch>` -> cleanup worktree |
 
-**If NOT in a worktree** (lightweight mode or legacy): skip this step — changes are already on the current branch.
+**If NOT in a worktree** (lightweight mode or legacy): changes are already on the current branch. Ask the user:
+
+```
+Implementation complete. Would you like me to commit the changes?
+
+1. Yes, commit now
+2. No, I'll handle it myself
+```
+
+**STOP and wait for the user's choice.** Only commit if the user explicitly chooses option 1. If they choose option 1, invoke `development-skills:commit` via the Skill tool.
 
 ## Expected Artifacts
 - Chronicle finalized (Status: Completed) or confirmed NOT NEEDED

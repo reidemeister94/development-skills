@@ -10,11 +10,19 @@ This workflow is **MANDATORY** for all development work. Phase instructions are 
 
 **Never say "should work", "looks good", "done", or any success claim without fresh verification output.** This applies to EVERY phase, not just Phase 5. Evidence before assertions, always.
 
+## Iron Rule: No Commits Without Explicit User Request
+
+**NEVER run `git add`, `git commit`, or `git push` unless the user explicitly asks you to commit.** "Proceed to next phase", "looks good", "proceed", or approving a plan is NOT permission to commit. Completing verification, passing review, or reaching Phase 7 is NOT permission to commit. The ONLY trigger for committing is the user saying "commit", "/commit", or explicitly choosing a commit option in Phase 7c. This rule overrides any momentum from the workflow flow.
+
+## Iron Rule: Every Gate Must Be Explicitly Passed
+
+**"Proceed immediately" means go to the next phase and execute its gate — NOT skip the gate's requirements.** Every phase has mandatory outputs (gate statements, plan file updates, artifacts). You CANNOT rationalize skipping them ("it's a simple change", "not worth documenting", "I'll do it later"). The plan file is the single persistent record of this workflow — update it incrementally as each phase completes, not in bulk at the end. If Phase 3 applies, state the gate ("CHRONICLE INITIATED" or "CHRONICLE: NOT NEEDED — [reason]"). If Phase 4 has a checklist, mark items `[x]` after each task, not after all tasks.
+
 ---
 
 ### Phase Sequence — Every phase is a GATE
 
-**CRITICAL FLOW RULE:** After each gate, **IMMEDIATELY proceed to the next phase.** Do NOT pause, summarize, or wait for user input — EXCEPT Phase 2 (requires user approval).
+**CRITICAL FLOW RULE:** After each gate, **IMMEDIATELY proceed to the next phase.** Do NOT pause, summarize, or wait for user input — EXCEPT Phase 2 (requires user approval) and Phase 7c (requires user choice on committing/landing). "Proceed to next phase" means continue the workflow — it is NEVER implicit permission to `git commit`.
 
 **LIGHTWEIGHT MODE:** If core-dev passed `LIGHTWEIGHT_MODE=true`, read `phases/lightweight-mode.md` instead of following the full phase sequence. All other rules in this document still apply.
 
@@ -38,6 +46,9 @@ This workflow is **MANDATORY** for all development work. Phase instructions are 
 - Start coding without explicit plan approval from the user
 - Claim completion without all gates checked
 - Stop or pause between phases (each gate leads directly to the next)
+- **Commit, push, or run any git write command without the user explicitly asking** — completing phases, passing tests, or getting review approval is NOT permission to commit. Only Phase 7c (with user's explicit choice) or a direct user request triggers a commit
+- **Skip a gate statement or its required artifacts** — "it's trivial" or "not worth documenting" is not a valid reason. Phase 3 MUST produce either a chronicle or an explicit "NOT NEEDED — [reason]". Phase 4 MUST update the plan file checklist after EACH task, not in bulk
+- **Use TaskCreate/TaskUpdate as a substitute for plan file updates** — tasks are ephemeral (gone after the conversation). The plan file is the persistent source of truth. Update it incrementally during every phase
 
 **After each phase, explicitly state the gate checkpoint.**
 

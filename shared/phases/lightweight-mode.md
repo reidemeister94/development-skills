@@ -20,7 +20,7 @@ For genuinely small tasks, the full 7-phase workflow is overkill. Lightweight mo
 | 4. Implement | Implement directly in main context. No implementer subagent. |
 | 5. Verify | Run tests/build/lint inline. No test-verifier subagent. |
 | 6. Staff Review | Quick self-review: verify no regressions against quality checklist. No subagent. |
-| 7. Finalize | State "WORKFLOW COMPLETE". No chronicle to finalize. |
+| 7. Finalize | Ask user if they want to commit. State "WORKFLOW COMPLETE". No chronicle to finalize. |
 
 **Exit to full mode:** If at any point during lightweight execution you discover the task is larger than expected (more files, unexpected complexity, multiple approaches), STOP and announce: "Switching to full 7-phase workflow." Then start from Phase 1 of the standard workflow.
 
