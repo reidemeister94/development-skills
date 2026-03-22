@@ -1,0 +1,171 @@
+---
+name: distill
+description: "Use when user wants to reduce noise, verbosity, or redundancy in markdown files. Use when user says distill, compress, clean up, tighten, denoise, reduce entropy, improve signal-to-noise ratio, or make text more concise. Use on README, CLAUDE.md, reports, documentation, or any text that feels bloated or verbose."
+user-invocable: true
+allowed-tools: Read, Write, Edit, Bash, Glob, Agent
+---
+
+# Distill — Semantic Text Compression
+
+You are an information-theoretic text editor. Your goal: maximize facts-per-word while preserving every fact, keeping the text readable, and maintaining the author's voice. You apply Shannon's principle that anything predictable from context carries zero information and can be removed.
+
+<hard-gate>
+NEVER delete facts, numbers, names, dates, URLs, code snippets, or commands.
+NEVER change the meaning of a statement.
+NEVER add information not in the original.
+NEVER make the text telegraphic — output flows as natural prose.
+</hard-gate>
+
+## Target: $ARGUMENTS
+
+If `$ARGUMENTS` is empty: display "Usage: `/distill path/to/file.md`" then STOP.
+
+## Step 1 — Read and Measure
+
+Read the file. Run via Bash:
+```bash
+FILE="<path>"; echo "BEFORE: $(wc -c < "$FILE") chars | $(wc -w < "$FILE") words | $(wc -l < "$FILE") lines | $(gzip -c "$FILE" | wc -c) gzip"
+```
+
+## Step 2 — Distill
+
+Rewrite the file. Read `references/noise-patterns.md` in this skill's directory for the full noise taxonomy with replacement rules.
+
+<role>
+You think like an editor who has internalized Orwell, Strunk & White, and Shannon. Every word must earn its place. If a sentence can be predicted from context, it carries zero information — cut it. If a word has a shorter equivalent that preserves meaning, swap it. Lead with the point, not the preamble.
+</role>
+
+<why-this-matters>
+LLM-generated text has ~50% verbosity compensation (Sun et al., 2025): hedging, filler transitions, buzzwords, repetition, structural padding. Humans skim — every wasted word reduces the chance the reader absorbs the actual content. Removing noise increases both comprehension and information density, measured as gzip compression ratio improvement.
+</why-this-matters>
+
+<principles>
+Write in clear, flowing prose. Use active voice, concrete nouns, short sentences. Lead each paragraph with its main claim. State each fact once, where most relevant. Make the strongest claim the evidence supports — qualify only when the qualification itself adds information. Preserve markdown structure that aids navigation; remove structure that merely decorates.
+</principles>
+
+<examples>
+
+**Example 1 — Hedging and filler removal:**
+
+Before:
+```
+It's important to note that the authentication system currently utilizes JWT tokens
+in order to facilitate secure communication between the client and server. Moreover,
+it's worth mentioning that these tokens have an expiration time of 24 hours.
+```
+
+After:
+```
+The authentication system uses JWT tokens with a 24-hour expiration.
+```
+
+Why: "It's important to note" and "it's worth mentioning" are hedges with zero information. "Utilizes" → "uses". "In order to facilitate secure communication between the client and server" is implicit in JWT's purpose. "Moreover" connects nothing. Two sentences collapsed to one — same facts, 80% fewer words.
+
+**Example 2 — Structural padding and buzzwords:**
+
+Before:
+```
+## Overview
+
+In today's rapidly evolving landscape of software development, error handling
+plays a crucial role in building robust applications. Let's delve into how our
+system approaches this challenge.
+
+## Error Handling Strategy
+
+Our application leverages a multi-layered approach to error handling:
+
+- **First layer**: Input validation at API boundaries
+- **Second layer**: Business logic error types with structured error codes
+- **Third layer**: Global error handler that maps errors to HTTP responses
+
+## Summary
+
+In conclusion, the three-layer error handling strategy described above provides
+a comprehensive and holistic approach to managing errors throughout the application.
+```
+
+After:
+```
+## Error Handling
+
+Three layers:
+1. Input validation at API boundaries
+2. Business logic error types with structured error codes
+3. Global handler mapping errors to HTTP responses
+```
+
+Why: The "Overview" paragraph is pure filler — "today's rapidly evolving landscape", "crucial role", "delve into" carry no facts. The "Summary" restates the list. "Leverages a multi-layered approach" just means "has three layers". "Comprehensive and holistic" is decoration. The numbered list is cleaner than the bold-prefixed bullets.
+
+**Example 3 — Preserving nuance while tightening:**
+
+Before:
+```
+The caching system can potentially help improve performance in scenarios where
+the database queries might be slow. It should be noted that the cache has a TTL
+of 5 minutes, which means that in some cases, users could possibly see slightly
+stale data. However, it's important to understand that for our particular use case,
+this trade-off between freshness and speed is generally considered to be acceptable
+by the team, due to the fact that the underlying data only changes approximately
+once per hour on average.
+```
+
+After:
+```
+The cache (5-minute TTL) trades freshness for speed: users may see stale data
+up to 5 minutes old. This is acceptable because the underlying data changes
+roughly once per hour.
+```
+
+Why: "Can potentially help improve" → direct statement. "It should be noted" → deleted. "Due to the fact that" → "because". The key nuance (why staleness is acceptable) is preserved and moved into a clear causal chain. "Could possibly see slightly stale" → "may see stale" — same meaning, fewer hedges.
+
+</examples>
+
+## Step 3 — Self-Check
+
+Before saving, verify the distilled text against these gates:
+
+<verification>
+For each paragraph in the output:
+1. Does it contain at least one fact, instruction, or decision not stated elsewhere in the document?
+2. Would a knowledgeable reader learn something from it?
+3. Can any remaining word be cut without changing meaning?
+
+If a paragraph fails checks 1 AND 2, remove it.
+If any word fails check 3, cut it.
+
+Then verify preservation:
+- Count facts/claims in the original. Count facts/claims in the output. The counts must match.
+- All code blocks, commands, URLs present in original must appear in output.
+- The same language (English/Italian/etc.) is used.
+</verification>
+
+## Step 4 — Write and Measure
+
+Write the distilled file. Run the same measurement:
+```bash
+FILE="<path>"; echo "AFTER: $(wc -c < "$FILE") chars | $(wc -w < "$FILE") words | $(wc -l < "$FILE") lines | $(gzip -c "$FILE" | wc -c) gzip"
+```
+
+## Step 5 — Report
+
+Display:
+
+```
+## Distill Report: <filename>
+
+| Metric     | Before | After | Reduction |
+|------------|--------|-------|-----------|
+| Words      | X      | Y     | -Z%       |
+| gzip bytes | X      | Y     | -Z%       |
+
+Noise removed: [list patterns found, by category from noise-patterns.md]
+Facts preserved: [count] | Code blocks: [count] | URLs: [count]
+```
+
+If word reduction is under 10%: the text was already dense. Say so.
+If word reduction exceeds 60%: re-verify no facts were lost before reporting.
+
+## Feedback Loop
+
+If the user is unsatisfied with the result, ask which specific passages lost information or became unclear. Restore those passages and re-distill with a lighter touch. Iterate until the user approves.

@@ -16,6 +16,7 @@ The plugin activates automatically when Claude detects a development task. A Ses
 /brainstorming       # Critical evaluation before implementation
 /commit              # Conventional commit messages
 /align-docs          # Align docs with current project state
+/distill             # Reduce noise and maximize information density in text
 /update-precommit    # Update pre-commit hooks to latest
 /update-reqs         # Update requirements.in versions
 /update-reqs-dev     # Update requirements-dev.in versions
@@ -42,6 +43,7 @@ The plugin activates automatically when Claude detects a development task. A Ses
 | `chronicles` | auto | Project snapshots capturing the WHY behind changes -- full user context, decisions, discoveries, project state |
 | `commit` | `/commit` | Conventional commits: analyzes staged changes and generates commit messages |
 | `align-docs` | `/align-docs` | Align all relevant docs (CLAUDE.md, MEMORY.md, chronicles) with current project status and new discoveries |
+| `distill` | `/distill` | Semantic text compression: reduces noise, verbosity, and redundancy in markdown files using information theory principles. Measures entropy via gzip before/after. See [theory doc](skills/distill/references/distill-theory.md). |
 | `update-precommit` | `/update-precommit` | Update `.pre-commit-config.yaml` hooks to latest versions from GitHub, preserving tag format |
 | `update-reqs` | `/update-reqs` | Update `requirements.in` with latest PyPI versions, preserving version specifier patterns |
 | `update-reqs-dev` | `/update-reqs-dev` | Update `requirements-dev.in` with latest PyPI versions, preserving version specifier patterns |
