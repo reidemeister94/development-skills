@@ -1,11 +1,13 @@
 ---
 name: distill
-description: "Use when user wants to reduce noise, verbosity, or redundancy in markdown files. Use when user says distill, compress, clean up, tighten, denoise, reduce entropy, improve signal-to-noise ratio, or make text more concise. Use on README, CLAUDE.md, reports, documentation, or any text that feels bloated or verbose."
+description: "Use when user wants to reduce noise, verbosity, or redundancy in markdown or text files. Use when user says distill, compress, clean up, tighten, denoise, reduce entropy, improve signal-to-noise ratio, or make text more concise. Accepts a file path, a directory (distills all .md/.txt files in it), or no argument (distills all .md/.txt files in the current directory)."
 user-invocable: true
 allowed-tools: Read, Write, Edit, Bash, Glob, Agent
 ---
 
 # Distill — Semantic Text Compression
+
+ultrathink
 
 You are an information-theoretic text editor. Your goal: maximize facts-per-word while preserving every fact, keeping the text readable, and maintaining the author's voice. You apply Shannon's principle that anything predictable from context carries zero information and can be removed.
 
@@ -16,9 +18,17 @@ NEVER add information not in the original.
 NEVER make the text telegraphic — output flows as natural prose.
 </hard-gate>
 
-## Target: $ARGUMENTS
+## Target Resolution
 
-If `$ARGUMENTS` is empty: display "Usage: `/distill path/to/file.md`" then STOP.
+Determine the file list from `$ARGUMENTS`:
+
+1. **Empty** (`$ARGUMENTS` is blank): Glob `*.md` and `*.txt` in the current working directory. Non-recursive — only top-level files.
+2. **Directory**: if `$ARGUMENTS` is a directory path, Glob `<dir>/**/*.md` and `<dir>/**/*.txt`. Recursive — includes all subdirectories.
+3. **File**: if `$ARGUMENTS` is a file path, use that single file.
+
+Exclude non-prose files (e.g., `requirements*.txt`, `LICENSE*`). If no files match, say "No .md or .txt files found in `<path>`." and STOP.
+
+**Process each file through Steps 1–4 below, then report in Step 5.**
 
 ## Step 1 — Read and Measure
 
@@ -149,7 +159,7 @@ FILE="<path>"; echo "AFTER: $(wc -c < "$FILE") chars | $(wc -w < "$FILE") words 
 
 ## Step 5 — Report
 
-Display:
+**Single file** — display:
 
 ```
 ## Distill Report: <filename>
@@ -163,8 +173,22 @@ Noise removed: [list patterns found, by category from noise-patterns.md]
 Facts preserved: [count] | Code blocks: [count] | URLs: [count]
 ```
 
-If word reduction is under 10%: the text was already dense. Say so.
-If word reduction exceeds 60%: re-verify no facts were lost before reporting.
+**Batch (multiple files)** — display per-file rows plus a totals row:
+
+```
+## Distill Report: <directory>
+
+| File            | Words before | Words after | Reduction |
+|-----------------|-------------|-------------|-----------|
+| file1.md        | X           | Y           | -Z%       |
+| file2.txt       | X           | Y           | -Z%       |
+| **Total**       | **X**       | **Y**       | **-Z%**   |
+
+Files processed: N | Skipped (already dense): N
+```
+
+If word reduction is under 10% for a file: mark it as already dense.
+If word reduction exceeds 60% for a file: re-verify no facts were lost before reporting.
 
 ## Feedback Loop
 

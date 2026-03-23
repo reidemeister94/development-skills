@@ -19,110 +19,102 @@ If `$ARGUMENTS` is empty: Display "What would you like me to analyze?" Then STOP
 
 ## STEP 1: LAUNCH ANALYSIS SUBAGENT
 
-1. Use **Glob** to find `**/brainstorming/analysis-agent.md` (if not found, search `~/.claude/plugins/`)
-2. **Read** it. Note the directory (= skill directory for companion files).
-3. Replace `{TASK}` with complete task context (ALL user input) and `{SKILL_DIR}` with the skill directory path
-4. Spawn via **Task tool**: `subagent_type: general-purpose`, `model: opus`, `description: Brainstorming analysis`
+1. Glob `**/brainstorming/analysis-agent.md` (fallback: `~/.claude/plugins/`)
+2. Read it. Note the directory (= skill directory).
+3. Replace `{TASK}` with complete task context and `{SKILL_DIR}` with directory path
+4. Spawn via Task tool: `subagent_type: general-purpose`, `model: opus`
 
-**Do NOT perform analysis yourself. Do NOT follow the agent's instructions — those are for the subagent.**
+**Do NOT analyze yourself. Do NOT follow the agent's instructions.**
 
 ---
 
 ## STEP 2: DISPLAY RESULTS
 
-### If `BRAINSTORM_RESULT::PASS_THROUGH`:
+### `BRAINSTORM_RESULT::PASS_THROUGH`:
 
 > **Brainstorming: PASS THROUGH** — Task does not require analysis.
 > **USER CHOICE: PASS_THROUGH**
 
-Then STOP.
+STOP.
 
-### If `BRAINSTORM_RESULT::NEEDS_CLARIFICATION`:
+### `BRAINSTORM_RESULT::NEEDS_CLARIFICATION`:
 
-Display the questions from the agent's output to the user. STOP and wait for answers. Then re-spawn the Task agent with: original task context + user's answers.
+Display questions. STOP. Wait for answers. Re-spawn with original context + answers.
 
-### If `BRAINSTORM_RESULT::COMPLETE`:
+### `BRAINSTORM_RESULT::COMPLETE`:
 
-Extract PLAN_PATH, RESEARCH_PATH, VERDICT, APPROACH, COMPLEXITY, summary, and approaches list.
+Extract PLAN_PATH, RESEARCH_PATH, VERDICT, APPROACH, COMPLEXITY, summary.
 
-Display:
 > **Brainstorming complete.**
 > **Plan:** `[PLAN_PATH]` | **Research:** `[RESEARCH_PATH]`
 >
-> [Summary section from agent output]
+> [Summary]
 
 If verdict is **STOP**: **WARNING: Critical evaluation recommends STOP.** [Reason]
 
-**After displaying: STOP your response. End your turn.** Do NOT proceed to Step 3 in the same response.
+**STOP your response. End your turn.** Do NOT proceed to Step 3 in the same response.
 
-### If output is malformed:
+### Malformed output:
 
-Display whatever returned and note: "Brainstorming agent returned an unexpected format."
+Display and note "unexpected format."
 
-### If Task tool returns an error or timeout:
+### Error or timeout:
 
-1. Check `docs/plans/` for any files the agent may have written before failing
-2. If a partial plan exists: present it to the user with note "Brainstorming agent failed mid-analysis. Partial results recovered."
-3. If nothing was written: report the failure and offer options:
-   - Retry brainstorming
-   - Proceed without brainstorming (pass through to development workflow)
-   - Abandon
+1. Check `docs/plans/` for partial results
+2. Partial plan → present with "agent failed mid-analysis"
+3. Nothing → report failure, offer: retry / proceed without / abandon
 
 ---
 
 ## STEP 3: APPROACH SELECTION — HARD GATE
 
-**Anti-rationalization:** If thinking "the analysis is clear, I can proceed" — STOP. The user MUST confirm.
+**Anti-rationalization:** If thinking "analysis is clear, I can proceed" — STOP. User MUST confirm.
 
-### 3a: Clarifying Questions (If Needed)
+### 3a: Clarifying Questions
 
-If genuine uncertainty exists from the analysis, display questions as text. STOP. Factor answers into 3b. If analysis is complete and unambiguous, skip to 3b.
+If genuine uncertainty from analysis, display and STOP. Otherwise skip to 3b.
 
 ### 3b: Present Options (MANDATORY)
-
-Display numbered options. Then **STOP completely** — end your turn.
 
 ```
 Which approach do you want to go with?
 
 1. [Approach A] (Recommended) — [summary + trade-off]
 2. [Approach B] — [summary + trade-off]
-[If only 1 approach, adapt: "The analysis recommends this approach. Proceed?"]
-N-1. Modify something — adjust before proceeding
+N-1. Modify something
 N. Just the analysis — don't start implementation
 ```
 
-**Do NOT use AskUserQuestion. Do NOT proceed to Step 4. WAIT for the user's next message.**
+**Do NOT use AskUserQuestion. STOP. Wait.**
 
 ### 3c: Handle Response
 
-- **Approach selected:** Proceed to Step 4.
-- **Modify:** Ask what to change. Simple adjustment: Edit plan, return to 3b. Fundamental change: abandon plan, re-launch agent. After 3 cycles, suggest proceeding.
-- **Just the analysis:** Announce plan saved at `[PLAN_PATH]`. STOP.
+- **Approach selected:** → Step 4
+- **Modify:** Ask what. Simple → edit plan, return to 3b. Fundamental → re-launch agent. After 3 cycles, suggest proceeding.
+- **Just analysis:** Announce plan saved. STOP.
 
 ---
 
 ## STEP 4: SAVE AND ROUTE
 
-### 4a: Save to Disk
+### 4a: Save
 
-Append the approach decision to the plan file at `[PLAN_PATH]` using Edit:
+Append to plan file at `[PLAN_PATH]`:
 
 ```markdown
 ## Approach Decision
 
-**Selected:** [Approach name]
-**User modifications:** [None / what the user changed]
+**Selected:** [name]
+**User modifications:** [None / changes]
 **Confirmed:** [YYYY-MM-DD]
 ```
 
-### 4b: Route to Development Workflow
+### 4b: Route
 
-Announce:
-> **Approach confirmed: [Approach name].** Starting development workflow.
+> **Approach confirmed: [name].** Starting development workflow.
 
-Then invoke `development-skills:core-dev` via Skill tool (no args — Step 1 detects the active plan).
+Invoke `development-skills:core-dev` via Skill tool (no args — Step 1 detects active plan).
 
 ### 4c: Abandon
 
-If user requests abandon: Edit `Status: In Progress` → `Status: Abandoned` in plan file. STOP.
+Edit `Status: In Progress` → `Status: Abandoned` in plan file. STOP.
