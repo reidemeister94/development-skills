@@ -1,0 +1,6 @@
+{
+  "_instructions": "Merge into .claude/settings.local.json. Add one entry per connection.",
+  "enabledMcpjsonServers": [
+    "postgres-YOUR-CONNECTION-NAME"
+  ]
+}

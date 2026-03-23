@@ -1,0 +1,12 @@
+{
+  "_instructions": "Replace placeholders and merge into .mcp.json in your project root. Add one block per connection.",
+  "mcpServers": {
+    "postgres-YOUR-CONNECTION-NAME": {
+      "command": "PLUGIN_PATH/scripts/run_postgres_mcp.sh",
+      "env": {
+        "DATABASE_URI": "postgresql://username:password@host:5432/dbname",
+        "ACCESS_MODE": "unrestricted"
+      }
+    }
+  }
+}

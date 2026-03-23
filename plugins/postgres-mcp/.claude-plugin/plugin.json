@@ -1,0 +1,5 @@
+{
+  "name": "postgres-mcp",
+  "description": "PostgreSQL MCP server integration for Claude Code. Run /postgres-setup to add database connections \u2014 supports multiple databases with any name.",
+  "version": "1.0.0"
+}

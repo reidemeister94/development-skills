@@ -20,8 +20,21 @@ venv/
 *.swo
 *~
 
-# Claude Code
-.claude/settings.local.json
+# Node
+node_modules/
+
+# Log files
+*.log
+
+# Claude Code (local-only files)
+.claude/*
+.mcp.json
+!.claude/hooks/
+!.claude/hooks/*.py
+!.claude/settings.json
+
+# Plans and specs (working artifacts, not for tracking)
+docs/superpowers/
 
 # Testing workspaces (ephemeral eval data)
 *-workspace/

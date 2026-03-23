@@ -1,0 +1,5 @@
+{
+  "name": "project-documenter",
+  "description": "Adds a /project-documenter skill for generating project documentation",
+  "version": "1.0.0"
+}

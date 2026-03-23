@@ -2,26 +2,31 @@
 
 ## Project Overview
 
-Open-source Claude Code plugin. Structured development workflow with 7-phase quality gates, subagent orchestration, and multi-language support.
+Open-source Claude Code plugin marketplace. Contains 4 independently installable plugins for structured development workflows, architecture decisions, documentation, and database integration.
 
 ## Project Structure
 
 ```
-.claude-plugin/plugin.json    # Plugin metadata + version (v0.0.1)
-skills/                       # 14 skills (core-dev, brainstorming, language-specific, utilities)
-agents/                       # 3 subagents (implementer, staff-reviewer, test-verifier)
-hooks/                        # Auto ruff-format on Edit/Write
-shared/                       # Workflow engine (phases, references, templates)
-scripts/                      # Plan file helper
-VERSION                       # Project version
-LICENSE                       # MIT
+plugins/                          # Claude Code plugins (each independently installable)
+  development-skills/             # Dev workflow: 16 skills, 3 subagents, 7-phase gates
+  adr/                            # Architecture Decision Records
+  project-documenter/             # Codebase documentation generator
+  postgres-mcp/                   # PostgreSQL MCP server integration
+docs/                             # Documentation
+  claude-code-reference/          # Official Claude Code reference docs
+.claude-plugin/plugin.json        # Plugin metadata + version (v0.0.1)
+.claude-plugin/marketplace.json   # Marketplace config (4 plugins)
+VERSION                           # Project version
+LICENSE                           # MIT
 ```
 
 ## Conventions
 
 - Plugin version is in `.claude-plugin/plugin.json`
+- Each plugin has its own `plugin.json` at `plugins/<name>/.claude-plugin/plugin.json`
 - Skills follow the SKILL.md frontmatter specification
 - Agents are defined in `agents/` as markdown files
+- Reference docs in `docs/claude-code-reference/` for skills/hooks/agents/MCP development
 
 # Model Behavior Principles
 

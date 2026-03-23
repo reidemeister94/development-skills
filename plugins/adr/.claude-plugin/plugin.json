@@ -1,0 +1,5 @@
+{
+  "name": "adr",
+  "description": "Architecture Decision Records: create, list, and manage ADRs for any project. Use /adr to document a decision, /adr-list to see all decisions, /adr-update to change a decision's status.",
+  "version": "1.0.0"
+}

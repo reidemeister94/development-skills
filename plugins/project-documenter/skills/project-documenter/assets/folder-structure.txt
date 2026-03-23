@@ -1,0 +1,78 @@
+docs/
+├── _index.md                           # Master index with navigation
+│
+├── data-model/                         # Entity/table documentation
+│   ├── _overview.md                    # ER diagram + entity index
+│   ├── {entity_name}.md                # One file per entity
+│   ├── users.md
+│   ├── orders.md
+│   ├── order_items.md
+│   ├── products.md
+│   └── ...
+│
+└── workflows/                          # Process documentation
+    │
+    ├── etl/                            # ETL pipeline steps
+    │   ├── _pipeline-overview.md       # Pipeline flowchart + step index
+    │   ├── step-01-{name}.md           # One file per logical step
+    │   ├── step-02-{name}.md
+    │   ├── step-03a-{name}.md          # Parallel steps use letter suffix
+    │   ├── step-03b-{name}.md
+    │   └── ...
+    │
+    └── api/                            # API endpoint documentation
+        ├── _endpoints-overview.md      # Endpoint summary table
+        ├── {method}-{path-slug}.md     # One file per endpoint
+        ├── get-api-users.md
+        ├── get-api-users-id.md
+        ├── post-api-orders.md
+        ├── delete-api-orders-id.md
+        └── ...
+
+================================================================================
+NAMING CONVENTIONS
+================================================================================
+
+ENTITIES:
+  - Filename: lowercase, underscores for multi-word (matches table name)
+  - Examples: users.md, order_items.md, user_preferences.md
+
+ETL STEPS:
+  - Pattern: step-{NN}-{descriptive-name}.md
+  - NN: Two-digit number (01, 02, ... 10, 11)
+  - Parallel steps: step-03a-name.md, step-03b-name.md
+  - Examples: step-01-extract-legacy-data.md, step-05-transform-dates.md
+
+API ENDPOINTS:
+  - Pattern: {method}-{path-slug}.md
+  - Method: lowercase (get, post, put, delete, patch)
+  - Path: slashes become dashes, params simplified
+  - Examples:
+    - GET /api/users           → get-api-users.md
+    - GET /api/users/:id       → get-api-users-id.md
+    - POST /api/orders         → post-api-orders.md
+    - DELETE /api/orders/:id   → delete-api-orders-id.md
+    - GET /api/v2/products     → get-api-v2-products.md
+
+OVERVIEW FILES:
+  - Always prefixed with underscore: _overview.md, _pipeline-overview.md
+  - Purpose: Index/summary files, not individual documentation
+
+================================================================================
+CROSS-REFERENCE LINKS
+================================================================================
+
+From entity to ETL step:
+  [Step 3: Transform](../workflows/etl/step-03-transform.md)
+
+From entity to API:
+  [GET /api/users](../workflows/api/get-api-users.md)
+
+From ETL step to entity:
+  [Users entity](../../data-model/users.md)
+
+From API to entity:
+  [Users entity](../../data-model/users.md)
+
+From API to ETL:
+  [ETL Step 5](../etl/step-05-aggregate.md)
