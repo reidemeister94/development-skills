@@ -102,7 +102,7 @@ Pass ONLY dynamic context to implementer:
 2. **Plan context** — goals, constraints, architecture (summarized)
 3. **Plan file path** — **ABSOLUTE**
 4. **Research file path** — **ABSOLUTE** (from WORKFLOW STATE). Do NOT summarize — pass the path.
-5. **Patterns file path(s)** — **ABSOLUTE**. Do NOT summarize — pass the path(s).
+5. **Patterns file path(s)** — **ABSOLUTE**. Do NOT summarize — pass the path(s). Always include the testing strategies reference: `plugins/development-skills/skills/create-test/references/testing-strategies.md` (boundary stress, property-based, invariant testing principles).
 6. **Implementation rules** — language-specific (copy verbatim)
 7. **Quality checklist** — language-specific items
 8. **Verification criteria** — command, expected outcome, failure definition

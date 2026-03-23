@@ -49,6 +49,8 @@
 
 **Bug fix exception:** If primarily a bug fix (error/stack trace), invoke `development-skills:debugging` instead — UNLESS it involves architectural decisions or multiple fix approaches.
 
+**Test-focused exception:** If the request is primarily about test creation, test quality, test strategy, or test coverage analysis (e.g., "add tests for X", "what should I test", "improve test quality", "explore untested code", "generate boundary tests") — invoke `development-skills:create-test` instead. UNLESS the request is part of a larger feature implementation (standard workflow handles tests via TDD).
+
 **User bypass:** "skip brainstorming", "just code it", "I already know the approach" — respect it. "I want it done fast" is NOT a bypass.
 
 **Proceed without brainstorming ONLY if ALL:**
