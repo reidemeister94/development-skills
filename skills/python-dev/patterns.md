@@ -1,6 +1,6 @@
 # Python Patterns & Standards
 
-This file contains the team's Python-specific patterns, standards, and code examples. Referenced by the python-dev skill during Research and Implementation phases.
+Team Python patterns referenced during Research and Implementation phases.
 
 ---
 
@@ -18,8 +18,8 @@ app/
 │   ├── requests/         # API request models
 │   └── responses/        # API response models
 ├── repository/
-│   └── query/            # SQL queries organized by domain
-├── service/              # Business logic layer
+│   └── query/            # SQL queries by domain
+├── service/              # Business logic
 ├── utils/                # Shared utilities
 └── main.py               # App initialization & lifespan
 ```
@@ -31,34 +31,25 @@ app/
 Use FastAPI's `Depends()` with lifespan-managed singletons:
 
 ```python
-# main.py - Initialize in lifespan
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     pool = await asyncpg.create_pool(dsn=settings.db_url)
     repository = TaskRepository(pool)
     service = TaskService(repository, settings)
-
     yield {"task_service": service, "settings": settings}
-
     await pool.close()
 
-# endpoint - Inject via Depends
 def get_task_service(request: Request) -> TaskService:
     return request.state.task_service
 
 @router.post("/tasks")
-async def create_task(
-    service: TaskService = Depends(get_task_service),
-):
+async def create_task(service: TaskService = Depends(get_task_service)):
     return await service.create_task(...)
 ```
 
-**Rules:**
-- Functions receive ALL dependencies as parameters
-- No globals, no internal instantiation
-- Singletons initialized in lifespan, accessed via request.state
+**Rules:** Functions receive ALL deps as parameters. No globals, no internal instantiation. Singletons in lifespan, accessed via request.state.
 
-### Service Layer Pattern
+### Service Layer
 
 ```python
 class ShippingService:
@@ -71,7 +62,7 @@ class ShippingService:
         return StatusResponse(items=items, total=len(items))
 ```
 
-### Repository Pattern
+### Repository
 
 ```python
 class TaskRepository:
@@ -160,8 +151,7 @@ class PGSQLSettings(BaseSettings):
 ```python
 pool = await asyncpg.create_pool(
     dsn=settings.db_url,
-    min_size=3,
-    max_size=10,
+    min_size=3, max_size=10,
     max_inactive_connection_lifetime=600,
 )
 ```
@@ -175,7 +165,7 @@ repository/query/
 └── shared_query.py
 ```
 
-### Parameterized Queries (asyncpg uses $1, $2...)
+### Parameterized Queries (asyncpg: $1, $2...)
 
 ```python
 records = await conn.fetch(
@@ -184,7 +174,7 @@ records = await conn.fetch(
 )
 ```
 
-### CTEs for Complex Queries
+### CTEs
 
 ```python
 QUERY = """
@@ -196,12 +186,12 @@ SELECT * FROM aggregated WHERE total > $1
 """
 ```
 
-### Data Model Conventions (PostgreSQL)
+### PostgreSQL Conventions
 
 | Area | Guideline |
 |------|-----------|
-| Naming | snake_case, plural tables (users, orders) |
-| PK | BIGSERIAL, single-column, `<table>_id` |
+| Naming | snake_case, plural tables |
+| PK | BIGSERIAL, `<table>_id` |
 | Timestamps | `created_at`, `updated_at` (TIMESTAMPTZ) |
 | Constraints | NOT NULL, UNIQUE, FK in DB |
 | Indexing | Index query patterns, not every column |
@@ -209,8 +199,6 @@ SELECT * FROM aggregated WHERE total > $1
 ---
 
 ## Error Handling
-
-### Exception Hierarchy
 
 ```python
 class ServiceError(Exception):
@@ -221,11 +209,7 @@ class ValidationError(ServiceError):
 
 class NotFoundError(ServiceError):
     """Resource not found."""
-```
 
-### Pattern: Catch specific, map to HTTP
-
-```python
 async def get_item(item_id: UUID, service: Service = Depends(get_service)):
     try:
         return await service.get_item(item_id)
@@ -233,47 +217,27 @@ async def get_item(item_id: UUID, service: Service = Depends(get_service)):
         raise HTTPException(status_code=404, detail="Item not found")
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    # Let unexpected errors bubble up as 500
 ```
 
 ---
 
 ## Logging
 
-### Setup
-
 ```python
 from pyinnovation.utils.logging_utils import get_logger
-
 logger = get_logger(name="my_service", log_level=settings.log_level)
-```
 
-### Usage
-
-```python
 logger.info(f"Task {task_id}: Processing started")
-logger.debug(f"Task {task_id}: Uploaded {obj_name}")
 logger.error(f"Task {task_id}: Failed", exc_info=True)
 ```
 
-### Principles
-
-- Structured JSON logs for CloudWatch
-- Correlation ID via `X-Request-ID` header
-- Filter health checks and noisy endpoints
-- Log levels: DEBUG for dev, INFO for prod
+Structured JSON for CloudWatch. Correlation ID via `X-Request-ID`. Filter health checks. DEBUG for dev, INFO for prod.
 
 ---
 
 ## Testing
 
-### Stack
-
-- `pytest` + `pytest-asyncio`
-- `pytest-mock` for mocking
-- `pytest-cov` for coverage
-
-### Fixtures
+Stack: `pytest` + `pytest-asyncio`, `pytest-mock`, `pytest-cov`. Coverage: 70-80%.
 
 ```python
 @pytest.fixture
@@ -283,68 +247,39 @@ def mock_repository() -> MagicMock:
     return repo
 
 @pytest.fixture
-def service(mock_repository: MagicMock, settings: Settings) -> TaskService:
+def service(mock_repository, settings) -> TaskService:
     return TaskService(repository=mock_repository, settings=settings)
-```
 
-### Unit Test
-
-```python
 def test_pagination_validation():
     with pytest.raises(ValidationError):
         Pagination(page_size=0)
-```
 
-### Integration Test
-
-```python
 def test_create_task(client, mock_service):
     app.dependency_overrides[get_service] = lambda: mock_service
     mock_service.create_task = AsyncMock(return_value=TaskResponse(id=uuid4()))
-
     response = client.post("/tasks", json={"name": "test"})
-
     assert response.status_code == 201
     mock_service.create_task.assert_called_once()
     app.dependency_overrides.clear()
 ```
 
-### Coverage Target: 70-80%
-
 ---
 
 ## Git & Versioning
-
-### Branch Strategy
 
 | Branch | Purpose |
 |--------|---------|
 | `main` | Production |
 | `staging` | UAT/pre-prod |
 | `dev` | Daily development |
-| `feat/<JIRA>-desc` | New features |
+| `feat/<JIRA>-desc` | Features |
 | `fix/<JIRA>-desc` | Bug fixes |
 
-### Commit Prefixes
-
-- `feat:` - New features
-- `fix:` - Bug fixes
-- `docs:` - Documentation
-- `chore:` - Maintenance
-- `bump:` - Version tags
-
-### Merge Strategy
-
-- Create branch from `main`
-- Merge to `dev`/`staging` for testing
-- PR + Code Review to merge to `main`
-- Use squash commits for clean history
+Prefixes: `feat:`, `fix:`, `docs:`, `chore:`, `bump:`. Squash commits. PR + review to `main`.
 
 ---
 
 ## Code Quality
-
-### Makefile Commands
 
 ```makefile
 make setup-dev-env    # Install dev tools + pre-commit
@@ -352,8 +287,6 @@ make test             # Run pytest
 make lint             # Run ruff
 make requirements.txt # Compile dependencies
 ```
-
-### Pre-commit Hooks
 
 ```yaml
 repos:
@@ -377,11 +310,10 @@ repos:
 | Type hint | `list[str]`, `dict[str, int]`, `str \| None` |
 | Data class | Pydantic `BaseModel` |
 | Settings | Pydantic `BaseSettings` |
-| Dependency | Pass as parameter, use `Depends()` |
+| Dependency | Pass as parameter, `Depends()` |
 | Side effect | Isolate, make explicit |
 | Long function | Split (max 50-70 lines) |
-| Repeated code | Extract to function |
-| DataFrame input | Always `.copy()` first |
+| DataFrame input | `.copy()` first |
 
 ## What NOT to Do
 
@@ -392,7 +324,7 @@ repos:
 | Catch-all `except Exception` | Specific exceptions |
 | Raw dicts for structured data | Pydantic models |
 | Hardcoded values | `BaseSettings` |
-| 100+ line functions | Split into focused units |
-| Comments for obvious code | Delete them |
+| 100+ line functions | Split |
+| Comments for obvious code | Delete |
 | Over-engineering | Solve current problem only |
 | Modify input DataFrames | `df.copy()` first |

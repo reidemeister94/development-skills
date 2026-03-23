@@ -33,7 +33,7 @@ WORKFLOW STATE Verification line: `pytest, ruff check, ruff format --check`
 
 **Phase 5 Tier B additional MCP verifications:**
 - PostgreSQL MCP → Query DB state before/after
-- Custom MCP servers → Query external data sources for verification
+- Legacy DB MCP → Query legacy database for data verification
 
 ### Implementation Rules (Phase 4)
 
