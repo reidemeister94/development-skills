@@ -1,6 +1,6 @@
 {
   "name": "development-skills-marketplace",
-  "description": "Marketplace for the Development Skills plugin",
+  "description": "Marketplace for development skills plugins",
   "owner": {
     "name": "reidemeister"
   },
@@ -10,6 +10,21 @@
       "description": "Structured development workflow with 7-phase quality gates, subagent orchestration, and multi-language support",
       "version": "0.0.8",
       "source": "./plugins/development-skills"
+    },
+    {
+      "name": "adr",
+      "source": "./plugins/adr",
+      "description": "Architecture Decision Records: document and manage architectural decisions for any project. Use /adr to create, /adr-list to browse, /adr-update to change status."
+    },
+    {
+      "name": "project-documenter",
+      "source": "./plugins/project-documenter",
+      "description": "Adds a /project-documenter skill for generating project documentation"
+    },
+    {
+      "name": "postgres-mcp",
+      "source": "./plugins/postgres-mcp",
+      "description": "PostgreSQL MCP server integration for Claude Code. Run /postgres-setup to add database connections — supports multiple databases with any name."
     }
   ]
 }
