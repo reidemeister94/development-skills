@@ -26,27 +26,25 @@
 
 ## Installation
 
-**Step 1** — Add this repository as a plugin marketplace:
+In Claude Code, register the marketplace first:
 
 ```bash
-claude plugin marketplace add reidemeister94/development-skills
+/plugin marketplace add reidemeister94/development-skills
 ```
 
-**Step 2** — Install the plugin:
+Then install the plugin:
 
 ```bash
-claude plugin install development-skills@development-skills
+/plugin install development-skills@development-skills
 ```
 
-That's it. The plugin activates automatically on any coding task. No configuration needed.
+The plugin activates automatically on any coding task. No configuration needed.
 
-> **Prerequisite:** The [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin is required for regression testing (`/eval-regression`). Install it with:
->
-> ```bash
-> claude plugin install skill-creator@claude-plugins-official
-> ```
+### Verify Installation
 
-Once installed, you can invoke skills directly:
+Start a new session and give Claude a development task. The plugin should activate automatically — you'll see it follow a structured workflow (research, plan, implement, verify, review) instead of jumping straight to code.
+
+You can also invoke skills directly:
 
 ```
 /brainstorming    — Evaluate approaches before committing to one
@@ -54,6 +52,20 @@ Once installed, you can invoke skills directly:
 /create-test      — Design tests that find bugs, not just exist
 /distill          — Compress verbose text while preserving facts
 /commit           — Conventional commit from staged changes
+```
+
+### Updating
+
+```bash
+/plugin update development-skills@development-skills
+```
+
+### Optional: Regression Testing
+
+The [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin is required for running regression tests (`/eval-regression`):
+
+```bash
+/plugin install skill-creator@claude-plugins-official
 ```
 
 ---
