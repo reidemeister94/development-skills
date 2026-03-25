@@ -86,10 +86,10 @@ One `implementer` per group. Pass `isolation: "worktree"`. Spawn ALL in a single
 ### After Completion
 
 1. Check all results
-2. Merge each worktree branch sequentially: `git merge <branch> --no-edit`
-3. If merge conflict: STOP — file analysis missed overlap
-4. Clean up worktrees
-5. Consolidate plan file — verify all checklists and logs present
+2. Commit worktree changes: `git -C <worktree-path> add -A && git -C <worktree-path> commit -m "agent: <group>"`
+3. Merge each branch: `git merge <branch> --no-edit`
+4. If merge conflict: STOP — file analysis missed overlap
+5. Clean up worktrees
 6. Run full test suite on merged result
 
 ---
@@ -106,7 +106,7 @@ Pass ONLY dynamic context to implementer:
 6. **Implementation rules** — language-specific (copy verbatim)
 7. **Quality checklist** — language-specific items
 8. **Verification criteria** — command, expected outcome, failure definition
-9. **Isolation info** — "Running in [main directory / isolated worktree]. Use absolute paths."
+9. **Isolation info** — "Running in [main directory / isolated worktree]. Expected branch: `<branch>`. Use absolute paths."
 
 ## Observation Masking
 
