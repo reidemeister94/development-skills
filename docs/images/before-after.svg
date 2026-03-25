@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="1000" height="580" rx="16" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="500" y="42" text-anchor="middle" fill="#e6edf3" font-size="22" font-weight="700">Without vs With development-skills</text>
+
+  <!-- Divider -->
+  <line x1="500" y1="66" x2="500" y2="560" stroke="#30363d" stroke-width="2" stroke-dasharray="8,6"/>
+
+  <!-- LEFT HEADER -->
+  <text x="250" y="82" text-anchor="middle" fill="#f85149" font-size="16" font-weight="700">Without the plugin</text>
+  <text x="250" y="100" text-anchor="middle" fill="#7d8590" font-size="11">Capability without discipline</text>
+
+  <!-- Left steps -->
+  <rect x="40" y="116" width="420" height="50" rx="10" fill="#161b22" stroke="#f85149" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="60" y="136" fill="#f85149" font-size="13" font-weight="600">1.</text>
+  <text x="80" y="136" fill="#e6edf3" font-size="13">"Add a user API endpoint"</text>
+  <text x="80" y="154" fill="#7d8590" font-size="11">Prompt goes in. Agent starts immediately.</text>
+
+  <rect x="40" y="176" width="420" height="50" rx="10" fill="#161b22" stroke="#f85149" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="60" y="196" fill="#f85149" font-size="13" font-weight="600">2.</text>
+  <text x="80" y="196" fill="#e6edf3" font-size="13">Skips planning - "this is straightforward"</text>
+  <text x="80" y="214" fill="#7d8590" font-size="11">No research. No trade-off analysis. Just vibes.</text>
+
+  <rect x="40" y="236" width="420" height="50" rx="10" fill="#161b22" stroke="#f85149" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="60" y="256" fill="#f85149" font-size="13" font-weight="600">3.</text>
+  <text x="80" y="256" fill="#e6edf3" font-size="13">Writes code first, tests after (maybe)</text>
+  <text x="80" y="274" fill="#7d8590" font-size="11">Tests pass on first try - proves nothing.</text>
+
+  <rect x="40" y="296" width="420" height="50" rx="10" fill="#161b22" stroke="#f85149" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="60" y="316" fill="#f85149" font-size="13" font-weight="600">4.</text>
+  <text x="80" y="316" fill="#e6edf3" font-size="13">"All checks pass" (only linting ran)</text>
+  <text x="80" y="334" fill="#7d8590" font-size="11">Verification honesty? What is that?</text>
+
+  <rect x="40" y="356" width="420" height="50" rx="10" fill="#161b22" stroke="#f85149" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="60" y="376" fill="#f85149" font-size="13" font-weight="600">5.</text>
+  <text x="80" y="376" fill="#e6edf3" font-size="13">Commits without asking</text>
+  <text x="80" y="394" fill="#7d8590" font-size="11">No review. No documentation. Ship it.</text>
+
+  <rect x="40" y="416" width="420" height="50" rx="10" fill="#161b22" stroke="#f85149" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="60" y="436" fill="#f85149" font-size="13" font-weight="600">6.</text>
+  <text x="80" y="436" fill="#e6edf3" font-size="13">Context compacted - decisions lost</text>
+  <text x="80" y="454" fill="#7d8590" font-size="11">3 months later: "why did we do this?"</text>
+
+  <!-- Left result -->
+  <rect x="40" y="486" width="420" height="70" rx="12" fill="#1c1012" stroke="#f85149" stroke-width="1.5"/>
+  <text x="250" y="516" text-anchor="middle" fill="#f85149" font-size="14" font-weight="700">1.7x more bugs, 2.74x more vulnerabilities</text>
+  <text x="250" y="540" text-anchor="middle" fill="#7d8590" font-size="11">67% of developers spend MORE time debugging AI code</text>
+
+  <!-- RIGHT HEADER -->
+  <text x="750" y="82" text-anchor="middle" fill="#3fb950" font-size="16" font-weight="700">With development-skills</text>
+  <text x="750" y="100" text-anchor="middle" fill="#7d8590" font-size="11">The good-day workflow, every day</text>
+
+  <!-- Right steps -->
+  <rect x="540" y="116" width="420" height="50" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="560" y="136" fill="#3fb950" font-size="13" font-weight="600">1.</text>
+  <text x="580" y="136" fill="#e6edf3" font-size="13">"Add a user API endpoint"</text>
+  <text x="580" y="154" fill="#7d8590" font-size="11">Brainstorming guard evaluates scope + approach.</text>
+
+  <rect x="540" y="176" width="420" height="50" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="560" y="196" fill="#3fb950" font-size="13" font-weight="600">2.</text>
+  <text x="580" y="196" fill="#e6edf3" font-size="13">Researches codebase, writes plan to disk</text>
+  <text x="580" y="214" fill="#7d8590" font-size="11">User reviews and approves before any code.</text>
+
+  <rect x="540" y="236" width="420" height="50" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="560" y="256" fill="#3fb950" font-size="13" font-weight="600">3.</text>
+  <text x="580" y="256" fill="#e6edf3" font-size="13">TDD cycles: RED &gt; GREEN &gt; REFACTOR</text>
+  <text x="580" y="274" fill="#7d8590" font-size="11">Every test fails first. Then passes. Then improves.</text>
+
+  <rect x="540" y="296" width="420" height="50" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="560" y="316" fill="#3fb950" font-size="13" font-weight="600">4.</text>
+  <text x="580" y="316" fill="#e6edf3" font-size="13">test-verifier: "8 passed, 0 failed"</text>
+  <text x="580" y="334" fill="#7d8590" font-size="11">Distinguishes real tests from lint-only. Evidence.</text>
+
+  <rect x="540" y="356" width="420" height="50" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="560" y="376" fill="#3fb950" font-size="13" font-weight="600">5.</text>
+  <text x="580" y="376" fill="#e6edf3" font-size="13">Staff review: spec compliance + quality</text>
+  <text x="580" y="394" fill="#7d8590" font-size="11">Two-stage Opus review. No rubber-stamping.</text>
+
+  <rect x="540" y="416" width="420" height="50" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="560" y="436" fill="#3fb950" font-size="13" font-weight="600">6.</text>
+  <text x="580" y="436" fill="#e6edf3" font-size="13">Plan + chronicle persist to disk</text>
+  <text x="580" y="454" fill="#7d8590" font-size="11">3 months later: read the chronicle. WHY is there.</text>
+
+  <!-- Right result -->
+  <rect x="540" y="486" width="420" height="70" rx="12" fill="#0d1f12" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="750" y="516" text-anchor="middle" fill="#3fb950" font-size="14" font-weight="700">40% fewer errors, 55% faster completion</text>
+  <text x="750" y="540" text-anchor="middle" fill="#7d8590" font-size="11">Every decision documented. Every phase verified.</text>
+</svg>

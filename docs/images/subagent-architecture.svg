@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#484f58"/>
+    </marker>
+    <marker id="arr-g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#3fb950"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="520" rx="16" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="500" y="42" text-anchor="middle" fill="#e6edf3" font-size="22" font-weight="700">Subagent Orchestration</text>
+  <text x="500" y="64" text-anchor="middle" fill="#7d8590" font-size="13">The right model for the right job. Opus judges. Sonnet executes. The orchestrator delegates.</text>
+
+  <!-- Main Orchestrator -->
+  <rect x="350" y="90" width="300" height="86" rx="14" fill="#1f6feb"/>
+  <text x="500" y="118" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" letter-spacing="1.5" opacity="0.8">MAIN AGENT</text>
+  <text x="500" y="143" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">Thin Orchestrator</text>
+  <text x="500" y="163" text-anchor="middle" fill="#c8e1ff" font-size="11">Holds the plan. Delegates to subagents. Never implements directly.</text>
+
+  <!-- Connection lines -->
+  <line x1="400" y1="176" x2="165" y2="266" stroke="#484f58" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+  <line x1="500" y1="176" x2="500" y2="266" stroke="#484f58" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+  <line x1="600" y1="176" x2="835" y2="266" stroke="#484f58" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+
+  <!-- Labels on connections -->
+  <text x="268" y="222" text-anchor="middle" fill="#7d8590" font-size="10" transform="rotate(-22, 268, 222)">Phase 6</text>
+  <text x="512" y="232" fill="#7d8590" font-size="10">Phase 4</text>
+  <text x="732" y="222" text-anchor="middle" fill="#7d8590" font-size="10" transform="rotate(22, 732, 222)">Phase 5</text>
+
+  <!-- Staff Reviewer -->
+  <rect x="40" y="270" width="240" height="170" rx="14" fill="#161b22" stroke="#8b5cf6" stroke-width="2"/>
+  <rect x="60" y="284" width="60" height="22" rx="11" fill="#8b5cf6"/>
+  <text x="90" y="299" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">OPUS</text>
+  <text x="168" y="300" text-anchor="middle" fill="#d2a8ff" font-size="15" font-weight="700">Staff Reviewer</text>
+  <line x1="60" y1="312" x2="260" y2="312" stroke="#30363d" stroke-width="1"/>
+  <text x="60" y="334" fill="#7d8590" font-size="11">Stage 1: Spec compliance</text>
+  <text x="60" y="354" fill="#7d8590" font-size="11">Stage 2: Code quality</text>
+  <line x1="60" y1="368" x2="260" y2="368" stroke="#30363d" stroke-width="1"/>
+  <text x="60" y="388" fill="#484f58" font-size="10">Reads plan file from disk</text>
+  <text x="60" y="406" fill="#484f58" font-size="10">Returns APPROVED or ISSUES</text>
+  <text x="60" y="424" fill="#484f58" font-size="10">No rubber-stamping</text>
+
+  <!-- Implementer -->
+  <rect x="380" y="270" width="240" height="170" rx="14" fill="#161b22" stroke="#d97706" stroke-width="2"/>
+  <rect x="400" y="284" width="74" height="22" rx="11" fill="#d97706"/>
+  <text x="437" y="299" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">SONNET</text>
+  <text x="515" y="300" text-anchor="middle" fill="#ffa657" font-size="15" font-weight="700">Implementer</text>
+  <line x1="400" y1="312" x2="600" y2="312" stroke="#30363d" stroke-width="1"/>
+  <text x="400" y="334" fill="#7d8590" font-size="11">TDD: RED &gt; GREEN &gt; REFACTOR</text>
+  <text x="400" y="354" fill="#7d8590" font-size="11">Anti-poisoning verification</text>
+  <line x1="400" y1="368" x2="600" y2="368" stroke="#30363d" stroke-width="1"/>
+  <text x="400" y="388" fill="#484f58" font-size="10">Writes Implementation Log to disk</text>
+  <text x="400" y="406" fill="#484f58" font-size="10">Returns compact summary only</text>
+  <text x="400" y="424" fill="#484f58" font-size="10">Can spawn in git worktree</text>
+
+  <!-- Test Verifier -->
+  <rect x="720" y="270" width="240" height="170" rx="14" fill="#161b22" stroke="#d97706" stroke-width="2"/>
+  <rect x="740" y="284" width="74" height="22" rx="11" fill="#d97706"/>
+  <text x="777" y="299" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">SONNET</text>
+  <text x="852" y="300" text-anchor="middle" fill="#ffa657" font-size="15" font-weight="700">Test Verifier</text>
+  <line x1="740" y1="312" x2="940" y2="312" stroke="#30363d" stroke-width="1"/>
+  <text x="740" y="334" fill="#7d8590" font-size="11">Runs tests, build, lint</text>
+  <text x="740" y="354" fill="#7d8590" font-size="11">Structured pass/fail report</text>
+  <line x1="740" y1="368" x2="940" y2="368" stroke="#30363d" stroke-width="1"/>
+  <text x="740" y="388" fill="#484f58" font-size="10">Verbose output stays isolated</text>
+  <text x="740" y="406" fill="#484f58" font-size="10">Distinguishes test vs lint-only</text>
+  <text x="740" y="424" fill="#484f58" font-size="10">Verification honesty enforced</text>
+
+  <!-- Shared disk artifact -->
+  <rect x="350" y="466" width="300" height="36" rx="10" fill="#161b22" stroke="#238636" stroke-width="1.5"/>
+  <text x="375" y="489" fill="#3fb950" font-size="12" font-weight="600">docs/plans/</text>
+  <text x="500" y="489" fill="#7d8590" font-size="12">Plan file on disk</text>
+  <text x="633" y="489" fill="#3fb950" font-size="12" font-weight="600">(shared)</text>
+
+  <!-- Arrows to disk -->
+  <line x1="160" y1="440" x2="382" y2="470" stroke="#3fb950" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-g)"/>
+  <line x1="500" y1="440" x2="500" y2="464" stroke="#3fb950" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-g)"/>
+  <line x1="840" y1="440" x2="618" y2="470" stroke="#3fb950" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-g)"/>
+
+  <text x="252" y="460" fill="#3fb950" font-size="9" transform="rotate(-10, 252, 460)">reads</text>
+  <text x="512" y="456" fill="#3fb950" font-size="9">writes</text>
+  <text x="738" y="460" fill="#3fb950" font-size="9" transform="rotate(10, 738, 460)">writes</text>
+</svg>
