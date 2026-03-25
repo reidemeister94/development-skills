@@ -363,15 +363,42 @@ The design decisions in this plugin are grounded in research from across the ind
 
 ---
 
+## Regression Testing
+
+The plugin ships with **27 evals and 89 assertions** covering 10 behavioral dimensions — the equivalent of a test suite for agent behavior. Powered by Anthropic's [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin.
+
+```
+/eval-regression
+```
+
+| Category | Evals | What It Tests |
+|----------|-------|--------------|
+| `brainstorming-guard` | 7 | Triggers analysis when needed, skips when appropriate |
+| `smart-isolation` | 6 | Parallel vs single agent decisions, worktree safety |
+| `anti-rationalization` | 4 | Resists shortcuts, catches flawed premises |
+| `workflow-phases` | 3 | Phase progression, resumption, plan discovery |
+| `implementer-discipline` | 2 | TDD enforcement, caller updates, verification honesty |
+| `language-detection` | 1 | Frontend vs TypeScript backend routing |
+| `chronicle-quality` | 1 | WHY documentation quality |
+| `askuserquestion-avoidance` | 1 | Conversational text, not AskUserQuestion tool |
+| `turn-boundary` | 1 | Stops at the right moment |
+| `project-directives` | 1 | Respects existing project configuration |
+
+Every eval snapshots the committed version as baseline, runs the modified version against the same prompts, grades all assertions, and produces a regression report with a clear verdict: **SAFE TO COMMIT** or **REGRESSIONS FOUND**.
+
+---
+
 ## Contributing
 
-Contributions are welcome — especially new language skills. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome — especially new language skills. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+
+**The golden rule: no PR without a passing regression benchmark.** Run `/eval-regression`, get 100% pass rate, paste `benchmark.md` in your PR. Zero regressions = merge. Regressions = fix first.
 
 **Ideas for contributions:**
 - New language skills: Rust, Go, Kotlin, Ruby, C#
 - Improved framework patterns for existing languages
 - Better anti-rationalization tables
-- Documentation and examples
+- New evals for uncovered edge cases
 
 Please open an issue to discuss changes before submitting a PR.
 

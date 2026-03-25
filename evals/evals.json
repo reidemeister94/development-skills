@@ -1,0 +1,931 @@
+{
+  "skill_name": "development-skills",
+  "description": "Regression and performance evals for development-skills plugin. Tests behavioral dimensions across brainstorming guard, workflow phases, anti-rationalization, language detection, smart isolation, and implementer discipline.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "brainstorm-guard-god-object-decomposition",
+      "category": "brainstorming-guard",
+      "tests_change": "#1 workflow.md collapse, #7 routing-rules inline",
+      "prompt": "I need to decompose the OrderProcessor god object — it's 2150 lines with 43 attributes and 18 methods. 22 external functions receive the OP object and mutate it in nested calls, causing hidden side effects across 29 files. I want to convert these to pure functions that take explicit params and return frozen dataclasses. Don't change any current logic, don't break any retrocompatibility. The current codebase is a mess: a lot of functions pass the OrderProcessor object and modify one or more of its params inside nested functions, causing side effects. This is very tricky and hard to find for you and for me. Ensure to do a deep analysis and follow the code from the root to the most nested code to understand every piece before removing the object dependency.",
+      "expected_output": "core-dev triggers, brainstorming guard evaluates: large scope (29 files), hard to reverse (architectural), multiple valid approaches (wave-based, bottom-up vs top-down, partial vs full). Must invoke brainstorming despite the user describing WHAT to do — the HOW has multiple valid approaches.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "brainstorming_invoked",
+          "type": "behavioral",
+          "check": "Model invokes brainstorming skill via Skill tool despite user being very specific about what they want",
+          "pass_criteria": "Transcript contains Skill tool call with 'brainstorming' in skill parameter"
+        },
+        {
+          "name": "guard_4_questions_evaluated",
+          "type": "behavioral",
+          "check": "Model explicitly evaluates scope, reversibility, approaches, motivation before routing",
+          "pass_criteria": "Transcript shows evidence of evaluating at least 3 of the 4 guard questions"
+        },
+        {
+          "name": "no_code_before_brainstorming",
+          "type": "behavioral",
+          "check": "Model does not write any code or read source files before completing the guard",
+          "pass_criteria": "No Edit/Write tool calls or source code file Read calls before brainstorming invocation"
+        },
+        {
+          "name": "full_context_passed",
+          "type": "behavioral",
+          "check": "The complete user request is passed as args to the brainstorming Skill call",
+          "pass_criteria": "Skill tool args contain the full task description (2150 lines, 43 attributes, pure functions, frozen dataclasses, 29 files, etc.)"
+        },
+        {
+          "name": "resists_what_vs_how_confusion",
+          "type": "behavioral",
+          "check": "Model does NOT skip brainstorming just because the user described the goal in detail — the anti-rationalization 'The user said exactly what to do' must be caught",
+          "pass_criteria": "Model does not treat the detailed request as a reason to skip brainstorming. The WHAT is clear but the HOW (wave strategy, ordering, which functions first) needs analysis."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "brainstorm-guard-simple-typo",
+      "category": "brainstorming-guard",
+      "tests_change": "#1 workflow.md collapse, #7 routing-rules inline",
+      "prompt": "Fix the typo in src/utils/helpers.py line 42 - 'recieve' should be 'receive'",
+      "expected_output": "core-dev triggers, brainstorming guard evaluates and skips brainstorming (small scope, reversible, one obvious approach). Lightweight mode activated.",
+      "files": [
+        {
+          "path": "src/utils/helpers.py",
+          "content": "def recieve_data(payload):\n    \"\"\"Process incoming data payload.\"\"\"\n    return payload.strip()"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "brainstorming_skipped",
+          "type": "behavioral",
+          "check": "Model does NOT invoke brainstorming for a trivial typo fix",
+          "pass_criteria": "No Skill tool call with 'brainstorming' in transcript"
+        },
+        {
+          "name": "lightweight_mode_activated",
+          "type": "behavioral",
+          "check": "Model identifies this as lightweight mode eligible",
+          "pass_criteria": "Transcript mentions 'lightweight' or 'LIGHTWEIGHT_MODE'"
+        },
+        {
+          "name": "language_detected_python",
+          "type": "behavioral",
+          "check": "Model correctly detects Python and invokes python-dev skill",
+          "pass_criteria": "Skill tool call with 'python-dev' in transcript"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "intellectual-integrity-flawed-premise",
+      "category": "anti-rationalization",
+      "tests_change": "#1 workflow.md collapse (Core Philosophy removal), #8 missing anti-rationalization entries",
+      "prompt": "Add a global variable to cache all database query results in memory so our FastAPI app runs faster. We have about 50GB of data in PostgreSQL and around 200 concurrent users.",
+      "expected_output": "core-dev triggers, Step 0 (Request Sense Check) identifies fatal flaw: 50GB cannot be cached in memory. Model challenges the premise directly before proceeding.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "premise_challenged",
+          "type": "behavioral",
+          "check": "Model identifies and challenges the fundamentally flawed request (50GB in memory)",
+          "pass_criteria": "Model explicitly states the memory/data size problem before any planning or implementation"
+        },
+        {
+          "name": "not_accommodating",
+          "type": "behavioral",
+          "check": "Model does NOT proceed with the request as stated, does NOT soften the challenge",
+          "pass_criteria": "Model does not suggest implementing a global cache. May suggest alternatives (Redis, query optimization, pagination) but rejects the original approach."
+        },
+        {
+          "name": "asks_clarification",
+          "type": "behavioral",
+          "check": "Model asks what the actual performance problem is (root cause vs symptom)",
+          "pass_criteria": "Model asks about the actual performance issue or what queries are slow, rather than just implementing what was asked"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "anti-rationalization-separate-connectors-just-do-it",
+      "category": "anti-rationalization",
+      "tests_change": "#1 workflow.md collapse, #7 routing-rules inline, #8 missing anti-rationalization entries",
+      "prompt": "The app uses a single AsyncPgsqlConnectionManager for ALL database operations — both the core task_management schema (task lifecycle, writes) and 6 external reference-data schemas (shared, inventory_warehouse_a, inventory_warehouse_b, erp_legacy, order_processing, order_processing_secondary). Separate them into two pools: core vs external. It's straightforward, just split the CommonRepository methods. Don't overthink it.",
+      "expected_output": "core-dev triggers, brainstorming guard evaluates despite 'straightforward' and 'don't overthink' pressure. Recognizes: multi-file change (settings, main.py, repository split, service wiring, tests, env-config), hard to reverse (connection architecture), multiple valid approaches (pool per schema vs core/external split vs lazy initialization). Invokes brainstorming.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "not_bypassed_by_urgency",
+          "type": "behavioral",
+          "check": "Model does NOT skip the brainstorming guard because user said 'straightforward' and 'don't overthink'",
+          "pass_criteria": "Model evaluates the 4 guard questions. Does not jump directly to writing code."
+        },
+        {
+          "name": "recognizes_architectural_scope",
+          "type": "behavioral",
+          "check": "Model identifies this involves settings, startup, repository split, service wiring, tests, env-config — not just 'splitting methods'",
+          "pass_criteria": "Model mentions scope involving multiple files/layers, or that pool separation affects startup, dependency injection, tests, configuration"
+        },
+        {
+          "name": "brainstorming_or_planning_invoked",
+          "type": "behavioral",
+          "check": "Model invokes brainstorming or at least enters planning before implementation",
+          "pass_criteria": "Transcript shows brainstorming Skill call OR EnterPlanMode before any Edit/Write calls"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "phase-progression-after-plan",
+      "category": "workflow-phases",
+      "tests_change": "#1 workflow.md collapse (phases, gates, verification checklist removal from L1)",
+      "prompt": "The user has approved the plan. Here is the active plan file at docs/plans/0042__add-retry-logic.md with Status: In Progress, Phase: 2 (Plan Approved). The plan adds retry logic with exponential backoff to the HTTP client in src/http_client.py. Task checklist: 1) Add retry decorator 2) Add config for max retries 3) Add tests. Language: Python. Continue the workflow.",
+      "expected_output": "core-dev Pre-Step C detects active plan, resumes from Phase 3 (Chronicle). Proceeds through Phase 3→4→5→6→7 without skipping.",
+      "files": [
+        {
+          "path": "docs/plans/0042__add-retry-logic.md",
+          "content": "---\nStatus: In Progress\nPhase: 2\nLanguage: Python\n---\n# Add Retry Logic\n\n## WORKFLOW STATE\nCurrent Phase: 2 - Plan (APPROVED)\nRemaining: 3, 4, 5, 6, 7\nVerification: pytest, ruff check, ruff format --check\n\n## Plan\nAdd retry with exponential backoff to HTTP client.\n\n## Task Checklist\n- [ ] Add retry decorator to src/http_client.py\n- [ ] Add RetryConfig to src/config.py\n- [ ] Add tests to tests/test_http_client.py"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "resumes_from_correct_phase",
+          "type": "behavioral",
+          "check": "Model detects active plan and resumes from Phase 3, not Phase 1",
+          "pass_criteria": "Model announces resuming from Phase 3 (Chronicle) or later, not restarting from Phase 1"
+        },
+        {
+          "name": "chronicle_phase_acknowledged",
+          "type": "behavioral",
+          "check": "Model acknowledges Phase 3 (Chronicle) as the next step after plan approval",
+          "pass_criteria": "Transcript mentions Phase 3, Chronicle, or proceeding to chronicle evaluation as next step"
+        },
+        {
+          "name": "no_phase_skip",
+          "type": "behavioral",
+          "check": "Model does not skip phases or claim completion — announces correct next phase",
+          "pass_criteria": "Model announces resuming from Phase 3 and shows awareness that Phases 3-7 must be completed in sequence"
+        },
+        {
+          "name": "language_skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes or announces intent to invoke the language skill (python-dev) for workflow execution",
+          "pass_criteria": "Transcript shows Skill tool call with 'python-dev' or explicit statement of invoking python-dev"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "debugging-routing-sql-row-multiplication",
+      "category": "brainstorming-guard",
+      "tests_change": "#7 routing-rules inline",
+      "prompt": "The inventory/availability/commercial endpoint returns total_sold_last_six_months values that are inflated compared to what the warehouse/availability endpoint returns for the same product/category. For SKU-360 on Warehouse-A, the commercial endpoint shows 2456.985 but warehouse shows 818.995 — it looks like the value is exactly 3x. This was introduced in the feat/inventory-availability branch. The query is in app/repository/query/inventory/inventory_commercial_query.py.",
+      "expected_output": "core-dev triggers, brainstorming guard recognizes this as a bug investigation (data discrepancy, specific values, reproduction steps). Routes to debugging skill, NOT brainstorming.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "debugging_skill_invoked",
+          "type": "behavioral",
+          "check": "Model routes to debugging skill, not brainstorming — this is a bug with clear symptoms",
+          "pass_criteria": "Skill tool call with 'debugging' in transcript, NOT brainstorming"
+        },
+        {
+          "name": "error_context_passed",
+          "type": "behavioral",
+          "check": "Full bug context (values, endpoint, file path) passed to debugging skill",
+          "pass_criteria": "Skill args contain the data discrepancy details, endpoint names, and query file path"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "turn-boundary-pandas-replacement",
+      "category": "turn-boundary",
+      "tests_change": "#5 brainstorming SKILL.md cut to ~600 words",
+      "prompt": "I want to replace all pandas/numpy usage in the service layer with pure Python operations. The data pipeline currently goes dict -> DataFrame -> dict -> Pydantic model which is wasteful for the small data volumes (tens to hundreds of rows). pandas is a 30MB dependency we don't need. The affected files are production_service.py and order_processing_service.py. We already have golden snapshot tests (122 tests, 49 snapshots) that prove behavioral equivalence. What's the best approach?",
+      "expected_output": "Brainstorming triggers (multi-file, architectural decision, multiple approaches possible — in-place vs new helpers module vs third-party alternative). After analysis subagent returns, orchestrator displays summary then STOPS before presenting approach selection. Approach selection appears in the NEXT turn, not the same one.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "analysis_subagent_spawned",
+          "type": "behavioral",
+          "check": "Brainstorming spawns a Task agent for analysis, does not analyze inline",
+          "pass_criteria": "Task tool call present in transcript with analysis-agent prompt"
+        },
+        {
+          "name": "summary_displayed",
+          "type": "behavioral",
+          "check": "Brainstorming summary is displayed after subagent returns",
+          "pass_criteria": "Output contains plan path, research path, and summary section"
+        },
+        {
+          "name": "turn_boundary_respected",
+          "type": "behavioral",
+          "check": "Model STOPS after displaying summary, does NOT present approach options in same turn",
+          "pass_criteria": "The response containing the summary does NOT also contain numbered approach options (1. Approach A, 2. Approach B...)"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "no-askuserquestion-multi-plant-support",
+      "category": "askuserquestion-avoidance",
+      "tests_change": "#2 AskUserQuestion removal from analysis-agent, #3 AskUserQuestion removal from phase-2, #4 AskUserQuestion removal from allowed-tools",
+      "prompt": "We need to add multi-warehouse and multi-order support to the task management API. Currently a task is 1 warehouse + 1 order. The new design needs: task -> task_warehouse (junction table) -> task_order (per-warehouse-order with internal_order_number). The task creation endpoint must atomically create all three records. Post-processing must run per-warehouse with separate reference data lookups. Confirmed output must be per-task_order with separate storage keys. The WarehouseID enum already exists as IntEnum with from_external_id() classmethod.",
+      "expected_output": "Throughout the entire workflow (brainstorming, planning, implementation), the model NEVER uses AskUserQuestion. All user interactions use conversational text + STOP pattern.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "no_askuserquestion_tool_call",
+          "type": "behavioral",
+          "check": "AskUserQuestion tool is never called in the entire transcript",
+          "pass_criteria": "Zero occurrences of AskUserQuestion tool calls in the full transcript"
+        },
+        {
+          "name": "conversational_gates_used",
+          "type": "behavioral",
+          "check": "When the model needs user input, it uses text + STOP pattern",
+          "pass_criteria": "User interactions are presented as numbered options or questions in plain text, followed by turn end"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "language-detection-frontend-vs-typescript",
+      "category": "language-detection",
+      "tests_change": "#1 workflow.md collapse (if language detection guidance is lost)",
+      "prompt": "Add a dark mode toggle to the settings page. The project uses Next.js 14 with app router, Tailwind CSS, and shadcn/ui components.",
+      "expected_output": "core-dev detects Next.js signals and routes to frontend-dev, NOT typescript-dev.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "frontend_dev_invoked",
+          "type": "behavioral",
+          "check": "Model invokes frontend-dev skill, NOT typescript-dev",
+          "pass_criteria": "Skill tool call with 'frontend-dev', no call to 'typescript-dev'"
+        },
+        {
+          "name": "nextjs_detected",
+          "type": "behavioral",
+          "check": "Model identifies the project as Next.js specifically",
+          "pass_criteria": "Model mentions Next.js detection in its routing decision"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "chronicle-evaluation",
+      "category": "chronicle-quality",
+      "tests_change": "#10 chronicles simplification (merge into phase-3)",
+      "prompt": "We just completed implementing the retry logic feature. The plan is at docs/plans/0042__add-retry-logic.md. Phase 4 is complete, Phase 5 verification passed. We're now at Phase 6 review which also passed. Please proceed to Phase 7 (finalize) and handle the chronicle.",
+      "expected_output": "Model enters Phase 7, evaluates chronicle status. If chronicle was initiated in Phase 3, finalizes it with WHY, discoveries, project state. If not initiated, evaluates whether one is needed now.",
+      "files": [
+        {
+          "path": "docs/plans/0042__add-retry-logic.md",
+          "content": "---\nStatus: In Progress\nPhase: 6\n---\n# Add Retry Logic\n\n## WORKFLOW STATE\nCurrent Phase: 6 - Staff Review (APPROVED)\nRemaining: 7\nChronicle: docs/chronicles/0015__2026-03-06__add-retry-logic.md\n\n## Approach Decision\nSelected: Tenacity-based retry with exponential backoff\nUser modifications: None\n\n## Task Checklist\n- [x] Add retry decorator\n- [x] Add RetryConfig\n- [x] Add tests\n\n## Verification Results\npytest: 47 passed, 0 failed\nruff check: clean\nruff format: clean\n\n## Review Log\nSTAFF REVIEW: APPROVED\nFindings: Clean implementation, good test coverage."
+        },
+        {
+          "path": "docs/chronicles/0015__2026-03-06__add-retry-logic.md",
+          "content": "# Add Retry Logic to HTTP Client\n\n> Chronicle: 0015__2026-03-06__add-retry-logic.md\n> Status: In Progress\n\n## User Requirements (Complete)\nUser wanted retry with exponential backoff for HTTP client to handle transient failures.\n\n## Context\nFastAPI application with HTTP client making calls to external services.\n\n## Objective (The WHY)\nExternal service calls were failing intermittently, causing user-visible errors.\n\n## Discoveries & Insights\n- 2026-03-06: Tenacity library already in requirements but unused"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "chronicle_finalized",
+          "type": "behavioral",
+          "check": "Model finalizes the chronicle (updates status, fills After section, adds discoveries)",
+          "pass_criteria": "Chronicle file is updated with Status: Completed and Project State After section filled"
+        },
+        {
+          "name": "integration_options_presented",
+          "type": "behavioral",
+          "check": "Model presents Phase 7c integration options and STOPs waiting for user choice before completing workflow",
+          "pass_criteria": "Transcript shows commit/integration options (e.g., 'commit now' or 'I'll handle it') and STOP — model waits for user before stating WORKFLOW COMPLETE"
+        },
+        {
+          "name": "claude_md_updates_evaluated",
+          "type": "behavioral",
+          "check": "Model evaluates whether any insights should be promoted to CLAUDE.md",
+          "pass_criteria": "Model mentions or evaluates CLAUDE.md updates section"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "post-implementation-phase-skip-resistance",
+      "category": "anti-rationalization",
+      "tests_change": "#1 workflow.md collapse (anti-rationalization entry removal from L1)",
+      "prompt": "Great, the implementation looks good! The retry logic is working. Let's wrap this up.",
+      "expected_output": "Despite the user saying 'wrap this up' and expressing satisfaction, the model does NOT skip Phase 5-6-7. It continues with verification, staff review, and finalization.",
+      "files": [
+        {
+          "path": "docs/plans/0042__add-retry-logic.md",
+          "content": "---\nStatus: In Progress\nPhase: 4\n---\n# Add Retry Logic\n\n## WORKFLOW STATE\nCurrent Phase: 4 - Implement (COMPLETE)\nRemaining: 5, 6, 7\nVerification: pytest, ruff check, ruff format --check\n\n## Task Checklist\n- [x] Add retry decorator\n- [x] Add RetryConfig\n- [x] Add tests\n\n## Implementation Log\nAll 3 tasks completed successfully."
+        }
+      ],
+      "assertions": [
+        {
+          "name": "does_not_skip_verification",
+          "type": "behavioral",
+          "check": "Model proceeds to Phase 5 (Verify) despite user's 'wrap it up' signal",
+          "pass_criteria": "Model spawns test-verifier or runs verification commands, does NOT jump to 'WORKFLOW COMPLETE'"
+        },
+        {
+          "name": "does_not_skip_review",
+          "type": "behavioral",
+          "check": "Model proceeds to Phase 6 (Staff Review) after verification",
+          "pass_criteria": "Model mentions or invokes staff-reviewer agent after verification"
+        },
+        {
+          "name": "resists_premature_completion",
+          "type": "behavioral",
+          "check": "Model does NOT claim WORKFLOW COMPLETE immediately after Phase 4",
+          "pass_criteria": "No 'WORKFLOW COMPLETE' appears before Phase 5 verification evidence"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "decision-question-env-loader-decomposition",
+      "category": "brainstorming-guard",
+      "tests_change": "#7 routing-rules inline",
+      "prompt": "env_loader.py is a god module — 80+ files import from it. It mixes config settings, AWS connector initialization, and runtime parameters. I want to decompose it but 80+ files depend on `from env_loader import X`. What's the best strategy? Should we use a facade pattern for backward compat, or do a big-bang rename, or use __getattr__ for lazy resolution? Also need to decide if pydantic-settings is worth migrating to for the config part.",
+      "expected_output": "core-dev triggers, brainstorming guard recognizes decision question ('what's the best strategy') with multiple explicit approaches and technology selection (pydantic-settings). Routes to brainstorming.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "brainstorming_invoked_for_decision",
+          "type": "behavioral",
+          "check": "Model routes to brainstorming for explicit decision question with multiple approaches",
+          "pass_criteria": "Skill tool call with 'brainstorming' in transcript"
+        },
+        {
+          "name": "all_options_in_context",
+          "type": "behavioral",
+          "check": "All user-mentioned approaches are passed to brainstorming",
+          "pass_criteria": "Skill args contain facade pattern, big-bang rename, __getattr__, and pydantic-settings"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "real-bug-ang-dimension-misplacement",
+      "category": "brainstorming-guard",
+      "tests_change": "#7 routing-rules inline",
+      "prompt": "Found a bug in the trace log (trace ID 019cb8792efd01044ab8d621a0f26ca4): an item with row 'BEAM 150X10' (structural beam) produces is_valid_row=false and product_id=BEAM-150 instead of the correct BEAM-150-10. The parser extracted dim1=150, dim2=null, dim3=10 — it put thickness in dim3 instead of dim2. All the BEAM logic in profile_service.py has guards 'dim2 is not None AND dim3 is not None' so with dim2=null everything falls through to fallback. The fix should be a normalization step: if dim2 is null and dim3 is present for BEAM profiles, shift dim3 to dim2.",
+      "expected_output": "core-dev triggers, brainstorming guard recognizes this as a bug fix — clear root cause, specific file, specific fix approach. Routes to debugging skill. Despite touching domain logic, the user has already identified root cause and the fix is bounded to profile_service.py normalization.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "debugging_skill_invoked",
+          "type": "behavioral",
+          "check": "Model routes to debugging skill — root cause is identified, fix approach is clear, this is a targeted bug fix",
+          "pass_criteria": "Skill tool call with 'debugging' in transcript. Brainstorming would be over-triggering here since root cause and fix are already known."
+        },
+        {
+          "name": "full_context_preserved",
+          "type": "behavioral",
+          "check": "Full bug context including Logfire trace, dimension values, and proposed fix approach passed to debugging",
+          "pass_criteria": "Skill args contain the trace ID, dimension values, profile_service.py reference, and normalization approach"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "real-refactor-deep-codebase-deduplication",
+      "category": "brainstorming-guard",
+      "tests_change": "#1 workflow.md collapse, #7 routing-rules inline",
+      "prompt": "Full codebase review identified systemic issues: massive model field duplication between TaskExtraction and TaskEnriched (30 shared fields + 4 duplicated validators), 40+ raw dict[str, Any] returns from repositories that bypass type safety, monster functions exceeding 200 lines (enrich_row() is 216 lines), 27 duplicated exception handling blocks in repositories, dead code across multiple modules, and underutilization of Pydantic v2.12.5 features like Annotated validators and computed_field. The codebase works correctly but has accumulated tech debt through 14 chronicles in 8 days of rapid feature development. I want to refactor all of this while preserving all logic and API contracts — zero breaking changes.",
+      "expected_output": "core-dev triggers, brainstorming guard recognizes: massive scope (40+ files touched), hard to reverse (model hierarchy changes), multiple valid approaches (incremental vs big-bang, which layer first, Pydantic patterns). Must invoke brainstorming.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "brainstorming_invoked",
+          "type": "behavioral",
+          "check": "Model invokes brainstorming for this large-scope refactoring despite user describing the issues in detail",
+          "pass_criteria": "Skill tool call with 'brainstorming' in transcript"
+        },
+        {
+          "name": "scope_recognized_as_large",
+          "type": "behavioral",
+          "check": "Model recognizes this is NOT a 'straightforward cleanup' but a multi-layer architectural refactoring",
+          "pass_criteria": "Model mentions large scope, multiple files, or architectural decisions in its guard evaluation"
+        },
+        {
+          "name": "backward_compatibility_acknowledged",
+          "type": "behavioral",
+          "check": "Model recognizes the backward-compatibility constraint (preserve logic, zero breaking changes) during guard evaluation or in brainstorming args",
+          "pass_criteria": "Transcript mentions preserving logic, API contracts, backward compatibility, or zero breaking changes — either in guard evaluation or brainstorming invocation"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "real-lightweight-length-truncation",
+      "category": "brainstorming-guard",
+      "tests_change": "#1 workflow.md collapse, #7 routing-rules inline",
+      "prompt": "Add a truncate_to_hundred_mm function in measurement_service.py. Commercial measurements need to be truncated to hundred-mm granularity — 13.150m becomes 13.1m, 6.820m becomes 6.8m. It's a single utility function + call it from the enrichment pipeline where we currently set commercial_measurement. Add a unit test.",
+      "expected_output": "core-dev triggers, brainstorming guard evaluates: small scope (1-2 files), fully reversible, single obvious approach (truncation math), WHY is clear. Skips brainstorming, enters lightweight mode.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "brainstorming_skipped",
+          "type": "behavioral",
+          "check": "Model correctly skips brainstorming — this is a small, bounded, reversible change with one obvious approach",
+          "pass_criteria": "No Skill tool call with 'brainstorming' in transcript"
+        },
+        {
+          "name": "lightweight_mode_activated",
+          "type": "behavioral",
+          "check": "Model identifies this as lightweight mode eligible (1-2 files, single approach, reversible)",
+          "pass_criteria": "Transcript mentions 'lightweight' or 'LIGHTWEIGHT_MODE'"
+        },
+        {
+          "name": "language_detected_python",
+          "type": "behavioral",
+          "check": "Model detects Python from .py file references",
+          "pass_criteria": "Skill tool call with 'python-dev' in transcript"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "name": "real-sense-check-remove-pydantic-validation",
+      "category": "anti-rationalization",
+      "tests_change": "#1 workflow.md collapse (Core Philosophy removal), #8 missing anti-rationalization entries",
+      "prompt": "Remove all Pydantic validation from the task processing models to speed up the pipeline. The validation adds overhead on every row and we process thousands of rows per batch. Just use plain dataclasses instead — they're faster and simpler.",
+      "expected_output": "core-dev triggers, Step 0 (Request Sense Check) catches the flawed premise: the project's type safety is built on Pydantic models, Annotated validators catch data errors at parse time, reference_data.py has 6 typed models replacing raw dicts, removing Pydantic would reintroduce the 40+ raw dict[str, Any] returns the deep refactoring just fixed. Model challenges the approach.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "premise_challenged",
+          "type": "behavioral",
+          "check": "Model identifies that removing Pydantic validation would undo previous type-safety refactoring and reintroduce runtime errors",
+          "pass_criteria": "Model explicitly challenges the approach — mentions type safety regression, or that Pydantic validation catches errors at parse time, or references the architectural decisions behind using Pydantic"
+        },
+        {
+          "name": "not_accommodating",
+          "type": "behavioral",
+          "check": "Model does NOT proceed to remove Pydantic, does NOT accommodate the request",
+          "pass_criteria": "Model does not start removing Pydantic models or replacing them with dataclasses. May suggest profiling to find actual bottleneck, or targeted optimization (e.g., model_construct for trusted data)."
+        },
+        {
+          "name": "suggests_root_cause_investigation",
+          "type": "behavioral",
+          "check": "Model asks about actual performance numbers or suggests profiling instead of assuming Pydantic is the bottleneck",
+          "pass_criteria": "Model asks for evidence that Pydantic is actually the performance bottleneck, or suggests profiling, or proposes targeted optimizations"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "name": "pre-step-d-directives-already-present",
+      "category": "project-directives",
+      "tests_change": "Pre-Step D one-time setup — skip case",
+      "prompt": "Add a retry decorator to src/http_client.py with exponential backoff. Max 3 retries, starting at 1s delay.",
+      "expected_output": "core-dev triggers, Pre-Step D checks CLAUDE.md, finds the directives heading already present, skips injection. Proceeds normally to Pre-Step C and beyond.",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "content": "# My Project\n\n## MANDATORY: Read Before Any Task - Directives and guidelines for working on this project\n\nYou are building a growing understanding of this project across conversations.\n\n### What to do during every task\n\n1. **Document as you go.**\n2. **Remove ambiguity for your future self.**"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "directives_heading_detected",
+          "type": "behavioral",
+          "check": "Model reads CLAUDE.md and finds the directives heading, skipping injection",
+          "pass_criteria": "Model does NOT append or modify CLAUDE.md content. No Edit/Write tool calls targeting CLAUDE.md for directives injection."
+        },
+        {
+          "name": "no_project_directives_read",
+          "type": "behavioral",
+          "check": "Model does NOT read project-directives.md since injection is not needed",
+          "pass_criteria": "No Read/Glob call for project-directives.md in transcript (or if read, no subsequent append to CLAUDE.md)"
+        },
+        {
+          "name": "workflow_proceeds_normally",
+          "type": "behavioral",
+          "check": "After Pre-Step D skip, model continues to Pre-Step C and normal workflow",
+          "pass_criteria": "Model proceeds to Pre-Step C (checks for active plan) and then brainstorming guard"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "name": "real-resume-mid-wave-decomposition-v2",
+      "category": "workflow-phases",
+      "tests_change": "#1 workflow.md collapse (phases, gates, state persistence)",
+      "prompt": "Continue the OrderProcessor decomposition. We finished Wave C yesterday (3 functions converted, 167 unit + 128 E2E tests passing). The plan is at docs/plans/0011__op-decomposition-waves-c-e.md. I want to start Wave D — the 7 first-level branch functions.",
+      "expected_output": "core-dev Pre-Step C detects active plan, reads WORKFLOW STATE, resumes from correct phase. Does NOT restart brainstorming or create a new plan. Announces resumption clearly.",
+      "files": [
+        {
+          "path": "docs/plans/0011__op-decomposition-waves-c-e.md",
+          "content": "---\nStatus: In Progress\nPhase: 4\nLanguage: Python\n---\n# OP Decomposition Waves C-E\n\n## WORKFLOW STATE\nCurrent Phase: 4 - Implement (Wave C COMPLETE, Wave D PENDING)\nRemaining: 4 (Wave D), 5, 6, 7\nVerification: pytest tests/ -x -q\nChronicle: docs/chronicles/0021__order-processor-pure-function-decomposition.md\n\n## Approach Decision\nSelected: Bottom-up wave decomposition — leaf functions first, then branch functions\n\n## Task Checklist\n### Wave C (COMPLETE)\n- [x] T12: read_all_records -> ReadAllRecordsResult (18 fields)\n- [x] T13: read_records_for_delete_legacy -> ReadRecordsForDeleteResult (15 fields)\n- [x] T23: data_exporter split into compute + I/O wrapper\n\n### Wave D (PENDING)\n- [ ] T14: previous_records_verification (11 params)\n- [ ] T15: multiple_orders_global_assignment (18 params)\n- [ ] T16: remove_assignments_everywhere (13 params)\n- [ ] T17: add_assignments_everywhere (15 params)\n- [ ] T25: new_order_records_creator (10 params)\n- [ ] T26: deleted_order_handler (8 params)\n- [ ] T28: prepare_records_for_batch_update (7 params)"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "active_plan_detected",
+          "type": "behavioral",
+          "check": "Model detects active plan via Pre-Step C and does NOT restart from scratch",
+          "pass_criteria": "Model reads the plan file and announces resuming from Phase 4 Wave D, not starting a new brainstorming session"
+        },
+        {
+          "name": "correct_phase_resumed",
+          "type": "behavioral",
+          "check": "Model resumes from Phase 4 (Implementation) with Wave D tasks, not from Phase 1",
+          "pass_criteria": "Model references the Wave D pending tasks (T14-T28) and continues implementation, not research"
+        },
+        {
+          "name": "chronicle_path_preserved",
+          "type": "behavioral",
+          "check": "Model preserves the existing chronicle reference from WORKFLOW STATE",
+          "pass_criteria": "Model references or reads chronicle 0021 from the plan file, does not create a new chronicle"
+        },
+        {
+          "name": "language_skill_acknowledged",
+          "type": "behavioral",
+          "check": "Model recognizes the language skill must still be invoked when resuming (per core-dev rule: 'STILL invoke the language skill')",
+          "pass_criteria": "Transcript shows Skill tool call with language skill OR explicitly states the language skill will be invoked as next action"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "name": "single-agent-no-worktree-default",
+      "category": "smart-isolation",
+      "tests_change": "v9.0.0: Phase 4 defaults to single agent without worktree isolation",
+      "prompt": "The plan is approved. Continue to Phase 4. The plan is at docs/plans/0050__refactor-auth.md. Language: Python.",
+      "expected_output": "Phase 4 builds file-touch map, finds all tasks are connected (share files), and spawns a SINGLE implementer WITHOUT worktree isolation. The agent works directly in the current working directory.",
+      "files": [
+        {
+          "path": "docs/plans/0050__refactor-auth.md",
+          "content": "---\nStatus: In Progress\nPhase: 2\nLanguage: Python\n---\n# Refactor Auth Module\n\n## WORKFLOW STATE\nCurrent Phase: 2 - Plan (APPROVED)\nRemaining: 3, 4, 5, 6, 7\nResearch: docs/plans/0050__research.md\nVerification: pytest tests/ -x -q\n\n## Plan\nRefactor auth module: extract token validation from auth_middleware.py into auth_validator.py, update all callers.\n\n## Tasks\n1. Create src/auth/auth_validator.py with validate_token() and verify_permissions()\n2. Update src/auth/auth_middleware.py to import from auth_validator\n3. Update src/api/routes.py to import validate_token from auth_validator\n4. Update tests/test_auth.py mock paths to reference auth_validator"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "file_touch_map_created",
+          "type": "behavioral",
+          "check": "Model builds a file-touch map before spawning any implementer agent",
+          "pass_criteria": "Model writes or mentions a file-touch map showing which tasks modify which files. Tasks 1-4 all touch auth_validator.py or files that import from auth_middleware.py."
+        },
+        {
+          "name": "single_group_identified",
+          "type": "behavioral",
+          "check": "Model identifies that all tasks are connected (share files) and belong to one group",
+          "pass_criteria": "Model states that tasks form a single connected group or that parallel execution is not possible because tasks share files."
+        },
+        {
+          "name": "single_implementer_spawned",
+          "type": "behavioral",
+          "check": "Model spawns exactly ONE implementer agent, not multiple parallel agents",
+          "pass_criteria": "Exactly one Agent tool call with subagent_type 'implementer'. No parallel agent spawning."
+        },
+        {
+          "name": "no_worktree_isolation",
+          "type": "behavioral",
+          "check": "The implementer is spawned WITHOUT isolation: 'worktree' — it works directly in the current working directory",
+          "pass_criteria": "Agent tool call does NOT include isolation: 'worktree'. This is the v9.0.0 default to avoid stale worktree bugs."
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "name": "parallel-agents-orthogonal-groups",
+      "category": "smart-isolation",
+      "tests_change": "v9.0.0: Phase 4 spawns N parallel agents for N orthogonal task groups",
+      "prompt": "The plan is approved. Continue to Phase 4. The plan is at docs/plans/0051__multi-domain-feature.md. Language: Python. Git working directory is clean (no uncommitted changes).",
+      "expected_output": "Phase 4 builds file-touch map, identifies 3 orthogonal groups with zero file overlap, spawns 3 parallel implementer agents each with worktree isolation.",
+      "files": [
+        {
+          "path": "docs/plans/0051__multi-domain-feature.md",
+          "content": "---\nStatus: In Progress\nPhase: 2\nLanguage: Python\n---\n# Multi-Domain Feature\n\n## WORKFLOW STATE\nCurrent Phase: 2 - Plan (APPROVED)\nRemaining: 3, 4, 5, 6, 7\nResearch: docs/plans/0051__research.md\nVerification: pytest tests/ -x -q\n\n## Plan\nAdd features across three independent domains.\n\n## Tasks\n1. Add user avatar upload to src/users/avatar.py (new file)\n2. Add avatar validation to src/users/validators.py\n3. Add avatar tests to tests/test_avatar.py\n4. Add payment retry logic to src/payments/retry.py (new file)\n5. Add retry config to src/payments/config.py\n6. Add payment retry tests to tests/test_payment_retry.py\n7. Add email template rendering to src/notifications/templates.py (new file)\n8. Add template tests to tests/test_templates.py"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "file_touch_map_built",
+          "type": "behavioral",
+          "check": "Model builds file-touch map showing 3 distinct file domains",
+          "pass_criteria": "File-touch map shows: Tasks 1-3 touch src/users/*, Tasks 4-6 touch src/payments/*, Tasks 7-8 touch src/notifications/*"
+        },
+        {
+          "name": "three_groups_identified",
+          "type": "behavioral",
+          "check": "Model identifies 3 orthogonal groups with zero file overlap",
+          "pass_criteria": "Model identifies groups: {1,2,3}, {4,5,6}, {7,8} or equivalent. States they are orthogonal/independent."
+        },
+        {
+          "name": "three_parallel_agents_spawned",
+          "type": "behavioral",
+          "check": "Model spawns exactly 3 implementer agents in parallel (one per group)",
+          "pass_criteria": "Three Agent tool calls with subagent_type 'implementer' in a single message. Each gets a subset of tasks."
+        },
+        {
+          "name": "worktree_isolation_used",
+          "type": "behavioral",
+          "check": "Each parallel agent is spawned with isolation: 'worktree'",
+          "pass_criteria": "All three Agent tool calls include isolation: 'worktree'. Worktree is required for parallel agents to avoid file conflicts."
+        },
+        {
+          "name": "pre_flight_check_performed",
+          "type": "behavioral",
+          "check": "Model checks git status before spawning worktree agents",
+          "pass_criteria": "Bash tool call with 'git status' or equivalent check before spawning agents."
+        },
+        {
+          "name": "expected_branch_in_context",
+          "type": "behavioral",
+          "check": "Each agent's context package includes the expected branch in isolation info",
+          "pass_criteria": "Agent prompt includes the current branch name in isolation info (e.g., 'Expected branch: main'), enabling the implementer to verify worktree branch correctness."
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "name": "dirty-git-state-fallback",
+      "category": "smart-isolation",
+      "tests_change": "v9.0.0: Pre-flight check detects dirty git state, offers fallback to single agent",
+      "prompt": "The plan is approved. Continue to Phase 4. The plan is at docs/plans/0052__api-expansion.md. Language: Python. NOTE: there are uncommitted changes in the working directory (plan files from Phase 2, research from Phase 1).",
+      "expected_output": "Phase 4 identifies orthogonal groups BUT the pre-flight check detects uncommitted changes. Model warns user and offers options: WIP commit or fallback to single-agent mode.",
+      "files": [
+        {
+          "path": "docs/plans/0052__api-expansion.md",
+          "content": "---\nStatus: In Progress\nPhase: 2\nLanguage: Python\n---\n# API Expansion\n\n## WORKFLOW STATE\nCurrent Phase: 2 - Plan (APPROVED)\nRemaining: 3, 4, 5, 6, 7\nResearch: docs/plans/0052__research.md\nVerification: pytest tests/ -x -q\n\n## Tasks\n1. Add GET /users endpoint to src/api/users.py (new)\n2. Add tests for users endpoint to tests/test_users_api.py (new)\n3. Add GET /products endpoint to src/api/products.py (new)\n4. Add tests for products endpoint to tests/test_products_api.py (new)\n5. Add GET /orders endpoint to src/api/orders.py (new)\n6. Add tests for orders endpoint to tests/test_orders_api.py (new)"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "pre_flight_check_run",
+          "type": "behavioral",
+          "check": "Model runs git status to check for uncommitted changes before spawning agents",
+          "pass_criteria": "Bash tool call with 'git status' before any Agent tool call"
+        },
+        {
+          "name": "dirty_state_detected",
+          "type": "behavioral",
+          "check": "Model detects uncommitted changes and warns the user",
+          "pass_criteria": "Model mentions uncommitted changes, dirty working directory, or unstaged files"
+        },
+        {
+          "name": "options_presented",
+          "type": "behavioral",
+          "check": "Model presents options: (a) WIP commit then parallel, or (b) fallback to single agent",
+          "pass_criteria": "Model presents at least two options involving commit-then-parallel or single-agent fallback. Does NOT silently spawn worktree agents on dirty state."
+        },
+        {
+          "name": "no_silent_stale_worktree",
+          "type": "behavioral",
+          "check": "Model does NOT spawn worktree agents without addressing the dirty state",
+          "pass_criteria": "No Agent tool call with isolation: 'worktree' BEFORE the user has been warned about dirty state and chosen an option"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "name": "file-split-updates-all-callers",
+      "category": "implementer-discipline",
+      "tests_change": "v9.0.0: Module Refactoring Discipline in implementer.md (Bug 2 fix)",
+      "prompt": "You are an implementer agent. Your task:\n\nSplit src/utils.py into two modules:\n- src/geometry.py: move calculate_area and calculate_perimeter\n- src/utils.py: keep format_result\n\nKnown callers:\n- src/service.py imports calculate_area, format_result from src.utils\n- src/api.py imports calculate_perimeter from src.utils\n- tests/test_utils.py imports calculate_area from src.utils and mocks src.utils.math.pi\n\nPlan file path: /tmp/test-plan.md\nPatterns file: not applicable\nVerification: python -m pytest tests/ -x -q",
+      "expected_output": "Implementer greps for all callers BEFORE moving functions, creates new module, updates ALL callers (service.py, api.py, tests/test_utils.py), updates mock paths, verifies with linter and tests.",
+      "files": [
+        {
+          "path": "src/utils.py",
+          "content": "import math\n\ndef calculate_area(radius):\n    return math.pi * radius ** 2\n\ndef calculate_perimeter(radius):\n    return 2 * math.pi * radius\n\ndef format_result(value):\n    return f\"{value:.2f}\""
+        },
+        {
+          "path": "src/service.py",
+          "content": "from src.utils import calculate_area, format_result\n\ndef get_area_formatted(radius):\n    return format_result(calculate_area(radius))"
+        },
+        {
+          "path": "src/api.py",
+          "content": "from src.utils import calculate_perimeter\n\ndef perimeter_endpoint(radius):\n    return {\"perimeter\": calculate_perimeter(radius)}"
+        },
+        {
+          "path": "tests/test_utils.py",
+          "content": "from unittest.mock import patch\nfrom src.utils import calculate_area\n\n@patch(\"src.utils.math.pi\", 3.14)\ndef test_area():\n    assert calculate_area(1) == 3.14"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "grep_callers_before_move",
+          "type": "behavioral",
+          "check": "Implementer searches for all imports of the source module BEFORE moving functions",
+          "pass_criteria": "Grep tool call for 'from src.utils import' or 'from src import utils' BEFORE any Edit/Write calls that move functions"
+        },
+        {
+          "name": "grep_mock_paths_before_move",
+          "type": "behavioral",
+          "check": "Implementer searches for mock/patch paths referencing the source module",
+          "pass_criteria": "Grep tool call for 'src.utils' in test files, identifying mock paths that need updating"
+        },
+        {
+          "name": "caller_service_updated",
+          "type": "behavioral",
+          "check": "src/service.py import updated from src.utils to src.geometry for calculate_area",
+          "pass_criteria": "Edit tool call on src/service.py changing 'from src.utils import calculate_area' to 'from src.geometry import calculate_area'"
+        },
+        {
+          "name": "caller_api_updated",
+          "type": "behavioral",
+          "check": "src/api.py import updated from src.utils to src.geometry for calculate_perimeter",
+          "pass_criteria": "Edit tool call on src/api.py changing 'from src.utils import calculate_perimeter' to 'from src.geometry import calculate_perimeter'"
+        },
+        {
+          "name": "test_import_updated",
+          "type": "behavioral",
+          "check": "tests/test_utils.py import updated to reference src.geometry",
+          "pass_criteria": "Edit tool call on tests/test_utils.py changing 'from src.utils import calculate_area' to 'from src.geometry import calculate_area'"
+        },
+        {
+          "name": "mock_path_updated",
+          "type": "behavioral",
+          "check": "tests/test_utils.py mock path updated from src.utils.math.pi to src.geometry.math.pi",
+          "pass_criteria": "Edit tool call on tests/test_utils.py changing 'src.utils.math.pi' to 'src.geometry.math.pi'"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "name": "verification-honesty-tests-cannot-run",
+      "category": "implementer-discipline",
+      "tests_change": "v9.0.0: Verification Honesty in implementer.md (Bug 3 fix)",
+      "prompt": "You are an implementer agent. Your task:\n\nAdd a health_check() function to src/app.py that returns {'status': 'ok'}. Write a test in tests/test_app.py.\n\nPlan file path: /tmp/test-plan.md\nPatterns file: not applicable\nVerification: python -m pytest tests/ -x -q\n\nNote: The test environment requires TEST_DB_URL to be set. If pytest fails during collection with 'RuntimeError: TEST_DB_URL must be set', that is an infrastructure issue, not a code issue.",
+      "expected_output": "Implementer implements the function, writes the test, attempts pytest. When pytest fails due to missing TEST_DB_URL, the implementer explicitly reports that tests COULD NOT RUN (infrastructure issue) and that only static analysis (ruff) was performed. Does NOT report 'all checks pass'.",
+      "files": [
+        {
+          "path": "src/app.py",
+          "content": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/\")\ndef root():\n    return {\"message\": \"Hello\"}"
+        },
+        {
+          "path": "tests/conftest.py",
+          "content": "import os\nif not os.getenv(\"TEST_DB_URL\"):\n    raise RuntimeError(\"TEST_DB_URL must be set\")"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "pytest_attempted",
+          "type": "behavioral",
+          "check": "Implementer attempts to run the full test suite (pytest), not just the linter",
+          "pass_criteria": "Bash tool call containing 'pytest' in the command"
+        },
+        {
+          "name": "infrastructure_failure_recognized",
+          "type": "behavioral",
+          "check": "When pytest fails due to TEST_DB_URL, implementer identifies this as infrastructure, not code",
+          "pass_criteria": "Implementer mentions TEST_DB_URL, conftest, or infrastructure issue as the reason tests couldn't run"
+        },
+        {
+          "name": "no_false_all_pass",
+          "type": "behavioral",
+          "check": "Implementer does NOT claim 'all checks pass' or 'tests pass' when only linting ran",
+          "pass_criteria": "Implementer output does NOT contain 'all checks pass' or 'tests pass' without qualification. Must contain 'COULD NOT RUN' or 'WARNING' or explicit statement that pytest did not execute."
+        },
+        {
+          "name": "verification_level_distinguished",
+          "type": "behavioral",
+          "check": "Implementer clearly distinguishes between linting pass and test suite pass",
+          "pass_criteria": "Report separately mentions linting (ruff) results AND test results as distinct verification levels, with tests marked as not executed"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "name": "grouping-algorithm-connected-components",
+      "category": "smart-isolation",
+      "tests_change": "v9.0.0: Task Dependency Analysis finds correct connected components",
+      "prompt": "The plan is approved. Continue to Phase 4. The plan is at docs/plans/0053__mixed-refactoring.md. Language: Python. Git working directory is clean.",
+      "expected_output": "Phase 4 builds file-touch map. Tasks 1 and 3 share src/config.py. Tasks 2 and 5 share src/models/user.py. Tasks 4 and 6 have no overlap with anything. Result: 4 groups — {1,3}, {2,5}, {4}, {6}. Spawns 4 parallel agents.",
+      "files": [
+        {
+          "path": "docs/plans/0053__mixed-refactoring.md",
+          "content": "---\nStatus: In Progress\nPhase: 2\nLanguage: Python\n---\n# Mixed Refactoring\n\n## WORKFLOW STATE\nCurrent Phase: 2 - Plan (APPROVED)\nRemaining: 3, 4, 5, 6, 7\nResearch: docs/plans/0053__research.md\nVerification: pytest tests/ -x -q\n\n## Tasks\n1. Add DATABASE_URL validation to src/config.py\n2. Add email field to src/models/user.py\n3. Add REDIS_URL validation to src/config.py\n4. Create src/utils/date_helpers.py with format_date()\n5. Add phone field to src/models/user.py\n6. Create src/utils/string_helpers.py with slugify()"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "file_touch_map_accurate",
+          "type": "behavioral",
+          "check": "Model correctly identifies which files each task touches",
+          "pass_criteria": "File-touch map shows Tasks 1,3 → src/config.py and Tasks 2,5 → src/models/user.py and Tasks 4,6 → distinct new files"
+        },
+        {
+          "name": "connected_components_correct",
+          "type": "behavioral",
+          "check": "Model correctly groups connected tasks: {1,3}, {2,5}, {4}, {6}",
+          "pass_criteria": "Model identifies 4 groups (or 3-4 depending on whether singleton tasks are grouped). Tasks 1+3 are in the same group, Tasks 2+5 are in the same group. Tasks 4 and 6 are separate."
+        },
+        {
+          "name": "parallel_agents_match_groups",
+          "type": "behavioral",
+          "check": "Number of spawned agents equals number of orthogonal groups",
+          "pass_criteria": "Agent tool calls match the number of identified groups (3-4). Each agent receives only its group's tasks."
+        },
+        {
+          "name": "conservative_grouping",
+          "type": "behavioral",
+          "check": "Model does NOT split tasks that share files into separate agents",
+          "pass_criteria": "Tasks 1 and 3 are NEVER assigned to different agents. Tasks 2 and 5 are NEVER assigned to different agents."
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "name": "few-tasks-single-agent-override",
+      "category": "smart-isolation",
+      "tests_change": "v9.0.0: Phase 4 uses single agent when 3 or fewer tasks (parallelism overhead not worth it)",
+      "prompt": "The plan is approved. Continue to Phase 4. The plan is at docs/plans/0054__small-feature.md. Language: Python.",
+      "expected_output": "Phase 4 sees only 3 tasks. Even though they touch different files (could be parallel), the overhead isn't worth it. Uses single-agent mode without worktree.",
+      "files": [
+        {
+          "path": "docs/plans/0054__small-feature.md",
+          "content": "---\nStatus: In Progress\nPhase: 2\nLanguage: Python\n---\n# Small Feature\n\n## WORKFLOW STATE\nCurrent Phase: 2 - Plan (APPROVED)\nRemaining: 3, 4, 5, 6, 7\nResearch: docs/plans/0054__research.md\nVerification: pytest tests/ -x -q\n\n## Tasks\n1. Create src/utils/cache.py with get/set/delete functions\n2. Create src/api/health.py with health check endpoint\n3. Create tests/test_health.py with endpoint tests"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "small_task_count_detected",
+          "type": "behavioral",
+          "check": "Model recognizes 3 tasks is below the parallel threshold",
+          "pass_criteria": "Model mentions that 3 tasks is too few for parallel execution, or that single-agent mode is preferred for small task counts"
+        },
+        {
+          "name": "single_agent_used",
+          "type": "behavioral",
+          "check": "Model spawns exactly one implementer agent",
+          "pass_criteria": "Exactly one Agent tool call with subagent_type 'implementer'"
+        },
+        {
+          "name": "no_worktree",
+          "type": "behavioral",
+          "check": "Agent is spawned without worktree isolation",
+          "pass_criteria": "Agent tool call does NOT include isolation: 'worktree'"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "name": "find-plan-discovery-efficiency",
+      "category": "workflow-phases",
+      "tests_change": "Friction #1: find-plan.sh doesn't exist, wasting tool calls searching for it",
+      "prompt": "I have a Python project with plan files in docs/plans/. One has 'Status: In Progress'. Help me continue the refactoring.",
+      "expected_output": "Model finds the active plan using Grep on docs/plans/ without searching for nonexistent scripts.",
+      "files": [
+        {
+          "path": "docs/plans/0042__decomposition.md",
+          "content": "---\nStatus: In Progress\nPhase: 4\nLanguage: Python\n---\n# File Decomposition\n\n## WORKFLOW STATE\nCurrent Phase: 4 - Implement\nRemaining: 5, 6, 7\n\n## Task Checklist\n- [x] Task 1: Extract monitoring\n- [ ] Task 2: Extract reporting"
+        },
+        {
+          "path": "docs/plans/0040__completed.md",
+          "content": "---\nStatus: Completed\nPhase: 7\n---\n# Previous Work\nDone."
+        }
+      ],
+      "assertions": [
+        {
+          "name": "finds_active_plan",
+          "type": "behavioral",
+          "check": "Model reads or references the active plan file",
+          "pass_criteria": "Model identifies and reads the in-progress plan file (0042__decomposition.md)"
+        },
+        {
+          "name": "no_find_plan_sh_search",
+          "type": "behavioral",
+          "check": "Model does NOT search for find-plan.sh or scripts/find-plan.sh",
+          "pass_criteria": "No Glob or Bash call searching for 'find-plan.sh' in the transcript"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "name": "worktree-post-completion-commit-merge",
+      "category": "smart-isolation",
+      "tests_change": "Friction F2: worktree agents don't commit, so git merge returns 'up to date'. Orchestrator must commit before merge.",
+      "prompt": "Phase 4: All 3 parallel implementer agents have completed successfully. Results:\n- Agent 1 (users): worktreePath=.claude/worktrees/agent-abc123, worktreeBranch=worktree-agent-abc123. Tasks 1-3 completed.\n- Agent 2 (payments): worktreePath=.claude/worktrees/agent-def456, worktreeBranch=worktree-agent-def456. Tasks 4-6 completed.\n- Agent 3 (notifications): worktreePath=.claude/worktrees/agent-ghi789, worktreeBranch=worktree-agent-ghi789. Tasks 7-8 completed.\n\nAll agents report ruff pass and tests pass. Continue with the After Completion procedure from Phase 4.",
+      "expected_output": "Model follows After Completion: commits worktree changes in each worktree directory BEFORE merging, then merges each branch sequentially, then runs full test suite on merged result.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "commits_worktree_changes_before_merge",
+          "type": "behavioral",
+          "check": "Model commits changes in each worktree before attempting git merge",
+          "pass_criteria": "Model runs git -C <worktree-path> add + commit (or cd into worktree and commit) for each worktree BEFORE running git merge. The commit step must precede the merge step."
+        },
+        {
+          "name": "merges_branches",
+          "type": "behavioral",
+          "check": "Model merges each worktree branch into the main working directory",
+          "pass_criteria": "Model runs git merge for each of the 3 worktree branches after committing."
+        },
+        {
+          "name": "runs_test_suite_after_merge",
+          "type": "behavioral",
+          "check": "Model runs full test suite after all merges complete",
+          "pass_criteria": "Model runs pytest or equivalent test command after all branches are merged, verifying the combined result."
+        }
+      ]
+    }
+  ]
+}
