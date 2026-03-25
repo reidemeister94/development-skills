@@ -26,7 +26,7 @@
 
 ## Installation
 
-**Step 1** — Add this repository as a marketplace:
+**Step 1** — Add this repository as a plugin marketplace:
 
 ```bash
 claude plugin marketplace add reidemeister94/development-skills
@@ -35,12 +35,12 @@ claude plugin marketplace add reidemeister94/development-skills
 **Step 2** — Install the plugin:
 
 ```bash
-claude plugin install development-skills
+claude plugin install development-skills@development-skills
 ```
 
 That's it. The plugin activates automatically on any coding task. No configuration needed.
 
-> **Prerequisite:** The [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin must be enabled:
+> **Prerequisite:** The [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin is required for regression testing (`/eval-regression`). Install it with:
 >
 > ```bash
 > claude plugin install skill-creator@claude-plugins-official
