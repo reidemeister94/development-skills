@@ -26,19 +26,19 @@ The problem isn't capability. It's *discipline*. On a good day, Claude plans car
 
 As Anthropic's own [2026 Agentic Coding Trends Report](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf) concluded: success comes from treating agentic development as a *"workflow design problem, not a tool adoption problem."*
 
+<p align="center">
+  <img src="docs/images/before-after.svg" alt="Without vs With development-skills" width="100%"/>
+</p>
+
 ---
 
 ## How It Works
 
 When you give Claude Code a development task with this plugin installed, it doesn't just start writing code. Instead, it follows a mandatory gated workflow:
 
-```
-Brainstorming Guard ─→ Research ─→ Plan ─→ Chronicle ─→ Implement ─→ Verify ─→ Staff Review ─→ Finalize
-         │                                                    │            │           │
-    Should we even                                     TDD cycles    test-verifier  staff-reviewer
-    code this yet?                                    (Red→Green→     subagent      subagent
-                                                       Refactor)
-```
+<p align="center">
+  <img src="docs/images/workflow-phases.svg" alt="7-Phase Development Workflow" width="100%"/>
+</p>
 
 Each phase is a **gate** — the agent cannot proceed until the gate conditions are met. No skipping. No combining. No "this is trivial, I'll just code it."
 
@@ -88,6 +88,10 @@ The plugin orchestrates three specialized subagents, each with a defined role an
 | **Test Verifier** | Sonnet | Runs verification commands, returns structured pass/fail with failure details. |
 
 This mirrors how Anthropic's own engineering blog describes [effective sub-agent architectures](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents): *"Specialized sub-agents handle focused tasks with clean context windows. Main agent coordinates high-level planning; subagents return condensed summaries despite exploring extensively."*
+
+<p align="center">
+  <img src="docs/images/subagent-architecture.svg" alt="Subagent Orchestration" width="100%"/>
+</p>
 
 Cherny's own workflow validates the approach — he [reports](https://venturebeat.com/technology/the-creator-of-claude-code-just-revealed-his-workflow-and-developers-are) that giving the agent a way to verify its own work *"improves the quality of the final result by a factor of 2-3x."*
 
@@ -279,6 +283,10 @@ Each language skill provides only language-specific config. No duplication acros
 ## Context Engineering in Practice
 
 This plugin implements many of the patterns described in Anthropic's [Effective Context Engineering for AI Agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) and validated by [Manus](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) across millions of production users:
+
+<p align="center">
+  <img src="docs/images/context-engineering.svg" alt="Context Engineering: Progressive Disclosure" width="100%"/>
+</p>
 
 | Principle | How development-skills Implements It |
 |---|---|
