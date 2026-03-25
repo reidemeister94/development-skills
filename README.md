@@ -1,6 +1,28 @@
-# development-skills
+<p align="center">
+  <img src="docs/images/social-preview.svg" alt="development-skills" width="100%"/>
+</p>
 
-**A Claude Code plugin that turns your AI agent into a disciplined software engineer.**
+<p align="center">
+  <a href="https://github.com/reidemeister94/development-skills/releases"><img src="https://img.shields.io/github/v/release/reidemeister94/development-skills?style=flat-square&color=blue" alt="Release"/></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/reidemeister94/development-skills?style=flat-square" alt="License"/></a>
+  <a href="https://github.com/reidemeister94/development-skills/stargazers"><img src="https://img.shields.io/github/stars/reidemeister94/development-skills?style=flat-square&color=yellow" alt="Stars"/></a>
+  <a href="https://github.com/reidemeister94/development-skills/issues"><img src="https://img.shields.io/github/issues/reidemeister94/development-skills?style=flat-square" alt="Issues"/></a>
+  <img src="https://img.shields.io/badge/Claude_Code-plugin-7c3aed?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48L3N2Zz4=" alt="Claude Code"/>
+</p>
+
+<p align="center">
+  <b>A Claude Code plugin that turns your AI agent into a disciplined software engineer.</b>
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick Start</a> &middot;
+  <a href="#how-it-works">How It Works</a> &middot;
+  <a href="#17-skills-5-languages">17 Skills</a> &middot;
+  <a href="#design-philosophy">Philosophy</a> &middot;
+  <a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54">Blog Post</a>
+</p>
+
+---
 
 Your AI agent can write code. But can it *follow a process*? Can it research before planning, plan before coding, test before shipping, and review before merging — every single time, without you reminding it?
 
@@ -9,6 +31,10 @@ Your AI agent can write code. But can it *follow a process*? Can it research bef
 > *"Claude Code gives you a fully stocked workshop. But it doesn't force you to measure twice before cutting."*
 >
 > — [How I Taught Agents to Follow a Process, Not Just Write Code](https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54)
+
+<p align="center">
+  <img src="docs/images/terminal-demo.svg" alt="development-skills in action" width="100%"/>
+</p>
 
 ---
 
@@ -313,19 +339,41 @@ This plugin was forged in production across 60,000+ lines of Python on real proj
 
 ---
 
+## Featured In
+
+<table>
+  <tr>
+    <td width="60" align="center"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968906.png" width="32"/></td>
+    <td><a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54"><b>How I Taught Agents to Follow a Process, Not Just Write Code</b></a><br/><sub>The full story behind this plugin — problems, failures, and solutions</sub></td>
+  </tr>
+</table>
+
 ## Further Reading
 
-- [How I Taught Agents to Follow a Process, Not Just Write Code](https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54) — the full story behind this plugin
-- [Effective Context Engineering for AI Agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — Anthropic's guide to the patterns this plugin implements
-- [Building Claude Code with Boris Cherny](https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny) — how the creator of Claude Code thinks about agent workflows
-- [TDD, AI Agents and Coding with Kent Beck](https://newsletter.pragmaticengineer.com/p/tdd-ai-agents-and-coding-with-kent) — why testing becomes more important with AI, not less
-- [Agentic Engineering](https://addyosmani.com/blog/agentic-engineering/) — Addy Osmani on the shift from vibe coding to structured agent workflows
+The design decisions in this plugin are grounded in research from across the industry:
+
+| Source | What It Covers |
+|--------|---------------|
+| [Effective Context Engineering for AI Agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) | Anthropic's guide to the patterns this plugin implements |
+| [Building Claude Code with Boris Cherny](https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny) | How the creator of Claude Code thinks about agent workflows |
+| [TDD, AI Agents and Coding with Kent Beck](https://newsletter.pragmaticengineer.com/p/tdd-ai-agents-and-coding-with-kent) | Why testing becomes more important with AI, not less |
+| [Agentic Engineering](https://addyosmani.com/blog/agentic-engineering/) | Addy Osmani on the shift from vibe coding to structured workflows |
+| [Context Engineering: Lessons from Manus](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) | Production-validated context patterns across millions of users |
+| [Agentic Workflows for Software Development](https://medium.com/quantumblack/agentic-workflows-for-software-development-dc8e64f4a79d) | McKinsey/QuantumBlack on orchestration vs execution layers |
 
 ---
 
 ## Contributing
 
-Contributions are welcome. Please open an issue to discuss changes before submitting a PR.
+Contributions are welcome — especially new language skills. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+**Ideas for contributions:**
+- New language skills: Rust, Go, Kotlin, Ruby, C#
+- Improved framework patterns for existing languages
+- Better anti-rationalization tables
+- Documentation and examples
+
+Please open an issue to discuss changes before submitting a PR.
 
 ## License
 
@@ -334,5 +382,14 @@ MIT
 ---
 
 <p align="center">
-  <a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54">Read the full story</a> &middot; <a href="https://github.com/reidemeister94/development-skills/issues">Report an issue</a>
+  <b>If this plugin makes your AI agent more disciplined, consider giving it a star.</b><br/>
+  <sub>It helps others discover the project and motivates continued development.</sub>
+</p>
+
+<p align="center">
+  <a href="https://github.com/reidemeister94/development-skills/stargazers"><img src="https://img.shields.io/github/stars/reidemeister94/development-skills?style=social" alt="Star on GitHub"/></a>
+</p>
+
+<p align="center">
+  <a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54">Read the full story</a> &middot; <a href="https://github.com/reidemeister94/development-skills/issues">Report an issue</a> &middot; <a href="CONTRIBUTING.md">Contribute</a>
 </p>
