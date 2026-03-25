@@ -15,12 +15,46 @@
 </p>
 
 <p align="center">
-  <a href="#quick-start">Quick Start</a> &middot;
+  <a href="#installation">Installation</a> &middot;
   <a href="#how-it-works">How It Works</a> &middot;
   <a href="#17-skills-5-languages">17 Skills</a> &middot;
   <a href="#design-philosophy">Philosophy</a> &middot;
   <a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54">Blog Post</a>
 </p>
+
+---
+
+## Installation
+
+**Step 1** — Add this repository as a marketplace:
+
+```bash
+claude plugin marketplace add reidemeister94/development-skills
+```
+
+**Step 2** — Install the plugin:
+
+```bash
+claude plugin install development-skills
+```
+
+That's it. The plugin activates automatically on any coding task. No configuration needed.
+
+> **Prerequisite:** The [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin must be enabled:
+>
+> ```bash
+> claude plugin install skill-creator@claude-plugins-official
+> ```
+
+Once installed, you can invoke skills directly:
+
+```
+/brainstorming    — Evaluate approaches before committing to one
+/debugging        — Systematic root-cause analysis
+/create-test      — Design tests that find bugs, not just exist
+/distill          — Compress verbose text while preserving facts
+/commit           — Conventional commit from staged changes
+```
 
 ---
 
@@ -199,41 +233,6 @@ A `PostToolUse` hook automatically formats files when Claude edits them:
 | Kotlin | ktfmt | ktlint |
 | Swift | swift-format | swiftformat |
 | HTML/YAML | prettier | — |
-
----
-
-## Quick Start
-
-### Install
-
-```bash
-# From GitHub
-claude plugins install --from github:reidemeister94/development-skills
-```
-
-### Prerequisites
-
-The [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin is required. Enable it in `~/.claude/settings.json`:
-
-```json
-{
-  "enabledPlugins": {
-    "skill-creator@claude-plugins-official": true
-  }
-}
-```
-
-### Usage
-
-The plugin activates automatically on any development task. You can also invoke skills directly:
-
-```
-/brainstorming    — Evaluate approaches before committing to one
-/debugging        — Systematic root-cause analysis
-/create-test      — Design tests that find bugs, not just exist
-/distill          — Compress verbose text while preserving facts
-/commit           — Conventional commit from staged changes
-```
 
 ---
 
