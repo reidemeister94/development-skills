@@ -1,4 +1,4 @@
-Produce a factual chronicle of development-skills plugin interactions in this conversation. Pure record — zero judgment, zero adjectives. The reader draws conclusions.
+Produce a factual chronicle of development-skills plugin interactions in this conversation. Pure record, no judgment.
 
 Write to `docs/reports/development-skills-feedback-YYYY-MM-DD.md`. Self-contained.
 
@@ -8,7 +8,7 @@ Language, size, test count, framework. Task performed. Why plugin was involved.
 
 ## Section 2: Full Chain-of-Thought Dump
 
-EXHAUSTIVE chronological dump of every plugin interaction. Every skill trigger, phase read, gate evaluation, routing decision, agent spawn, tool call, verification run, deviation.
+EXHAUSTIVE chronological dump of every plugin interaction. Every skill trigger, phase read, gate evaluation, routing decision, agent spawn, tool call, verification run, deviation, problem.
 
 Each step:
 1. **Plugin instruction:** Quote the specific instruction from the specific file

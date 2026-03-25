@@ -36,6 +36,8 @@ Do NOT comment what clean, well-named code already says.
 
 ### Anti-Poisoning Verification
 
+**At startup (if worktree):** `git branch --show-current` — if branch doesn't match expected, return error immediately.
+
 After each task, **verify all references are grounded:**
 - Confirm file paths exist (Glob/Grep)
 - Confirm function signatures match actual source

@@ -2,7 +2,7 @@ Ingest a development-skills feedback report. Challenge every suggestion against 
 
 ## Ground Rule: The Report Is Input, Not Truth
 
-The report describes what happened, not what should change. Most friction is model behavior or edge cases. **Default verdict: SKIP.** A change must EARN its place.
+The report describes what happened, not what should change. Most friction is model behavior or edge cases. A change must EARN its place.
 
 Core Pillars (from CLAUDE.md):
 1. **Maximize simplicity.** Small improvement + ugly complexity = not worth it.
@@ -22,13 +22,11 @@ Read every file referenced in friction points. Understand current instruction, w
 
 ## Step 3: Gather Best Practices (targeted)
 
-Research ONLY content relevant to friction points:
+Research content relevant to friction points:
 - Official Claude Code docs: https://code.claude.com/docs/en/overview
 - `@~/Documents/ai/superpowers`
 - `@~/Documents/ai/claude-code-tips`
 - `@~/Documents/ai/Agent-Skills-for-Context-Engineering`
-
-Skip unrelated content.
 
 ## Step 4: Critical Evaluation — Friction Points
 
