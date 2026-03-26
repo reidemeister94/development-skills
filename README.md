@@ -17,7 +17,7 @@
 <p align="center">
   <a href="#installation">Installation</a> &middot;
   <a href="#how-it-works">How It Works</a> &middot;
-  <a href="#17-skills-5-languages">18 Skills</a> &middot;
+  <a href="#18-skills-5-languages">18 Skills</a> &middot;
   <a href="#design-philosophy">Philosophy</a> &middot;
   <a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54">Blog Post</a>
 </p>
@@ -70,33 +70,17 @@ The [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plu
 
 ---
 
-Your AI agent can write code. But can it *follow a process*? Can it research before planning, plan before coding, test before shipping, and review before merging — every single time, without you reminding it?
-
-`development-skills` is a Claude Code plugin that enforces a structured 7-phase development workflow with quality gates, subagent orchestration, and multi-language support. It takes Claude Code's raw capability and channels it through the same disciplined process a senior engineering team follows.
-
-> *"Claude Code gives you a fully stocked workshop. But it doesn't force you to measure twice before cutting."*
->
-> — [How I Taught Agents to Follow a Process, Not Just Write Code](https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54)
-
 <p align="center">
   <img src="docs/images/terminal-demo.svg" alt="development-skills in action" width="100%"/>
 </p>
 
----
+## Why This Exists
 
-## The Problem
+AI agents are fast but undisciplined. [67% of developers](https://addyo.substack.com/p/the-80-problem-in-agentic-coding) spend *more* time debugging AI-generated code, which contains [1.7x more major issues](https://www.elektormagazine.com/articles/2026-an-ai-odyssey-vibe-coding-hangover) and 2.74x more security vulnerabilities. Agents [delete unit tests](https://newsletter.pragmaticengineer.com/p/tdd-ai-agents-and-coding-with-kent) to make them pass. They generate code at 140-200 lines/min while humans comprehend at 20-40 — creating [cognitive debt](https://margaretstorey.com/blog/2026/02/09/cognitive-debt/).
 
-AI coding agents are getting faster. But faster isn't better when the process is wrong.
+**development-skills makes the good-day workflow the only workflow** — research before planning, plan before coding, test before shipping, review before merging. Every time, without reminding.
 
-[67% of developers](https://addyo.substack.com/p/the-80-problem-in-agentic-coding) now spend *more* time debugging AI-generated code despite initial velocity gains. Studies show AI co-authored code contains [1.7x more major issues](https://www.elektormagazine.com/articles/2026-an-ai-odyssey-vibe-coding-hangover) and 2.74x more security vulnerabilities than human-written code. Kent Beck [observed](https://newsletter.pragmaticengineer.com/p/tdd-ai-agents-and-coding-with-kent) that agents actively *delete unit tests* to make them pass — optimizing for completion, not correctness.
-
-The core paradox: AI generates code at 140-200 lines/minute, but humans comprehend at 20-40 lines/minute. This creates what researchers call [cognitive debt](https://margaretstorey.com/blog/2026/02/09/cognitive-debt/) — code that works but nobody understands.
-
-The problem isn't capability. It's *discipline*. On a good day, Claude plans carefully, writes tests, reviews its own work, and delivers production-quality code. On a bad day, it skips planning, guesses at solutions, and declares "done" without evidence.
-
-**development-skills makes the good-day workflow the only workflow.**
-
-As Anthropic's own [2026 Agentic Coding Trends Report](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf) concluded: success comes from treating agentic development as a *"workflow design problem, not a tool adoption problem."*
+> *As Anthropic's [2026 Agentic Coding Trends Report](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf) concluded: success comes from treating agentic development as a "workflow design problem, not a tool adoption problem."*
 
 <p align="center">
   <img src="docs/images/before-after.svg" alt="Without vs With development-skills" width="100%"/>
@@ -130,77 +114,23 @@ Each phase is a **gate** — the agent cannot proceed until the gate conditions 
 
 ---
 
-## What Makes This Different
-
-### Brainstorming Guard — Think Before You Code
-
-Boris Cherny, creator of Claude Code, [estimates](https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny) that *"10 minutes of proper planning consistently saves an hour of debugging."* This plugin enforces that principle architecturally.
-
-Before any coding begins, the plugin evaluates: *Is this task complex enough to require planning?* It checks scope (files affected), reversibility (can we undo this?), approach clarity (is there one obvious way?), and motivation (do we understand WHY?). If any signal is ambiguous, it spawns a dedicated analysis agent that researches, evaluates trade-offs, and proposes approaches — all in an isolated context that doesn't pollute your main conversation.
-
-The default is to analyze. The burden of proof is on *skipping* analysis, not on triggering it. Without this guard, the agent skips brainstorming ~40% of the time on tasks that genuinely need it.
-
-**Anti-rationalization tables** counter the model's tendency to justify shortcuts:
-
-| The model thinks... | The rule says... |
-|---|---|
-| "User said exactly what to do" | WHAT the user wants is not HOW to build it. Evaluate the HOW. |
-| "This is straightforward" | Checking reversibility and alternatives is non-negotiable. |
-| "I'll test after" | A test that passes first try proves nothing. RED first. |
-| "50GB in memory cache is fine" | That's a flawed premise. Challenge it BEFORE proceeding. |
-
-### Subagent Architecture — The Right Model for the Right Job
-
-The plugin orchestrates three specialized subagents, each with a defined role and model tier:
-
-| Agent | Model | Role |
-|-------|-------|------|
-| **Staff Reviewer** | Opus | Two-stage code review: spec compliance first, then code quality. No rubber-stamping. |
-| **Implementer** | Sonnet | Executes tasks from the approved plan. TDD discipline, anti-poisoning verification. |
-| **Test Verifier** | Sonnet | Runs verification commands, returns structured pass/fail with failure details. |
-
-This mirrors how Anthropic's own engineering blog describes [effective sub-agent architectures](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents): *"Specialized sub-agents handle focused tasks with clean context windows. Main agent coordinates high-level planning; subagents return condensed summaries despite exploring extensively."*
+## Key Features
 
 <p align="center">
   <img src="docs/images/subagent-architecture.svg" alt="Subagent Orchestration" width="100%"/>
 </p>
 
-Cherny's own workflow validates the approach — he [reports](https://venturebeat.com/technology/the-creator-of-claude-code-just-revealed-his-workflow-and-developers-are) that giving the agent a way to verify its own work *"improves the quality of the final result by a factor of 2-3x."*
+**Brainstorming Guard** — Before coding, evaluates scope, reversibility, and approach clarity. If anything is ambiguous, spawns an isolated analysis agent. The default is to analyze; burden of proof is on *skipping*. Anti-rationalization tables counter the model's tendency to justify shortcuts. Without this guard, the agent skips analysis [~40% of the time](https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54) on tasks that need it.
 
-### Observation Masking — Clean Context, Full Audit Trail
+**Subagent Architecture** — Three specialized agents: Staff Reviewer (Opus, two-stage code review), Implementer (Sonnet, TDD execution), Test Verifier (Sonnet, structured pass/fail). Mirrors Anthropic's [effective sub-agent patterns](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents). Giving agents a way to verify their own work [improves quality 2-3x](https://venturebeat.com/technology/the-creator-of-claude-code-just-revealed-his-workflow-and-developers-are).
 
-Tool outputs consume 80%+ of context tokens. The plugin keeps verbose output off the main conversation:
+**Observation Masking** — Verbose tool output (80%+ of context tokens) stays on disk. Implementation logs, test output, and review criteria live in files — your main conversation stays clean for [decision-making](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents).
 
-- The implementer writes detailed reasoning to a `## Implementation Log` on disk
-- The test-verifier's output stays in its own context
-- The staff-reviewer reads the plan file directly from disk
-- Your main conversation stays clean for decision-making
+**Filesystem Persistence** — Plans, chronicles, and workflow state survive context compaction. The agent resumes from any phase, even after a full context clear. Projects with persistent memory show [40% fewer errors and 55% faster completion](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf).
 
-Full details are always on disk. Nothing is lost — it's just not cluttering the context window where [attention matters most](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents).
+**Smart Parallel Implementation** — For 4+ independent tasks, analyzes file-touch maps and spawns parallel agents in git worktrees — but only when proven safe via dependency analysis. Naive parallelization [produced 100% unusable code](https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54); single-agent is the safe default.
 
-### Filesystem Persistence — Survive Context Compaction
-
-Plans, chronicles, and workflow state live on disk, not in the conversation. When Claude Code compacts your context (and it will, on complex tasks), the plugin recovers seamlessly:
-
-1. **WORKFLOW STATE block** at the top of the plan file tracks the current phase
-2. **Plan files** in `docs/plans/` persist the full project record
-3. **Chronicles** in `docs/chronicles/` capture the WHY behind every change
-
-The agent can resume from any phase, even after a full context clear. Anthropic's data confirms the impact: projects with well-maintained memory files show [40% fewer agent errors and 55% faster task completion](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf).
-
-### Smart Parallel Implementation
-
-For tasks with 4+ independent work items, the plugin analyzes file-touch maps, identifies orthogonal groups (tasks that share no files), and spawns parallel implementer agents in git worktrees.
-
-This was learned the hard way. Early attempts at naive parallelization produced [100% unusable code](https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54) — agents wrote imports to files that had been renamed by other agents. The current approach: single agent by default (sees latest state), parallel only when proven safe via dependency analysis.
-
-### Chronicles — The Missing Layer of Documentation
-
-Most projects have two layers: code (WHAT) and plans (HOW). Chronicles add the third: **WHY**.
-
-Written at both the start and end of each task, chronicles capture business context, requirements rationale, discoveries, failed approaches, and architectural decisions. Named with sequential IDs and dates (`0023__2026-02-17__customer-entity-migration.md`), they form a timeline you can browse with `ls`.
-
-Three months from now, when someone asks "why did we switch from UUID to natural business keys?" — the answer isn't buried in a Slack thread. It's in the chronicle.
+**Chronicles** — The missing documentation layer. Code says WHAT, plans say HOW, chronicles capture **WHY**. Business context, decisions, and failed approaches — timestamped and browseable.
 
 ---
 
@@ -251,169 +181,78 @@ A `PostToolUse` hook automatically formats files when Claude edits them:
 
 ## Design Philosophy
 
-### Iron Rules
+**Iron Rules** — enforced at every phase, not suggested:
 
-These rules are enforced at every phase, not just suggested:
+1. No positive claims without fresh verification evidence
+2. Red/Green TDD — every implementation starts with a failing test ([Kent Beck agrees](https://newsletter.pragmaticengineer.com/p/tdd-ai-agents-and-coding-with-kent))
+3. Comment the WHY, not the WHAT
+4. No commits without explicit user request
+5. Every gate must be explicitly passed
 
-1. **No positive claims without evidence.** The agent never says "should work" or "looks good" without fresh verification output.
-2. **Red/Green TDD is the starting point.** Every implementation starts with a failing test. No exceptions. Kent Beck is right — TDD becomes [*more* necessary with AI agents](https://newsletter.pragmaticengineer.com/p/tdd-ai-agents-and-coding-with-kent), not less.
-3. **Comment the WHY, not the WHAT.** Ambiguous code gets a reason, not a restatement.
-4. **No commits without explicit user request.** Passing phases is not permission to commit.
-5. **Every gate must be explicitly passed.** "Proceed immediately" means execute the next gate — not skip its requirements.
-
-### Model Behavior Principles
-
-1. **Maximum honesty, zero accommodation.** The model exists to maximize outcomes, not comfort. If the developer's approach is wrong, it says so with evidence.
-2. **Critical thinking is always on.** Even outside brainstorming, the model evaluates requests for flaws, wrong assumptions, and symptom-vs-root-cause confusion.
-3. **Calibrated criticism only.** Every challenge is concrete, evidence-based, and actionable. No pedantic objections or theoretical concerns.
-4. **Planning is 90% of the work.** Brainstorming and planning phases are where quality is decided.
-5. **Data-validated decisions.** Approaches validated against online sources and codebase evidence, not training-data patterns alone.
-6. **Persist knowledge to disk.** Context windows are ephemeral. Useful information is continuously offloaded to structured files on disk.
+**Model Behavior** — maximum honesty (zero accommodation), always-on critical thinking, calibrated criticism (concrete and evidence-based), planning as 90% of the work, data-validated decisions, and persistent knowledge on disk.
 
 ---
 
 ## Architecture
 
 ```
-development-skills/
-├── .claude-plugin/plugin.json    # Plugin metadata
-├── skills/                       # 18 skills
-│   ├── core-dev/                 #   Workflow router + brainstorming guard
-│   ├── brainstorming/            #   Critical evaluation (isolated analysis agent)
-│   ├── python-dev/               #   Python patterns
-│   ├── java-dev/                 #   Java patterns
-│   ├── typescript-dev/           #   TypeScript patterns (backend/CLI)
-│   ├── frontend-dev/             #   React, Next.js, Raycast, Vite (auto-detect)
-│   ├── swift-dev/                #   Swift patterns
-│   ├── debugging/                #   Systematic root-cause debugging
-│   ├── create-test/              #   Risk-scored test design
-│   ├── distill/                  #   Information-theoretic text compression
-│   ├── commit/                   #   Conventional commits
-│   ├── chronicles/               #   Project snapshots (WHY documentation)
-│   ├── align-docs/               #   Documentation alignment
-│   ├── eval-regression/          #   Pre-commit regression testing
-│   ├── update-precommit/         #   Pre-commit hook updater
-│   ├── update-reqs/              #   requirements.in updater
-│   ├── update-reqs-dev/          #   requirements-dev.in updater
-│   └── resolve-merge/            #   Merge conflict resolution
-├── agents/                       # 3 specialized subagents
-│   ├── implementer.md            #   Sonnet — TDD execution
-│   ├── staff-reviewer.md         #   Opus — two-stage code review
-│   └── test-verifier.md          #   Sonnet — verification execution
-├── hooks/                        # Auto-format + session context
-├── shared/                       # Workflow engine
-│   ├── workflow.md               #   Phase sequence, iron rules, gates
-│   └── phases/                   #   Per-phase instructions (loaded just-in-time)
-└── commands/                     # Feedback production/ingestion
+skills/          18 skills (core-dev, 5 languages, brainstorming, debugging, testing, utilities)
+agents/          3 subagents (implementer, staff-reviewer, test-verifier)
+hooks/           Auto-format on Edit/Write (multi-language) + session context
+shared/          Workflow engine with just-in-time phase loading
+commands/        Feedback production/ingestion
 ```
 
-### Progressive Disclosure
-
-The plugin follows Anthropic's recommended [just-in-time context loading](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) pattern. Context is a finite attention budget — every unnecessary token dilutes the model's focus:
-
-- **Always loaded**: `workflow.md` — phase sequence, iron rules, gate definitions (~120 lines)
-- **Loaded per-phase**: `phases/phase-N-*.md` — detailed instructions (~300 words each)
-- **Loaded on-demand**: routing rules, language patterns, reference files, templates
-
-Each language skill provides only language-specific config. No duplication across skills.
+Context is loaded progressively following Anthropic's [just-in-time pattern](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents): `workflow.md` always loaded (~120 lines), phase instructions loaded per-phase (~300 words each), language patterns loaded on-demand.
 
 ---
 
-## Context Engineering in Practice
+## Context Engineering
 
-This plugin implements many of the patterns described in Anthropic's [Effective Context Engineering for AI Agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) and validated by [Manus](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) across millions of production users:
+Implements patterns from Anthropic's [Context Engineering guide](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) and validated by [Manus](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) across millions of production users:
 
 <p align="center">
   <img src="docs/images/context-engineering.svg" alt="Context Engineering: Progressive Disclosure" width="100%"/>
 </p>
 
-| Principle | How development-skills Implements It |
-|---|---|
-| *"Find the smallest set of high-signal tokens"* | Progressive disclosure — load phase instructions just-in-time, not all at once |
-| *"Sub-agents return condensed summaries"* | Observation masking — verbose output on disk, summaries in conversation |
-| *"Use the file system as extended context"* | Plans, chronicles, workflow state, and implementation logs on disk |
-| *"Structured note-taking outside context"* | WORKFLOW STATE blocks survive compaction; chronicles persist business rationale |
-| *"Clean context windows for focused tasks"* | Each subagent gets only the context it needs — implementer doesn't see review criteria |
-| *"Preserve failure evidence in context"* | Anti-rationalization tables and iron rules keep the model honest under pressure |
+- **Progressive disclosure** — phase instructions loaded just-in-time, not all at once
+- **Observation masking** — verbose output on disk, condensed summaries in conversation
+- **Filesystem as extended context** — plans, chronicles, workflow state, implementation logs
+- **Clean subagent windows** — each agent gets only the context it needs
+- **Anti-rationalization tables** — keep the model honest under pressure
+
+> Built from 60,000+ lines of production Python — FastAPI backends, legacy databases, shared environments. Every feature exists because its absence caused a real problem.
 
 ---
-
-## Built From Real-World Experience
-
-This plugin was forged in production across 60,000+ lines of Python on real projects — FastAPI backends, legacy database integrations, shared production environments. Every feature exists because its absence caused a real problem:
-
-- **Brainstorming guard** — because the agent kept skipping analysis on tasks that needed it (~40% skip rate without it)
-- **Observation masking** — because implementation debugging was polluting the context needed for clear-headed review
-- **Single-agent default** — because 8 parallel agents in worktrees produced 100% unusable code (stale branches, broken imports, "all checks pass" when only linting ran)
-- **Iron rules with anti-rationalization tables** — because the model would negotiate away its own process under pressure
-- **Filesystem persistence** — because context compaction wiped critical decisions mid-workflow
-- **Verification honesty** — because agents claimed "all tests pass" when tests hadn't actually run
-- **Chronicles** — because three months later, nobody could answer *why* a design decision was made
-
----
-
-## Featured In
-
-<table>
-  <tr>
-    <td width="60" align="center"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968906.png" width="32"/></td>
-    <td><a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54"><b>How I Taught Agents to Follow a Process, Not Just Write Code</b></a><br/><sub>The full story behind this plugin — problems, failures, and solutions</sub></td>
-  </tr>
-</table>
 
 ## Further Reading
 
-The design decisions in this plugin are grounded in research from across the industry:
-
-| Source | What It Covers |
-|--------|---------------|
-| [Effective Context Engineering for AI Agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) | Anthropic's guide to the patterns this plugin implements |
-| [Building Claude Code with Boris Cherny](https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny) | How the creator of Claude Code thinks about agent workflows |
-| [TDD, AI Agents and Coding with Kent Beck](https://newsletter.pragmaticengineer.com/p/tdd-ai-agents-and-coding-with-kent) | Why testing becomes more important with AI, not less |
-| [Agentic Engineering](https://addyosmani.com/blog/agentic-engineering/) | Addy Osmani on the shift from vibe coding to structured workflows |
-| [Context Engineering: Lessons from Manus](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) | Production-validated context patterns across millions of users |
-| [Agentic Workflows for Software Development](https://medium.com/quantumblack/agentic-workflows-for-software-development-dc8e64f4a79d) | McKinsey/QuantumBlack on orchestration vs execution layers |
+- [How I Taught Agents to Follow a Process, Not Just Write Code](https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54) — the full story behind this plugin
+- [Effective Context Engineering for AI Agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — Anthropic's guide to the patterns we implement
+- [Building Claude Code with Boris Cherny](https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny) — how the creator thinks about agent workflows
+- [TDD, AI Agents and Coding with Kent Beck](https://newsletter.pragmaticengineer.com/p/tdd-ai-agents-and-coding-with-kent) — why testing matters more with AI
+- [Agentic Engineering](https://addyosmani.com/blog/agentic-engineering/) — Addy Osmani on structured workflows
+- [Context Engineering: Lessons from Manus](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) — production-validated patterns
 
 ---
 
 ## Regression Testing
 
-The plugin ships with **27 evals and 89 assertions** covering 10 behavioral dimensions — the equivalent of a test suite for agent behavior. Powered by Anthropic's [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin.
+**27 evals, 89 assertions** across 10 behavioral dimensions — a test suite for agent behavior. Powered by Anthropic's [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin.
 
 ```
 /eval-regression
 ```
 
-| Category | Evals | What It Tests |
-|----------|-------|--------------|
-| `brainstorming-guard` | 7 | Triggers analysis when needed, skips when appropriate |
-| `smart-isolation` | 6 | Parallel vs single agent decisions, worktree safety |
-| `anti-rationalization` | 4 | Resists shortcuts, catches flawed premises |
-| `workflow-phases` | 3 | Phase progression, resumption, plan discovery |
-| `implementer-discipline` | 2 | TDD enforcement, caller updates, verification honesty |
-| `language-detection` | 1 | Frontend vs TypeScript backend routing |
-| `chronicle-quality` | 1 | WHY documentation quality |
-| `askuserquestion-avoidance` | 1 | Conversational text, not AskUserQuestion tool |
-| `turn-boundary` | 1 | Stops at the right moment |
-| `project-directives` | 1 | Respects existing project configuration |
-
-Every eval snapshots the committed version as baseline, runs the modified version against the same prompts, grades all assertions, and produces a regression report with a clear verdict: **SAFE TO COMMIT** or **REGRESSIONS FOUND**.
+Covers: brainstorming guard (7), smart isolation (6), anti-rationalization (4), workflow phases (3), implementer discipline (2), language detection, chronicle quality, turn boundaries, and project directives. Each eval snapshots the committed version as baseline, runs the modified version, and produces a clear verdict: **SAFE TO COMMIT** or **REGRESSIONS FOUND**.
 
 ---
 
 ## Contributing
 
-Contributions are welcome — especially new language skills. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+Contributions welcome — especially new language skills (Rust, Go, Kotlin, Ruby, C#). See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-**The golden rule: no PR without a passing regression benchmark.** Run `/eval-regression`, get 100% pass rate, paste `benchmark.md` in your PR. Zero regressions = merge. Regressions = fix first.
-
-**Ideas for contributions:**
-- New language skills: Rust, Go, Kotlin, Ruby, C#
-- Improved framework patterns for existing languages
-- Better anti-rationalization tables
-- New evals for uncovered edge cases
-
-Please open an issue to discuss changes before submitting a PR.
+**Golden rule:** no PR without a passing `/eval-regression` benchmark. Zero regressions = merge. Open an issue first to discuss.
 
 ## License
 
