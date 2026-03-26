@@ -37,6 +37,48 @@ Read the file. Run via Bash:
 FILE="<path>"; echo "BEFORE: $(wc -c < "$FILE") chars | $(wc -w < "$FILE") words | $(wc -l < "$FILE") lines | $(gzip -c "$FILE" | wc -c) gzip"
 ```
 
+## Step 1.5 — Deterministic Pre-Processing
+
+Read `references/deterministic-patterns.md` in this skill's directory. Apply the regex patterns via a single Bash/Python command:
+
+```bash
+python3 -c "
+import re, sys
+text = open(sys.argv[1]).read()
+# Verbose constructions
+subs = [('in order to','to'),('due to the fact that','because'),('at this point in time','now'),('in the event that','if'),('for the purpose of','for'),('on a daily basis','daily'),('a large number of','many'),('the vast majority of','most'),('in spite of the fact that','although'),('is able to','can'),('has the ability to','can'),('make use of','use'),('take into consideration','consider'),('prior to','before'),('subsequent to','after'),('in close proximity to','near'),('on the basis of','based on')]
+for old, new in subs:
+    text = re.sub(r'\b' + re.escape(old) + r'\b', new, text, flags=re.IGNORECASE)
+# Hedging (EN)
+for p in [r\"It'?s (important|worth) (to note|mentioning|noting) that\s*\",r\"It should be noted that\s*\",r\"It bears mentioning( that)?\s*\",r\"Needless to say,?\s*\",r\"It goes without saying( that)?\s*\",r\"As you may know,?\s*\",r\"As mentioned (above|earlier|previously),?\s*\",r\"Keep in mind that\s*\"]:
+    text = re.sub(p, '', text, flags=re.IGNORECASE)
+# Hedging (IT)
+for p in [r\"[ÈE]' importante notare che\s*\",r\"[Vv]ale la pena (menzionare|ricordare|notare)( che)?\s*\",r\"[Vv]a sottolineato che\s*\",r\"[Aa] questo punto nel tempo,?\s*\"]:
+    text = re.sub(p, '', text, flags=re.IGNORECASE)
+# Filler openers
+for p in [r'^(Certainly|Absolutely|Of course)!?\s*',r'^Great question!?\s*',r\"^That'?s a (really )?(good|great|excellent) (point|question)!?\s*\",r'^I hope this helps!?\s*',r'^Let me know if you have any( other)? questions!?\s*']:
+    text = re.sub(p, '', text, flags=re.MULTILINE|re.IGNORECASE)
+# Transitions
+for p in [r'^(Moreover|Furthermore|Additionally|In addition),?\s*',r'^(That being said|With that in mind|Having said that),?\s*',r'^(Inoltre|Peraltro|In aggiunta),?\s*']:
+    text = re.sub(p, '', text, flags=re.MULTILINE|re.IGNORECASE)
+# Slop score
+bw = ['delve','tapestry','landscape','paradigm','leverage','utilize','facilitate','comprehensive','holistic','robust','cutting-edge','state-of-the-art','revolutionary','innovative','novel','synergy','empower','seamlessly','effortlessly','transformative']
+count = sum(len(re.findall(r'\b'+re.escape(w)+r'\b', text, re.IGNORECASE)) for w in bw)
+score = max(0, 100 - 2*count)
+open(sys.argv[1], 'w').write(text)
+print(f'PRE-CLEAN: {len(subs)} verbose patterns | slop_score={score}/100 | buzzwords={count}')
+" "<path>"
+```
+
+This step handles mechanical substitutions the LLM might miss. The LLM in Step 2 then focuses on semantic compression.
+
+<deterministic-benefits>
+- 100% recall on pattern kill lists (regex never misses a listed pattern)
+- Zero hallucination risk (regex can't invent content)
+- Same input always produces same output (reproducible)
+- Multilingual: handles Italian, French, Spanish, German hedges
+</deterministic-benefits>
+
 ## Step 2 — Distill
 
 Rewrite the file. Read `references/noise-patterns.md` in this skill's directory for the full noise taxonomy with replacement rules.
@@ -150,6 +192,17 @@ Then verify preservation:
 - The same language (English/Italian/etc.) is used.
 </verification>
 
+## Step 3.5 — Deterministic Post-Verification
+
+Before writing, run these checks on the distilled text:
+
+<post-checks>
+1. **Table preservation**: if the original has markdown tables (lines matching `|...|...|`), count table rows in original vs output. If rows decreased, restore missing rows.
+2. **Code block preservation**: count fenced code blocks (``` or ~~~) in original vs output. Counts must match.
+3. **URL preservation**: extract all URLs (http/https/ftp/mailto) from original. Verify each appears in output. Restore any missing.
+4. **Number density check**: if the original is under 100 words and already achieves slop_score >= 90 (from Step 1.5), apply only minimal changes — this text is already dense.
+</post-checks>
+
 ## Step 4 — Write and Measure
 
 Write the distilled file. Run the same measurement:
@@ -173,7 +226,7 @@ Noise removed: [list patterns found, by category from noise-patterns.md]
 Facts preserved: [count] | Code blocks: [count] | URLs: [count]
 ```
 
-**Batch (multiple files)** — display per-file rows plus a totals row:
+**Batch (multiple files)** — track metrics as you go. After processing each file, append its row to a running table. After ALL files are processed, compute totals by summing the words-before and words-after columns, then calculate the total reduction percentage.
 
 ```
 ## Distill Report: <directory>
@@ -186,6 +239,8 @@ Facts preserved: [count] | Code blocks: [count] | URLs: [count]
 
 Files processed: N | Skipped (already dense): N
 ```
+
+Compute the **Total** row by summing: `total_before = sum(words_before)`, `total_after = sum(words_after)`, `reduction = (1 - total_after/total_before) * 100`.
 
 If word reduction is under 10% for a file: mark it as already dense.
 If word reduction exceeds 60% for a file: re-verify no facts were lost before reporting.

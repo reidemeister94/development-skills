@@ -16,7 +16,14 @@ Taxonomy of noise in LLM-generated text, from academic research (Verbosity != Ve
 - "As mentioned above/earlier..."
 - "Keep in mind that..."
 
-**Rule:** If removing the hedge doesn't change meaning, remove it.
+**Italian equivalents:**
+- "È importante notare che..."
+- "Vale la pena menzionare che..."
+- "Va sottolineato che..."
+- "Come accennato sopra/in precedenza..."
+- "Tenere presente che..."
+
+**Rule:** If removing the hedge doesn't change meaning, remove it. Apply in ALL languages — the patterns are structural, not language-specific.
 
 ## 2. Empty Transitions
 
@@ -37,7 +44,12 @@ Taxonomy of noise in LLM-generated text, from academic research (Verbosity != Ve
 - "The bottom line is..."
 - Any final paragraph that restates previous content
 
-**Rule:** A conclusion should synthesize or add insight, not repeat.
+**Italian equivalents:**
+- "In conclusione" / "In sintesi"
+- "Per riassumere" / "Per concludere"
+- "Nel complesso" / "In definitiva"
+
+**Rule:** A conclusion should synthesize or add insight, not repeat. Apply in ALL languages.
 
 ## 4. Filler Openers
 
