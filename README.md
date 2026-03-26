@@ -17,7 +17,7 @@
 <p align="center">
   <a href="#installation">Installation</a> &middot;
   <a href="#how-it-works">How It Works</a> &middot;
-  <a href="#17-skills-5-languages">17 Skills</a> &middot;
+  <a href="#17-skills-5-languages">18 Skills</a> &middot;
   <a href="#design-philosophy">Philosophy</a> &middot;
   <a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54">Blog Post</a>
 </p>
@@ -204,7 +204,7 @@ Three months from now, when someone asks "why did we switch from UUID to natural
 
 ---
 
-## 17 Skills, 5 Languages
+## 18 Skills, 5 Languages
 
 ### Development Skills
 
@@ -224,7 +224,7 @@ Three months from now, when someone asks "why did we switch from UUID to natural
 | Skill | Trigger | What It Does |
 |-------|---------|-------------|
 | `create-test` | `/create-test` | Risk-scored test design. Explorer mode audits your codebase for dangerous untested code; targeted mode generates boundary, property-based, and invariant tests with strong assertions |
-| `distill` | `/distill` | Information-theoretic text compression. Applies Shannon's principle — anything predictable from context carries zero information and can be removed. Measures improvement via gzip entropy ratio |
+| `distill` | `/distill` | Hybrid semantic text compression: deterministic regex pre-processing + LLM compression + deterministic post-verification. Multilingual noise removal (EN/IT/FR/ES/DE). Measures entropy via gzip |
 | `commit` | `/commit` | Conventional commits from staged changes |
 | `chronicles` | Auto | Project snapshots capturing the WHY behind changes |
 | `align-docs` | `/align-docs` | Align documentation with current project state |
@@ -232,6 +232,7 @@ Three months from now, when someone asks "why did we switch from UUID to natural
 | `update-precommit` | `/update-precommit` | Update `.pre-commit-config.yaml` hooks to latest versions |
 | `update-reqs` | `/update-reqs` | Update `requirements.in` with latest PyPI versions |
 | `update-reqs-dev` | `/update-reqs-dev` | Update `requirements-dev.in` with latest PyPI versions |
+| `resolve-merge` | `/resolve-merge` | Systematic merge conflict resolution with numbered docs renumbering support |
 
 ### Auto-Format on Save
 
@@ -276,7 +277,7 @@ These rules are enforced at every phase, not just suggested:
 ```
 development-skills/
 ├── .claude-plugin/plugin.json    # Plugin metadata
-├── skills/                       # 17 skills
+├── skills/                       # 18 skills
 │   ├── core-dev/                 #   Workflow router + brainstorming guard
 │   ├── brainstorming/            #   Critical evaluation (isolated analysis agent)
 │   ├── python-dev/               #   Python patterns
@@ -293,7 +294,8 @@ development-skills/
 │   ├── eval-regression/          #   Pre-commit regression testing
 │   ├── update-precommit/         #   Pre-commit hook updater
 │   ├── update-reqs/              #   requirements.in updater
-│   └── update-reqs-dev/          #   requirements-dev.in updater
+│   ├── update-reqs-dev/          #   requirements-dev.in updater
+│   └── resolve-merge/            #   Merge conflict resolution
 ├── agents/                       # 3 specialized subagents
 │   ├── implementer.md            #   Sonnet — TDD execution
 │   ├── staff-reviewer.md         #   Opus — two-stage code review
