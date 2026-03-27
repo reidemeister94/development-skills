@@ -43,6 +43,25 @@ Set `TOPIC` = `$ARGUMENTS`
 
 ---
 
+## PHASE 0: MANDATORY SOURCES (Topic-Specific)
+
+Before general web research, check if `TOPIC` relates to **Claude Code** (skills, SKILL.md, hooks, subagents, agents, CLAUDE.md, plugins, context engineering, agentic coding, Claude Code workflow, Claude Code best practices, slash commands, MCP in Claude Code).
+
+**If Claude Code-related**, you MUST fetch and deeply read ALL of these sources IN ADDITION to the regular search battery. These are Tier S — authoritative, non-negotiable:
+
+| # | Source | What to extract | How |
+|---|--------|----------------|-----|
+| 1 | **superpowers** | Iron Laws, skill writing patterns (CSO, anti-rationalization tables, baseline testing), TDD enforcement, Two-Stage Review, progressive disclosure, subagent-driven development, whole-plan review, defense-in-depth | WebFetch `https://github.com/obra/superpowers` — then read key skill files: `skills/writing-skills/SKILL.md`, `skills/test-driven-development/SKILL.md`, `skills/subagent-driven-development/SKILL.md`, `skills/verification-before-completion/SKILL.md` |
+| 2 | **Claude Code releases** | Latest features, breaking changes, new capabilities, deprecations | WebFetch `https://github.com/anthropics/claude-code/releases` with prompt: "Extract all release notes from the last 3 months. Focus on new features, skill/agent/hook changes, and breaking changes." |
+| 3 | **Official Claude Code docs** | Best practices, skill authoring, subagent patterns, hook guide, context management | WebFetch `https://code.claude.com/docs/en/best-practices` AND `https://code.claude.com/docs/en/skills` AND `https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices` |
+| 4 | **claude-code-tips** | Community-tested tips, CLAUDE.md examples, workflow patterns, real-world productivity tricks | WebFetch `https://github.com/ykdojo/claude-code-tips` |
+
+**Execution:** Fetch all 4 sources in parallel (use Agent subagents or parallel tool calls). These results feed into Phase 4 synthesis alongside web research results.
+
+**If NOT Claude Code-related**, skip this phase entirely.
+
+---
+
 ## PHASE 1: DECOMPOSE THE TOPIC
 
 Before searching, break the topic into 4-6 research angles. Think about what a staff engineer would want to know:
