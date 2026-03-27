@@ -17,7 +17,7 @@
 <p align="center">
   <a href="#installation">Installation</a> &middot;
   <a href="#how-it-works">How It Works</a> &middot;
-  <a href="#18-skills-5-languages">18 Skills</a> &middot;
+  <a href="#19-skills-5-languages">19 Skills</a> &middot;
   <a href="#design-philosophy">Philosophy</a> &middot;
   <a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54">Blog Post</a>
 </p>
@@ -134,7 +134,7 @@ Each phase is a **gate** — the agent cannot proceed until the gate conditions 
 
 ---
 
-## 18 Skills, 5 Languages
+## 19 Skills, 5 Languages
 
 ### Development Skills
 
@@ -163,6 +163,7 @@ Each phase is a **gate** — the agent cannot proceed until the gate conditions 
 | `update-reqs` | `/update-reqs` | Update `requirements.in` with latest PyPI versions |
 | `update-reqs-dev` | `/update-reqs-dev` | Update `requirements-dev.in` with latest PyPI versions |
 | `resolve-merge` | `/resolve-merge` | Systematic merge conflict resolution with numbered docs renumbering support |
+| `best-practices` | `/best-practices <topic>` | Deep web research from authoritative sources (engineering blogs, official docs, books, GitHub projects >5k stars). Produces structured state-of-the-art report with trade-offs, decision frameworks, anti-patterns, and cited sources |
 
 ### Auto-Format on Save
 
@@ -196,7 +197,7 @@ A `PostToolUse` hook automatically formats files when Claude edits them:
 ## Architecture
 
 ```
-skills/          18 skills (core-dev, 5 languages, brainstorming, debugging, testing, utilities)
+skills/          19 skills (core-dev, 5 languages, brainstorming, debugging, testing, utilities)
 agents/          3 subagents (implementer, staff-reviewer, test-verifier)
 hooks/           Auto-format on Edit/Write (multi-language) + session context
 shared/          Workflow engine with just-in-time phase loading
