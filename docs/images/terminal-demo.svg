@@ -1,33 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 620" font-family="'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 680" font-family="'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace">
   <style>
-    @keyframes typing1 { 0%,8% { opacity:0 } 10% { opacity:1 } }
-    @keyframes typing2 { 0%,18% { opacity:0 } 20% { opacity:1 } }
-    @keyframes typing3 { 0%,26% { opacity:0 } 28% { opacity:1 } }
-    @keyframes typing4 { 0%,34% { opacity:0 } 36% { opacity:1 } }
-    @keyframes typing5 { 0%,42% { opacity:0 } 44% { opacity:1 } }
-    @keyframes typing6 { 0%,50% { opacity:0 } 52% { opacity:1 } }
-    @keyframes typing7 { 0%,58% { opacity:0 } 60% { opacity:1 } }
-    @keyframes typing8 { 0%,66% { opacity:0 } 68% { opacity:1 } }
-    @keyframes typing9 { 0%,74% { opacity:0 } 76% { opacity:1 } }
-    @keyframes typing10 { 0%,80% { opacity:0 } 82% { opacity:1 } }
-    @keyframes typing11 { 0%,86% { opacity:0 } 88% { opacity:1 } }
+    @keyframes typing1 { 0%,6% { opacity:0 } 8% { opacity:1 } }
+    @keyframes typing2 { 0%,14% { opacity:0 } 16% { opacity:1 } }
+    @keyframes typing3 { 0%,22% { opacity:0 } 24% { opacity:1 } }
+    @keyframes typing4 { 0%,30% { opacity:0 } 32% { opacity:1 } }
+    @keyframes typing5 { 0%,36% { opacity:0 } 38% { opacity:1 } }
+    @keyframes typing6 { 0%,42% { opacity:0 } 44% { opacity:1 } }
+    @keyframes typing7 { 0%,48% { opacity:0 } 50% { opacity:1 } }
+    @keyframes typing8 { 0%,54% { opacity:0 } 56% { opacity:1 } }
+    @keyframes typing9 { 0%,62% { opacity:0 } 64% { opacity:1 } }
+    @keyframes typing10 { 0%,70% { opacity:0 } 72% { opacity:1 } }
+    @keyframes typing11 { 0%,78% { opacity:0 } 80% { opacity:1 } }
+    @keyframes typing12 { 0%,86% { opacity:0 } 88% { opacity:1 } }
     @keyframes blink { 0%,49% { opacity:1 } 50%,100% { opacity:0 } }
-    .l1 { animation: typing1 16s infinite }
-    .l2 { animation: typing2 16s infinite }
-    .l3 { animation: typing3 16s infinite }
-    .l4 { animation: typing4 16s infinite }
-    .l5 { animation: typing5 16s infinite }
-    .l6 { animation: typing6 16s infinite }
-    .l7 { animation: typing7 16s infinite }
-    .l8 { animation: typing8 16s infinite }
-    .l9 { animation: typing9 16s infinite }
-    .l10 { animation: typing10 16s infinite }
-    .l11 { animation: typing11 16s infinite }
+    .l1 { animation: typing1 18s infinite }
+    .l2 { animation: typing2 18s infinite }
+    .l3 { animation: typing3 18s infinite }
+    .l4 { animation: typing4 18s infinite }
+    .l5 { animation: typing5 18s infinite }
+    .l6 { animation: typing6 18s infinite }
+    .l7 { animation: typing7 18s infinite }
+    .l8 { animation: typing8 18s infinite }
+    .l9 { animation: typing9 18s infinite }
+    .l10 { animation: typing10 18s infinite }
+    .l11 { animation: typing11 18s infinite }
+    .l12 { animation: typing12 18s infinite }
     .cursor { animation: blink 1s step-end infinite }
   </style>
 
   <!-- Terminal window -->
-  <rect width="820" height="620" rx="12" fill="#0d1117"/>
+  <rect width="820" height="680" rx="12" fill="#0d1117"/>
 
   <!-- Title bar -->
   <rect width="820" height="38" rx="12" fill="#161b22"/>
@@ -74,48 +76,60 @@
     <text x="250" y="356" fill="#3fb950" font-size="12">Approved.</text>
   </g>
 
-  <!-- Line 5: Implement -->
+  <!-- Line 5: Chronicle -->
   <g class="l5" opacity="0">
-    <text x="20" y="384" fill="#d97706" font-size="13" font-weight="700">PHASE 4</text>
-    <text x="100" y="384" fill="#ffa657" font-size="13">Implement</text>
-    <text x="220" y="384" fill="#484f58" font-size="12">(Sonnet implementer subagent)</text>
+    <text x="20" y="384" fill="#8b5cf6" font-size="13" font-weight="700">PHASE 3</text>
+    <text x="100" y="384" fill="#d2a8ff" font-size="13">Chronicle</text>
+    <text x="20" y="404" fill="#7d8590" font-size="12">CHRONICLE INITIATED — 0043__2026-03-31__user-orders-api.md</text>
   </g>
 
+  <!-- Line 6: Implement header -->
   <g class="l6" opacity="0">
-    <text x="36" y="404" fill="#f85149" font-size="12">RED</text>
-    <text x="72" y="404" fill="#7d8590" font-size="12">test_get_user_orders_paginated FAILED (expected)</text>
+    <text x="20" y="432" fill="#d97706" font-size="13" font-weight="700">PHASE 4</text>
+    <text x="100" y="432" fill="#ffa657" font-size="13">Implement</text>
+    <text x="220" y="432" fill="#484f58" font-size="12">(Sonnet implementer subagent)</text>
   </g>
 
+  <!-- Line 7: RED -->
   <g class="l7" opacity="0">
-    <text x="36" y="424" fill="#3fb950" font-size="12">GREEN</text>
-    <text x="84" y="424" fill="#7d8590" font-size="12">test_get_user_orders_paginated PASSED</text>
+    <text x="36" y="452" fill="#f85149" font-size="12">RED</text>
+    <text x="72" y="452" fill="#7d8590" font-size="12">test_get_user_orders_paginated FAILED (expected)</text>
   </g>
 
+  <!-- Line 8: GREEN -->
   <g class="l8" opacity="0">
-    <text x="36" y="444" fill="#d2a8ff" font-size="12">REFACTOR</text>
-    <text x="120" y="444" fill="#7d8590" font-size="12">Extracted cursor encoding to shared utility</text>
-    <text x="20" y="464" fill="#7d8590" font-size="12">Implementer: 5/5 tasks done. Plan file updated.</text>
-    <text x="20" y="484" fill="#3fb950" font-size="12">SOLUTION COMPLETE</text>
+    <text x="36" y="472" fill="#3fb950" font-size="12">GREEN</text>
+    <text x="84" y="472" fill="#7d8590" font-size="12">test_get_user_orders_paginated PASSED</text>
   </g>
 
-  <!-- Line 6: Verify + Review -->
+  <!-- Line 9: REFACTOR + completion -->
   <g class="l9" opacity="0">
-    <text x="20" y="512" fill="#da3633" font-size="13" font-weight="700">PHASE 5</text>
-    <text x="100" y="512" fill="#f97583" font-size="13">Verify</text>
-    <text x="170" y="512" fill="#7d8590" font-size="12">12 passed, 0 failed, 0 warnings</text>
-    <text x="20" y="532" fill="#3fb950" font-size="12">VERIFICATION COMPLETE (evidence: pytest output attached)</text>
+    <text x="36" y="492" fill="#d2a8ff" font-size="12">REFACTOR</text>
+    <text x="120" y="492" fill="#7d8590" font-size="12">Extracted cursor encoding to shared utility</text>
+    <text x="20" y="512" fill="#7d8590" font-size="12">Implementer: 5/5 tasks done. Plan file updated.</text>
+    <text x="20" y="532" fill="#3fb950" font-size="12">SOLUTION COMPLETE</text>
   </g>
 
+  <!-- Line 10: Verify -->
   <g class="l10" opacity="0">
-    <text x="20" y="556" fill="#388bfd" font-size="13" font-weight="700">PHASE 6</text>
-    <text x="100" y="556" fill="#79c0ff" font-size="13">Staff Review</text>
-    <text x="220" y="556" fill="#484f58" font-size="12">(Opus reviewer subagent)</text>
-    <text x="20" y="576" fill="#3fb950" font-size="12">APPROVED: Spec complete, no simplification possible. Code is minimal and correct.</text>
+    <text x="20" y="560" fill="#da3633" font-size="13" font-weight="700">PHASE 5</text>
+    <text x="100" y="560" fill="#f97583" font-size="13">Verify</text>
+    <text x="170" y="560" fill="#7d8590" font-size="12">12 passed, 0 failed, 0 warnings</text>
+    <text x="20" y="580" fill="#3fb950" font-size="12">VERIFICATION COMPLETE (evidence: pytest output attached)</text>
   </g>
 
+  <!-- Line 11: Staff Review -->
   <g class="l11" opacity="0">
-    <text x="20" y="604" fill="#2ea043" font-size="13" font-weight="700">PHASE 7</text>
-    <text x="100" y="604" fill="#7ee787" font-size="13">Finalize</text>
-    <text x="190" y="604" fill="#3fb950" font-size="12">WORKFLOW COMPLETE. Chronicle updated.</text>
+    <text x="20" y="608" fill="#388bfd" font-size="13" font-weight="700">PHASE 6</text>
+    <text x="100" y="608" fill="#79c0ff" font-size="13">Staff Review</text>
+    <text x="220" y="608" fill="#484f58" font-size="12">(Opus reviewer subagent)</text>
+    <text x="20" y="628" fill="#3fb950" font-size="12">APPROVED: Spec complete, no simplification possible. Code is minimal and correct.</text>
+  </g>
+
+  <!-- Line 12: Finalize -->
+  <g class="l12" opacity="0">
+    <text x="20" y="656" fill="#2ea043" font-size="13" font-weight="700">PHASE 7</text>
+    <text x="100" y="656" fill="#7ee787" font-size="13">Finalize</text>
+    <text x="190" y="656" fill="#3fb950" font-size="12">WORKFLOW COMPLETE. Chronicle updated.</text>
   </g>
 </svg>

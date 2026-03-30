@@ -239,13 +239,13 @@ Implements patterns from Anthropic's [Context Engineering guide](https://www.ant
 
 ## Regression Testing
 
-**27 evals, 89 assertions** across 10 behavioral dimensions — a test suite for agent behavior. Powered by Anthropic's [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin.
+**30 evals, 98 assertions** across 11 behavioral dimensions — a test suite for agent behavior. Powered by Anthropic's [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin.
 
 ```
 /eval-regression
 ```
 
-Covers: brainstorming guard (7), smart isolation (6), anti-rationalization (4), workflow phases (3), implementer discipline (2), language detection, chronicle quality, turn boundaries, and project directives. Each eval snapshots the committed version as baseline, runs the modified version, and produces a clear verdict: **SAFE TO COMMIT** or **REGRESSIONS FOUND**.
+Covers: brainstorming guard (7), smart isolation (6), anti-rationalization (4), performance review (3), workflow phases (3), implementer discipline (2), language detection, chronicle quality, turn boundaries, project directives, and AskUserQuestion avoidance. Each eval snapshots the committed version as baseline, runs the modified version, and produces a clear verdict: **SAFE TO COMMIT** or **REGRESSIONS FOUND**.
 
 ---
 

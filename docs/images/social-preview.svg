@@ -62,7 +62,7 @@
 
   <!-- Stats -->
   <g font-size="18">
-    <text x="320" y="510" text-anchor="middle" fill="#e6edf3" font-weight="700" font-size="28">17</text>
+    <text x="320" y="510" text-anchor="middle" fill="#e6edf3" font-weight="700" font-size="28">19</text>
     <text x="320" y="536" text-anchor="middle" fill="#7d8590">Skills</text>
 
     <text x="530" y="510" text-anchor="middle" fill="#e6edf3" font-weight="700" font-size="28">3</text>
