@@ -65,6 +65,9 @@ Add these to the shared workflow's verification checklist:
 - [ ] No global state or hidden dependencies
 - [ ] DataFrames copied before mutation
 - [ ] Python 3.13+ features where appropriate
+- [ ] No `iterrows()` — vectorized ops, `to_dict("records")`, or `groupby` instead
+- [ ] Independent DB queries run concurrently (`asyncio.gather` / `ThreadPoolExecutor`)
+- [ ] No fetch-then-filter — use JOIN or IN (subquery) instead of 2 round trips
 - [ ] `ruff check` passes
 - [ ] `ruff format` applied
 - [ ] `pytest` passes (or alternative verification documented)

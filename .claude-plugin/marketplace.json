@@ -8,7 +8,7 @@
     {
       "name": "development-skills",
       "description": "Structured development workflow with 7-phase quality gates, subagent orchestration, and multi-language support",
-      "version": "0.0.15",
+      "version": "0.0.16",
       "source": "./"
     }
   ]
