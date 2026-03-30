@@ -926,6 +926,93 @@
           "pass_criteria": "Model runs pytest or equivalent test command after all branches are merged, verifying the combined result."
         }
       ]
+    },
+    {
+      "id": 28,
+      "name": "perf-review-iterrows-antipattern",
+      "category": "performance-review",
+      "tests_change": "v0.0.16: Performance Patterns in python-dev patterns.md — iterrows detection",
+      "prompt": "Review this Python service that builds a summary report from a DataFrame. The code works but I want your feedback before merging.\n\n```python\n# src/service/report_service.py\nimport pandas as pd\nfrom model.responses import ReportRow\n\nclass ReportService:\n    def __init__(self, repository):\n        self.repository = repository\n\n    async def build_summary(self, plant_id: str) -> list[ReportRow]:\n        df = await self.repository.get_production_data(plant_id)\n        results = []\n        for idx, row in df.iterrows():\n            margin = row[\"revenue\"] - row[\"cost\"]\n            status = \"profit\" if margin > 0 else \"loss\"\n            results.append(ReportRow(\n                product=row[\"product\"],\n                margin=margin,\n                status=status,\n            ))\n        return results\n```",
+      "expected_output": "core-dev triggers, python-dev invoked. During review, model flags df.iterrows() as a performance anti-pattern per patterns.md and suggests vectorized operations or to_dict('records').",
+      "files": [],
+      "assertions": [
+        {
+          "name": "iterrows_flagged",
+          "type": "behavioral",
+          "check": "Model identifies iterrows() as an anti-pattern or performance issue",
+          "pass_criteria": "Model explicitly mentions iterrows() as problematic, anti-pattern, slow, or inefficient"
+        },
+        {
+          "name": "vectorized_alternative_suggested",
+          "type": "behavioral",
+          "check": "Model suggests a concrete vectorized alternative",
+          "pass_criteria": "Model suggests at least one of: vectorized column operations, to_dict('records'), df.apply(), np.where(), or df.assign() as replacement"
+        },
+        {
+          "name": "python_dev_invoked",
+          "type": "behavioral",
+          "check": "Model invokes python-dev skill for Python code review",
+          "pass_criteria": "Skill tool call with 'python-dev' in transcript"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "name": "perf-review-sequential-db-queries",
+      "category": "performance-review",
+      "tests_change": "v0.0.16: Performance Patterns in python-dev patterns.md — sequential query parallelization",
+      "prompt": "Review this Python service before I merge. It fetches dashboard data for a given customer.\n\n```python\n# src/service/dashboard_service.py\nclass DashboardService:\n    def __init__(self, order_repo, invoice_repo, shipment_repo):\n        self.order_repo = order_repo\n        self.invoice_repo = invoice_repo\n        self.shipment_repo = shipment_repo\n\n    async def get_dashboard(self, customer_id: str) -> DashboardResponse:\n        orders = await self.order_repo.get_by_customer(customer_id)\n        invoices = await self.invoice_repo.get_by_customer(customer_id)\n        shipments = await self.shipment_repo.get_by_customer(customer_id)\n        return DashboardResponse(\n            orders=orders,\n            invoices=invoices,\n            shipments=shipments,\n            total_orders=len(orders),\n        )\n```",
+      "expected_output": "core-dev triggers, python-dev invoked. During review, model identifies 3 sequential independent await calls and suggests asyncio.gather() to parallelize them.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "sequential_queries_flagged",
+          "type": "behavioral",
+          "check": "Model identifies the 3 sequential awaits as a performance issue",
+          "pass_criteria": "Model mentions that the 3 queries are independent and run sequentially, wasting wall-clock time"
+        },
+        {
+          "name": "gather_suggested",
+          "type": "behavioral",
+          "check": "Model suggests asyncio.gather or concurrent execution",
+          "pass_criteria": "Model suggests asyncio.gather() or asyncio.create_task() or similar concurrent pattern as replacement"
+        },
+        {
+          "name": "python_dev_invoked",
+          "type": "behavioral",
+          "check": "Model invokes python-dev skill for Python code review",
+          "pass_criteria": "Skill tool call with 'python-dev' in transcript"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "name": "perf-review-fetch-then-filter",
+      "category": "performance-review",
+      "tests_change": "v0.0.16: Performance Patterns in python-dev patterns.md — fetch-then-filter to JOIN",
+      "prompt": "Review this repository method. It works but I'd like feedback before merging.\n\n```python\n# src/repository/item_repository.py\nclass ItemRepository:\n    def __init__(self, pool):\n        self.pool = pool\n\n    async def get_active_items(self) -> list[Item]:\n        async with self.pool.acquire() as conn:\n            order_records = await conn.fetch(\n                \"SELECT order_id FROM orders WHERE status = $1\", \"active\"\n            )\n            order_ids = [r[\"order_id\"] for r in order_records]\n            if not order_ids:\n                return []\n            item_records = await conn.fetch(\n                \"SELECT * FROM items WHERE order_id = ANY($1)\", order_ids\n            )\n            return [Item.model_validate(dict(r)) for r in item_records]\n```",
+      "expected_output": "core-dev triggers, python-dev invoked. During review, model flags the fetch-IDs-then-WHERE-IN pattern as two unnecessary round trips and suggests a single JOIN or IN (subquery).",
+      "files": [],
+      "assertions": [
+        {
+          "name": "two_round_trips_flagged",
+          "type": "behavioral",
+          "check": "Model identifies the two-query pattern as unnecessary round trips",
+          "pass_criteria": "Model mentions two round trips, two queries, fetch-then-filter, or that this can be done in a single query"
+        },
+        {
+          "name": "join_or_subquery_suggested",
+          "type": "behavioral",
+          "check": "Model suggests JOIN or IN (subquery) as replacement",
+          "pass_criteria": "Model suggests at least one of: JOIN, IN (SELECT ...), or subquery as a single-query replacement"
+        },
+        {
+          "name": "python_dev_invoked",
+          "type": "behavioral",
+          "check": "Model invokes python-dev skill for Python code review",
+          "pass_criteria": "Skill tool call with 'python-dev' in transcript"
+        }
+      ]
     }
   ]
 }

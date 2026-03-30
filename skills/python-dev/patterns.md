@@ -303,6 +303,79 @@ repos:
 
 ---
 
+## Performance Patterns
+
+### DataFrame: Never iterrows()
+
+`iterrows()` is O(n) with Python-speed per-row overhead. Always prefer vectorized operations.
+
+| Instead of | Use |
+|------------|-----|
+| `for _, row in df.iterrows()` | Vectorized: `df["col"] = df["a"] + df["b"]` |
+| Loop to build list of dicts | `df.to_dict("records")` |
+| Loop to group and aggregate | `df.groupby("key").agg(...)` |
+| Loop with conditional logic | `df.loc[mask]` or `np.where()` |
+
+### Database: Parallelize Independent Queries
+
+Sequential I/O-bound queries to the same DB waste wall-clock time. Use concurrent execution for independent queries.
+
+```python
+# WRONG: sequential — total time = sum of all queries
+result_a = await repo.get_orders(customer_id)
+result_b = await repo.get_invoices(customer_id)
+result_c = await repo.get_shipments(customer_id)
+
+# RIGHT: concurrent — total time = max of all queries
+result_a, result_b, result_c = await asyncio.gather(
+    repo.get_orders(customer_id),
+    repo.get_invoices(customer_id),
+    repo.get_shipments(customer_id),
+)
+
+# RIGHT (sync): ThreadPoolExecutor for blocking DB calls
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+with ThreadPoolExecutor(max_workers=3) as pool:
+    futures = {
+        pool.submit(repo.get_orders, customer_id): "orders",
+        pool.submit(repo.get_invoices, customer_id): "invoices",
+        pool.submit(repo.get_shipments, customer_id): "shipments",
+    }
+    results = {tag: f.result() for f, tag in futures.items()}
+```
+
+**When to apply:** 2+ independent queries to the same DB in the same function. Not applicable when query B depends on query A's result.
+
+### Database: JOIN Instead of Fetch-Then-Filter
+
+Two round trips where one SQL statement suffices is a latency and consistency anti-pattern.
+
+```python
+# WRONG: fetch IDs, then fetch by IDs — 2 round trips
+order_ids = await conn.fetch("SELECT order_id FROM orders WHERE status = $1", "open")
+ids = [r["order_id"] for r in order_ids]
+items = await conn.fetch(f"SELECT * FROM items WHERE order_id = ANY($1)", ids)
+
+# RIGHT: single query with JOIN
+items = await conn.fetch("""
+    SELECT i.*
+    FROM items i
+    JOIN orders o ON o.order_id = i.order_id
+    WHERE o.status = $1
+""", "open")
+
+# RIGHT: single query with IN (subquery)
+items = await conn.fetch("""
+    SELECT * FROM items
+    WHERE order_id IN (SELECT order_id FROM orders WHERE status = $1)
+""", "open")
+```
+
+**When to apply:** Pattern "query 1 for IDs → query 2 with WHERE IN (IDs)". Exceptions: when the intermediate result is needed for other logic, or when the ID set must be logged/cached.
+
+---
+
 ## Quick Reference
 
 | Need | Do This |
@@ -328,3 +401,6 @@ repos:
 | Comments for obvious code | Delete |
 | Over-engineering | Solve current problem only |
 | Modify input DataFrames | `df.copy()` first |
+| `df.iterrows()` | Vectorized ops, `to_dict("records")`, `groupby` |
+| Sequential independent DB queries | `asyncio.gather()` or `ThreadPoolExecutor` |
+| Fetch IDs → WHERE IN (IDs) | JOIN or IN (subquery) in one query |
