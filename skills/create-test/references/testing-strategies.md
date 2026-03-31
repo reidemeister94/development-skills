@@ -4,7 +4,7 @@
 
 Tests exist for two reasons only: (1) find bugs in code just written, (2) catch regressions in future changes. Everything else is ritual.
 
-### The 10 Principles
+### The 9 Principles
 
 1. **Code first, test smart.** Understand the implementation's tensions and fragile points before writing tests. The implementation reveals WHERE bugs will hide — blind test-first misses this.
 
@@ -23,8 +23,6 @@ Tests exist for two reasons only: (1) find bugs in code just written, (2) catch 
 8. **Compare against simplicity.** Write a simple, obviously-correct reference implementation inside the test. Run both on the same random inputs. Differences are bugs in one or the other. The simple version is easy to verify by inspection.
 
 9. **Speed is correctness.** Slow tests don't get run. Tests that don't run don't find bugs. Optimize for fast execution: in-memory over I/O, parallel over sequential, skip unnecessary setup.
-
-10. **LLMs need steering.** "Write tests for X" produces shallow tests with weak assertions. You must explicitly request: boundary stress at specific thresholds, property-based testing with specific invariants, reference implementation comparison, fuzz testing with biased generators.
 
 ---
 
@@ -94,7 +92,9 @@ Tests exist for two reasons only: (1) find bugs in code just written, (2) catch 
 - Computation caching: run expensive operations once, share across tests
 - Checkpoint architecture: capture intermediate states, not just final output
 
-**Comparison utilities needed:**
+**Recommended library:** `pytest-regressions` — purpose-built golden file testing for JSON, DataFrames, images. Handles file creation, comparison, and update workflow automatically. 92% regression detection accuracy vs 72% for hand-written assertions.
+
+**Comparison utilities needed (if not using pytest-regressions):**
 - `assert_dataframes_equal(actual, expected, tolerance=1e-6, exclude_cols=[...])`
 - `normalize_value(val)` — sort lists, handle NaN, canonical JSON for dicts
 - `diff_report(actual, expected)` — per-row differences for debugging
@@ -136,6 +136,122 @@ Tests exist for two reasons only: (1) find bugs in code just written, (2) catch 
 - Script to start both services with correct configs
 - Known expected differences documented and excluded
 - Report: PASS/FAIL per endpoint with diff details
+
+### 7. Real Database Integration Testing
+
+**When:** Code that executes SQL queries, ORM operations, repository patterns, data pipelines, or anything where the DB IS the logic (constraints, triggers, stored procedures).
+
+**Core rule:** NEVER substitute SQLite for PostgreSQL in tests. SQLite accepts strings in integer columns, lacks JSONB, window functions, partial indexes, and row-level locking. Code passes SQLite tests and fails in production.
+
+See `integration-patterns.md` for isolation strategies (transaction rollback, TRUNCATE, template DB + tmpfs, IntegreSQL), fixture patterns, factory fixtures, Docker Compose templates, and synthetic data generation.
+
+### 8. Browser E2E Testing (Playwright)
+
+**When:** User-facing web applications. Test user-visible behavior, not implementation details.
+
+**Three non-negotiable rules:**
+1. Semantic locators only: `getByRole` > `getByText` > `getByTestId` > never CSS/XPath
+2. Web-first assertions only: `await expect(loc).toBeVisible()`, never synchronous `isVisible()`
+3. Page Object Model with lazy getter locators for any project beyond trivial size
+
+See `e2e-browser-patterns.md` for POM architecture, locator priority, visual regression, CI/CD integration, and anti-patterns.
+
+### 9. Characterization / Approval Testing (Golden Master)
+
+**When:** Legacy code without tests that needs refactoring. The chicken-and-egg problem: need tests to refactor safely, but untested code seems impossible to test.
+
+**Core concept:** Capture the ACTUAL behavior of existing code — not what it should do, but what it DOES. If behavior changes after refactoring → the refactoring broke something.
+
+**Process:**
+1. **Identify seams** — points where you can alter behavior without changing source code (classes, interfaces, config)
+2. **Write capture script** — exercise the code with representative inputs, serialize all outputs
+3. **Write Printer/normalizer** — scrub volatile data (timestamps, IDs, random values) for deterministic comparison
+4. **Run as regression** — after refactoring, any diff = behavior change
+
+**Critical nuance:** Characterization tests capture bugs too. If the baseline includes incorrect behavior, your tests legitimize it. Use as a bridge to understanding, then replace with proper behavioral tests once you understand the code.
+
+**Techniques from Michael Feathers (Working Effectively with Legacy Code):**
+- **Sprout Method**: new logic in isolation, tested separately, called from legacy code
+- **Wrap Method**: rename original, create wrapper with same name, add logic before/after
+- **Scratch Refactoring**: exploratory refactoring to understand code — then REVERT ALL before implementing
+
+### 10. Concurrency & Atomicity Testing
+
+**When:** Async code, shared resources, database operations that must be atomic, booking/reservation systems, counters, rate limiters.
+
+**Three core patterns:** race condition (concurrent claims on scarce resource — exactly one wins), idempotency (duplicate requests produce same result), stress (N concurrent operations maintain invariants).
+
+See `language-templates.md` for concrete scaffolds per language.
+
+**Key rule:** Concurrency bugs are non-deterministic. Run stress tests with high iteration counts (`@settings(max_examples=500)` or explicit loops). A test that passes once proves nothing — it must pass 100 times.
+
+### 11. Contract Testing
+
+**When:** Multiple services communicate via API. Teams deploy independently. Breaking changes at service boundaries cause production incidents.
+
+**Consumer-Driven Contracts (Pact):**
+1. **Consumer** defines expectations (what it needs from provider)
+2. Consumer tests generate pact files (JSON contracts)
+3. **Provider** verifies pact files independently
+4. `can-i-deploy` gate prevents incompatible deployments
+
+**Critical anti-pattern:** Over-specifying contracts. If consumer only needs `name`, don't assert on `address` and `phone` — provider removing unused fields breaks the contract unnecessarily. Test the minimum contract your consumer requires.
+
+**Alternative for REST APIs:** OpenAPI schema validation as contract. Less powerful than Pact but lower overhead for simple cases.
+
+### 12. Mutation Testing (Test Quality Verification)
+
+**When:** You want to verify that your tests actually catch bugs, not just execute code. Code coverage measures execution; mutation testing measures assertion quality.
+
+**How it works:** Introduce deliberate bugs (mutants) into source code. If tests still pass → tests don't actually verify that code path.
+
+**Mutation score interpretation:**
+- 85-90%+: Excellent — strong test suite
+- 60-80%: Decent — room for improvement on edge cases
+- <60%: Weak — tests verify execution, not correctness
+
+**Tools:** mutmut (Python, zero-config), cosmic-ray (Python, distributed), Stryker (TypeScript/JS)
+
+**When to apply:** Critical business logic (payments, auth), stable APIs, complex algorithms. Skip for: simple CRUD, trivial getters, prototypes, frequently changing code.
+
+**Practical tip:** Schedule mutation testing as a nightly CI job, not on every commit. Focus on the critical 10-20% of the codebase.
+
+### 13. Flaky Test Prevention
+
+**When:** Any test suite running in CI. Flaky tests are the #1 CI reliability killer — they erode trust until developers ignore failures.
+
+**Common causes and fixes:**
+
+| Cause | Detection | Fix |
+|-------|-----------|-----|
+| Time-dependent logic | Tests fail near midnight/DST/timezone boundaries | Inject clock: `freezegun` (Python), `jest.useFakeTimers()` (TS) |
+| Random data without seed | Unreproducible failures | `factory.random.reseed_random(42)` or `Faker.seed(42)` in conftest |
+| Test ordering dependency | Tests pass alone, fail in suite | Run with `pytest-randomly` to detect; fix shared state |
+| Network calls in tests | Timeout-dependent failures | Mock with `responses`, `httpx_mock`, or `page.route()` |
+| Race conditions in async tests | Intermittent failures under load | Use `asyncio.wait_for` with explicit timeouts, never `asyncio.sleep` |
+| Shared mutable state | Test A pollutes state for test B | Function-scoped fixtures with transaction rollback |
+| File system artifacts | Leftover files from previous runs | Use `tmp_path` fixture (pytest) or tempdir |
+
+**Prevention checklist for generated tests:**
+1. No calls to `time.time()`, `datetime.now()`, or `Date.now()` — inject or mock
+2. No hardcoded ports — use dynamic port assignment
+3. No `sleep()` — use condition-based waiting or web-first assertions
+4. Each test creates its own state — never rely on test execution order
+5. Deterministic random seeds for any random data generation
+
+### 14. Database Migration Testing
+
+**When:** Projects using Alembic, Flyway, Liquibase, or Prisma migrations. Critical during refactoring when schema changes accompany code changes.
+
+**Test patterns:**
+
+1. **Up/down round-trip:** Apply migration, verify schema, rollback migration, verify original schema restored
+2. **Data preservation:** Seed data before migration, apply migration, verify data correctly transformed
+3. **Idempotency:** Applying the same migration twice should either succeed silently or fail cleanly
+
+**Tools:** `alembic upgrade head && alembic downgrade -1 && alembic upgrade head` as CI step. For Alembic specifically, `pytest-alembic` provides fixtures for testing individual migrations.
+
+See `integration-patterns.md` for concrete implementation patterns.
 
 ---
 

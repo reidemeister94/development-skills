@@ -1,17 +1,18 @@
 ---
 name: create-test
-description: "Use when user wants to design tests, analyze test coverage quality, generate boundary/property/invariant tests, audit existing tests for weak assertions, or create golden fixture capture scripts. Use when user says create test, design tests, test strategy, what should I test, explore tests, test quality, boundary testing, fuzz testing, property-based testing, golden fixtures, or /create-test."
+description: "Design and generate tests: boundary, property, invariant, integration, E2E, characterization, concurrency, contract, visual regression, mutation. Analyzes coverage gaps, audits weak assertions, creates golden fixtures. Trigger: /create-test"
 user-invocable: true
 allowed-tools: Glob, Grep, Read, Bash, Agent, Edit, Write
+effort: high
 ---
 
 # Create Test — Intelligent Test Design
 
-ultrathink
+<!-- ultrathink: triggers extended reasoning mode -->
 
 **Announce:** "Using the create-test skill. Analyzing code to design tests that find bugs, not just exist."
 
-Read `references/testing-strategies.md` in this skill's directory now. Keep its principles active throughout.
+Read `references/testing-strategies.md` now. Keep its principles active throughout.
 
 ## Argument Parsing
 
@@ -22,16 +23,20 @@ Read `references/testing-strategies.md` in this skill's directory now. Keep its 
 
 ## MODE A: Explorer (no arguments)
 
-Spawn an analysis subagent (Agent tool, `model: opus`) with this prompt:
+Spawn an analysis subagent (Agent tool) with this prompt:
 
 ```
 You are a test coverage analyst. Your job: find the most dangerous untested code in this project.
 
 ## Instructions
 
-1. **Detect project type:**
+1. **Detect project type and test infrastructure:**
    - Glob for: pyproject.toml, pom.xml, build.gradle, package.json, Package.swift
    - Read the config to understand: language, framework, test runner, existing test locations
+   - Detect DB layer: grep for asyncpg, SQLAlchemy, psycopg, prisma, database URLs, connection pools
+   - Detect browser testing: glob for playwright.config.*, cypress.config.*, *.spec.ts, *.e2e.ts
+   - Detect containers: glob for docker-compose*.yml, Dockerfile*, testcontainers usage
+   - Detect legacy indicators: source files with 0 test coverage, functions >100 lines, no test directory
 
 2. **Map what EXISTS:**
    - Glob for test files: `tests/**`, `test/**`, `src/test/**`, `__tests__/**`, `*Test.*`, `*_test.*`, `*.test.*`, `*.spec.*`
@@ -52,14 +57,15 @@ You are a test coverage analyst. Your job: find the most dangerous untested code
    |-----------|---------|------------|----------|
    | **Blast radius** | Internal helper | Service layer | Public API / data pipeline |
    | **Complexity** | Pure function, no branches | Multiple branches, state | Recursive, concurrent, external deps |
-   | **Change frequency** | Untouched 6+ months | Monthly changes | Weekly or more |
+   | **Change frequency** | Untouched 6+ months (`git log --since="6 months ago" -- <file> \| wc -l` = 0) | Monthly changes | Weekly or more |
    | **Data sensitivity** | Display/formatting | Business logic | Financial, auth, data integrity |
 
    Risk = sum of scores. Rank from highest to lowest.
 
 5. **Audit existing test quality:**
-   Read `references/weak-assertion-patterns.md` (in the create-test skill directory within the development-skills plugin).
-   For each existing test file, check for weak assertion patterns. Report files with assertion density < 2 or weak assertion ratio > 0.3.
+   Read `references/weak-assertion-patterns.md`.
+   Use Grep with the regex patterns from that file to scan existing test files for weak assertions.
+   Report files with assertion density < 2 or weak assertion ratio > 0.3.
 
 6. **Output format:**
 
@@ -85,9 +91,19 @@ You are a test coverage analyst. Your job: find the most dangerous untested code
 
 ## Recommended Test Infrastructure
 [conftest patterns, fixtures, markers — only if missing]
+
+## Testing Layers Assessment
+| Layer | Status | Gap |
+|-------|--------|-----|
+| Unit (boundary, property, invariant) | [present/absent] | [what's missing] |
+| Integration (real DB, services) | [present/absent] | [what's missing] |
+| E2E (browser/API lifecycle) | [present/absent] | [what's missing] |
+| Characterization (golden master) | [present/absent] | [needed for refactoring?] |
+| Contract (service boundaries) | [present/absent] | [multi-service?] |
+| Visual regression | [present/absent] | [UI project?] |
 ```
 
-Write this analysis to `docs/test-analysis.md` in the project root.
+Write this analysis to `test-analysis.md` in the project root.
 ```
 
 After the subagent returns, display the analysis summary to the user:
@@ -109,7 +125,7 @@ After the subagent returns, display the analysis summary to the user:
 1. Read the target file completely
 2. If a directory, read all source files in it
 3. Identify the project language and test framework (from project config files)
-4. Read `references/language-templates.md` in this skill's directory for the target language
+4. Read `references/language-templates.md` for the target language
 
 ### Step 2: Implementation Analysis
 
@@ -139,18 +155,25 @@ For each public function/method/endpoint in the target:
 
 ### Step 3: Strategy Selection
 
-Read `references/testing-strategies.md` to select strategies. Apply this matrix:
+Refer to `references/testing-strategies.md` to select strategies. Apply this matrix:
 
-| Code characteristic | Primary strategy | Secondary |
-|-------------------|-----------------|-----------|
-| Numeric thresholds | Boundary stress | Property-based |
-| Data transformation | Property-based (round-trip, invariant) | Boundary |
-| Parser / serializer | Fuzz + property-based | Boundary |
-| API endpoint (read) | Golden fixture regression | Boundary |
-| API endpoint (write) | CRUD lifecycle | Golden fixture |
-| State machine | State transition coverage | Boundary |
-| Algorithm / computation | Invariant (reference impl) | Property-based |
-| Pure function, few params | Boundary exhaustive | — |
+| Code characteristic | Primary strategy | Secondary | Reference |
+|-------------------|-----------------|-----------|-----------|
+| Numeric thresholds | Boundary stress | Property-based | testing-strategies.md §1 |
+| Data transformation | Property-based (round-trip, invariant) | Boundary | testing-strategies.md §2 |
+| Parser / serializer | Fuzz + property-based | Boundary | testing-strategies.md §2 |
+| API endpoint (read) | Golden fixture regression | Boundary | testing-strategies.md §4 |
+| API endpoint (write) | CRUD lifecycle | Golden fixture | testing-strategies.md §5 |
+| State machine | State transition coverage | Boundary | testing-strategies.md §1 |
+| Algorithm / computation | Invariant (reference impl) | Property-based | testing-strategies.md §3 |
+| Pure function, few params | Boundary exhaustive | — | testing-strategies.md §1 |
+| DB queries / repositories | Real DB integration | Factory fixtures | integration-patterns.md |
+| Browser UI / user flows | Playwright E2E | Visual regression | e2e-browser-patterns.md |
+| Legacy code, pre-refactoring | Characterization (golden master) | Approval test | testing-strategies.md §9 |
+| Concurrent / async operations | Concurrency stress | Property-based | testing-strategies.md §10 |
+| Microservice boundary | Contract test (Pact) | CRUD lifecycle | testing-strategies.md §11 |
+| DB migrations (Alembic, etc.) | Up/down verification | Rollback test | integration-patterns.md |
+| **Migration legacy→new** | Live comparison | Characterization | testing-strategies.md §6 |
 
 ### Step 4: Generate Tests
 
@@ -168,12 +191,22 @@ For golden fixture / e2e patterns, generate BOTH:
 - The capture script (to be run once against live system)
 - The regression test (replays from captured fixtures)
 
+**For DB integration tests:** Apply patterns from `references/integration-patterns.md` (isolation strategies, factory fixtures, synthetic data).
+
+**For Playwright E2E tests:** Apply patterns from `references/e2e-browser-patterns.md` (POM, locator priority, web-first assertions, visual regression).
+
+**For characterization tests:** Apply patterns from `references/testing-strategies.md` §9 (capture baseline, Printer/normalizer, capture script + regression test).
+
+**For concurrency tests:** Apply patterns from `references/testing-strategies.md` §10 and `references/language-templates.md` concurrency scaffolds.
+
+**For contract tests:** Apply patterns from `references/language-templates.md` Pact scaffolds.
+
 ### Step 5: Run and Verify
 
 1. Run the generated tests: use the project's test command
 2. Read the output completely
 3. If tests fail: fix the test (not the source code), re-run
-4. If a test passes on first run without ever having failed: flag it as potentially hollow — verify it actually tests something
+4. After tests pass, verify each test can actually fail: if the production code had a bug at this boundary, would this assertion catch it? If unsure, temporarily invert an assertion to confirm it fails.
 
 ### Step 6: Quality Report
 
@@ -188,6 +221,10 @@ For golden fixture / e2e patterns, generate BOTH:
 | Property-based tests | N | >= 1 per transform | OK/WARN |
 | Weak assertions | N | 0 | OK/WARN |
 | Random/fuzz tests | N | >= 1 for complex logic | OK/WARN |
+| Integration tests (real DB) | N | >= 1 per repository/query | OK/WARN/N/A |
+| E2E browser tests | N | >= 1 per critical flow | OK/WARN/N/A |
+| Characterization tests | N | >= 1 per legacy module | OK/WARN/N/A |
+| Concurrency tests | N | >= 1 per shared resource | OK/WARN/N/A |
 
 ### Strategies Applied
 - Boundary stress: [list of thresholds tested]
@@ -195,6 +232,10 @@ For golden fixture / e2e patterns, generate BOTH:
 - Invariant: [list of invariants checked]
 - Golden fixture: [if applicable]
 - CRUD lifecycle: [if applicable]
+- DB integration: [if applicable — isolation strategy used]
+- E2E browser: [if applicable — flows covered]
+- Characterization: [if applicable — modules locked]
+- Contract: [if applicable — consumer/provider pairs]
 
 ### NOT Tested (and why)
 [Functions/paths deliberately excluded with justification]
