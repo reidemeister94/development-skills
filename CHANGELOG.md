@@ -1,3 +1,23 @@
+## 0.0.18 (2026-03-31)
+
+### Feat
+
+- add roast-my-code skill (code quality critique + AI-readiness audit)
+- add create-test evals (6 evals, 24 assertions covering routing, explorer, DB integration, Playwright, Hypothesis, characterization)
+- add e2e-browser-patterns.md reference (Playwright POM, locator priority, visual regression, CI/CD)
+- add integration-patterns.md reference (testcontainers, transaction rollback, factory fixtures, migration testing)
+- add progress update messages to best-practices skill
+- enhance language-templates.md with Hypothesis composites, settings profiles, Pact contract testing, mutation testing setup
+
+### Fix
+
+- remove duplication in create-test SKILL.md (replaced inline blocks with single-line references)
+- remove redundant double-read of testing-strategies.md
+- add flaky test prevention and migration testing sections to testing-strategies
+- add pytest-xdist worker isolation, pytest-factoryboy, IntegreSQL patterns to integration-patterns
+- replace hardcoded model:opus with effort:high frontmatter
+- standardize reference path phrasing across create-test skill
+
 ## 0.0.17 (2026-03-30)
 
 ### Feat

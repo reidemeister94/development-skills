@@ -14,6 +14,21 @@ ultrathink
 
 Read `references/research-strategy.md` in this skill's directory now. Keep its principles active throughout.
 
+## MANDATORY: Progress Updates
+
+**Output a short status message to the user at each phase transition.** The user must see progress in real-time. Use this exact pattern — output text BEFORE launching tools for each phase:
+
+| When | Message pattern |
+|------|----------------|
+| Phase 0 start | `Phase 0/4 — Fetching mandatory sources (superpowers, official docs, releases, tips)...` |
+| Phase 1 start | `Phase 1/4 — Decomposing topic into research angles...` then list the angles |
+| Phase 2 start | `Phase 2/4 — Launching web research ({N} queries across {N} agents)...` |
+| Phase 2 complete | `Research complete — {N} sources collected. Filtering by authority...` |
+| Phase 3 start | `Phase 3/4 — Deep-fetching top {N} URLs...` |
+| Phase 4 start | `Phase 4/4 — Synthesizing report from {N} sources...` |
+
+**Rules:** Messages must be emitted as visible text output, not internal reasoning. Keep each under one line. Skip Phase 0 message if topic is not Claude Code-related.
+
 ## Date Awareness — Temporal Calibration
 
 Determine TODAY's date from the system context (e.g., `currentDate` in system-reminder). Set:
@@ -51,12 +66,14 @@ Before general web research, check if `TOPIC` relates to **Claude Code** (skills
 
 | # | Source | What to extract | How |
 |---|--------|----------------|-----|
-| 1 | **superpowers** | Iron Laws, skill writing patterns (CSO, anti-rationalization tables, baseline testing), TDD enforcement, Two-Stage Review, progressive disclosure, subagent-driven development, whole-plan review, defense-in-depth | WebFetch `https://github.com/obra/superpowers` — then read key skill files: `skills/writing-skills/SKILL.md`, `skills/test-driven-development/SKILL.md`, `skills/subagent-driven-development/SKILL.md`, `skills/verification-before-completion/SKILL.md` |
+| 1 | **superpowers** — `@~/Documents/ai/superpowers` | Iron Laws, skill writing patterns (CSO, anti-rationalization tables, baseline testing), TDD enforcement, Two-Stage Review, progressive disclosure, subagent-driven development, whole-plan review, defense-in-depth. Read: `README.md`, `skills/writing-skills/SKILL.md`, `skills/test-driven-development/SKILL.md`, `skills/subagent-driven-development/SKILL.md`, `skills/verification-before-completion/SKILL.md` | Use Read tool on local files. If local copy unavailable, WebFetch `https://github.com/obra/superpowers` |
 | 2 | **Claude Code releases** | Latest features, breaking changes, new capabilities, deprecations | WebFetch `https://github.com/anthropics/claude-code/releases` with prompt: "Extract all release notes from the last 3 months. Focus on new features, skill/agent/hook changes, and breaking changes." |
 | 3 | **Official Claude Code docs** | Best practices, skill authoring, subagent patterns, hook guide, context management | WebFetch `https://code.claude.com/docs/en/best-practices` AND `https://code.claude.com/docs/en/skills` AND `https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices` |
-| 4 | **claude-code-tips** | Community-tested tips, CLAUDE.md examples, workflow patterns, real-world productivity tricks | WebFetch `https://github.com/ykdojo/claude-code-tips` |
+| 4 | **claude-code-tips** — `@~/Documents/ai/claude-code-tips` | Community-tested tips, CLAUDE.md examples, workflow patterns, real-world productivity tricks | Use Read tool on local `README.md`. If unavailable, WebFetch `https://github.com/ykdojo/claude-code-tips` |
+| 5 | **claude-code-best-practice** — `@~/Documents/ai/claude-code-best-practice` | all claude code best practices and references | Use Read tool on local `README.md`. If unavailable, WebFetch `https://github.com/shanraisshan/claude-code-best-practice` |
 
-**Execution:** Fetch all 4 sources in parallel (use Agent subagents or parallel tool calls). These results feed into Phase 4 synthesis alongside web research results.
+
+**Execution:** Fetch all sources in parallel (use Agent subagents or parallel tool calls). These results feed into Phase 4 synthesis alongside web research results.
 
 **If NOT Claude Code-related**, skip this phase entirely.
 

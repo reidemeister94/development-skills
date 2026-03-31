@@ -32,7 +32,7 @@ WORKFLOW STATE Verification line: `mvn test / gradle test, mvn compile / gradle 
 
 **Phase 5 Tier B additional MCP verifications:**
 - PostgreSQL MCP → Query DB state before/after
-- Legacy DB MCP → Query legacy database for data verification
+- Legacy DB MCP → Query legacy databases for data verification
 
 ### Implementation Rules (Phase 4)
 
