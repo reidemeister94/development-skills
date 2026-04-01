@@ -98,10 +98,7 @@ Does your code under test issue explicit COMMIT?
 └── Yes → ↓
     Does the test need DDL changes (ALTER TABLE, CREATE INDEX)?
     ├── No → TRUNCATE CASCADE
-    └── Yes → ↓
-        Test suite > 500 integration tests?
-        ├── No → Template DB clone (~87ms/test)
-        └── Yes → IntegreSQL pool (~5ms/test)
+    └── Yes → Template DB clone (~87ms/test)
 ```
 
 ---
@@ -203,19 +200,6 @@ def postgres_container(worker_id):
 
 Run with: `pytest -n auto` (auto-detect CPU cores)
 
-### Strategy 4: IntegreSQL (Pool of Pre-Initialized Databases)
-
-[IntegreSQL](https://github.com/allaboutapps/integresql) is a PostgreSQL pool manager that pre-creates template databases. Each test gets a clean clone in ~5ms (vs ~87ms for `CREATE DATABASE ... TEMPLATE`).
-
-**How it works:**
-1. IntegreSQL runs as a sidecar (Docker container alongside PostgreSQL)
-2. You register a "template" by hashing your migrations
-3. IntegreSQL pre-creates N cloned databases from that template
-4. Each test requests a database from the pool — instant, pre-initialized
-5. After test, database is returned to pool and reset
-
-**When to use:** Large test suites (500+ integration tests) where even Template DB cloning is too slow. Requires Docker Compose setup but pays off at scale.
-
 ---
 
 ## Factory Fixtures Pattern
@@ -263,66 +247,7 @@ def make_order(db_session, make_customer):
     yield make
 ```
 
-### Factory Boy Integration (For Complex Object Graphs)
-
-```python
-import random
-import factory
-from factory.alchemy import SQLAlchemyModelFactory
-
-class CustomerFactory(SQLAlchemyModelFactory):
-    class Meta:
-        model = Customer
-        sqlalchemy_session_persistence = "commit"
-
-    name = factory.Faker("name")
-    email = factory.Sequence(lambda n: f"user{n}@test.com")
-    tier = "standard"
-
-class OrderFactory(SQLAlchemyModelFactory):
-    class Meta:
-        model = Order
-        sqlalchemy_session_persistence = "commit"
-
-    customer = factory.SubFactory(CustomerFactory)
-    product = factory.Faker("word")
-    quantity = factory.LazyFunction(lambda: random.randint(1, 10))
-
-# In conftest.py — bind to test session
-@pytest.fixture(autouse=True)
-def _bind_factories(db_session):
-    CustomerFactory._meta.sqlalchemy_session = db_session
-    OrderFactory._meta.sqlalchemy_session = db_session
-```
-
-### pytest-factoryboy Registration (Preferred for Large Projects)
-
-`pytest-factoryboy` auto-generates fixtures from Factory Boy factories — less boilerplate, composable overrides via parametrize:
-
-```python
-# conftest.py
-from pytest_factoryboy import register
-
-@register
-class CustomerFactory(SQLAlchemyModelFactory):
-    class Meta:
-        model = Customer
-        sqlalchemy_session_persistence = "commit"
-    name = factory.Faker("name")
-    email = factory.Sequence(lambda n: f"user{n}@test.com")
-
-register(CustomerFactory, "vip_customer", tier="premium")  # named variant
-
-# Auto-generated fixtures: `customer`, `customer_factory`, `vip_customer`
-
-# In tests — override attributes via parametrize:
-@pytest.mark.parametrize("customer__tier", ["enterprise"])
-def test_enterprise_discount(customer):
-    assert customer.tier == "enterprise"
-
-# Deterministic random data:
-factory.random.reseed_random(42)  # in conftest.py for reproducible tests
-```
+The `make_` pattern above is sufficient for most projects. No external factory library needed.
 
 ---
 
@@ -409,146 +334,11 @@ services:
       - "8001:8000"
 ```
 
-### Template: Backend + PostgreSQL + Frontend
-
-```yaml
-# docker-compose.e2e.yml
-services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: testdb
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-    tmpfs:
-      - /var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U test -d testdb"]
-      interval: 2s
-      timeout: 5s
-      retries: 5
-
-  backend:
-    build: ./backend
-    environment:
-      DATABASE_URL: postgresql://test:test@postgres:5432/testdb
-    depends_on:
-      postgres:
-        condition: service_healthy
-    ports:
-      - "8001:8000"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 3s
-      timeout: 5s
-      retries: 10
-
-  frontend:
-    build: ./frontend
-    environment:
-      API_URL: http://backend:8000
-    depends_on:
-      backend:
-        condition: service_healthy
-    ports:
-      - "3001:3000"
-
-  # Playwright runs OUTSIDE Docker (on host) pointing at http://localhost:3001
-```
-
-### pytest Integration with Docker Compose
-
-```python
-# conftest.py
-import subprocess
-import time
-
-@pytest.fixture(scope="session", autouse=True)
-def docker_compose():
-    """Start test environment, wait for healthy, tear down after."""
-    subprocess.run(
-        ["docker", "compose", "-f", "docker-compose.test.yml", "up", "-d", "--wait"],
-        check=True, timeout=120,
-    )
-    yield
-    subprocess.run(
-        ["docker", "compose", "-f", "docker-compose.test.yml", "down", "-v"],
-        check=True, timeout=60,
-    )
-```
-
----
-
-## Synthetic Test Data Generation
-
-### Tier 1: Pure SQL (Fastest, Server-Side)
-
-```sql
--- Bulk generate with generate_series + random
-INSERT INTO customers (name, email, tier)
-SELECT
-    'Customer ' || i,
-    'customer' || i || '@test.com',
-    (ARRAY['standard', 'premium', 'enterprise'])[1 + floor(random() * 3)::int]
-FROM generate_series(1, 1000) AS i;
-```
-
-### Tier 2: Faker + Dataclasses (Richest, Relationship-Aware)
-
-```python
-from dataclasses import dataclass, field
-from faker import Faker
-from random import choice, randint
-
-fake = Faker()
-
-@dataclass
-class CustomerData:
-    name: str = field(default_factory=fake.name)
-    email: str = field(default_factory=fake.email)
-    tier: str = field(default_factory=lambda: choice(["standard", "premium"]))
-
-@dataclass
-class OrderData:
-    customer: CustomerData = field(default_factory=CustomerData)
-    product: str = field(default_factory=lambda: " ".join(
-        w.title() for w in fake.words(nb=randint(1, 3))
-    ))
-    quantity: int = field(default_factory=lambda: randint(1, 50))
-
-def seed_database(session, n_customers=100, orders_per_customer=5):
-    """Generate realistic interconnected test data."""
-    customers = [CustomerData() for _ in range(n_customers)]
-    for c in customers:
-        db_customer = Customer(name=c.name, email=c.email, tier=c.tier)
-        session.add(db_customer)
-        session.flush()
-        for _ in range(orders_per_customer):
-            order = OrderData(customer=c)
-            session.add(Order(
-                customer_id=db_customer.id,
-                product=order.product,
-                quantity=order.quantity,
-            ))
-    session.commit()
-```
+For multi-service E2E setups, use `docker compose -f docker-compose.test.yml up -d --wait` in a session-scoped fixture. Playwright runs on host pointing at `localhost:<port>`.
 
 ---
 
 ## PostgreSQL-Specific Test Patterns
-
-### Schema-Based Function Mocking
-
-Override PostgreSQL functions per-test via search_path:
-
-```sql
--- Mock now() for deterministic time-dependent tests
-CREATE SCHEMA test_overrides;
-CREATE FUNCTION test_overrides.now() RETURNS timestamptz AS $$
-  SELECT timestamptz '2026-01-15 12:00:00+00';
-$$ LANGUAGE SQL;
--- Set search_path: test_overrides, public
-```
 
 ### Testing Constraints and Triggers
 
