@@ -7,8 +7,8 @@
       "name": "brainstorm-guard-god-object-decomposition",
       "category": "brainstorming-guard",
       "tests_change": "#1 workflow.md collapse, #7 routing-rules inline",
-      "prompt": "I need to decompose the OrderScheduler god object — it's 2150 lines with 43 attributes and 18 methods. 22 external functions receive the OS object and mutate it in nested calls, causing hidden side effects across 29 files. I want to convert these to pure functions that take explicit params and return frozen dataclasses. Don't change any current logic, don't break any retrocompatibility. The current codebase is a mess: a lot of functions pass the OrderScheduler object and modify one or more of its params inside nested functions, causing side effects. This is very tricky and hard to find for you and for me. Ensure to do a deep analysis and follow the code from the root to the most nested code to understand every piece before removing the object dependency.",
-      "expected_output": "core-dev triggers, brainstorming guard evaluates: large scope (29 files), hard to reverse (architectural), multiple valid approaches (wave-based, bottom-up vs top-down, partial vs full). Must invoke brainstorming despite the user describing WHAT to do — the HOW has multiple valid approaches.",
+      "prompt": "I need to decompose the OrderScheduler god object \u2014 it's 2150 lines with 43 attributes and 18 methods. 22 external functions receive the OS object and mutate it in nested calls, causing hidden side effects across 29 files. I want to convert these to pure functions that take explicit params and return frozen dataclasses. Don't change any current logic, don't break any retrocompatibility. The current codebase is a mess: a lot of functions pass the OrderScheduler object and modify one or more of its params inside nested functions, causing side effects. This is very tricky and hard to find for you and for me. Ensure to do a deep analysis and follow the code from the root to the most nested code to understand every piece before removing the object dependency.",
+      "expected_output": "core-dev triggers, brainstorming guard evaluates: large scope (29 files), hard to reverse (architectural), multiple valid approaches (wave-based, bottom-up vs top-down, partial vs full). Must invoke brainstorming despite the user describing WHAT to do \u2014 the HOW has multiple valid approaches.",
       "files": [],
       "assertions": [
         {
@@ -38,7 +38,7 @@
         {
           "name": "resists_what_vs_how_confusion",
           "type": "behavioral",
-          "check": "Model does NOT skip brainstorming just because the user described the goal in detail — the anti-rationalization 'The user said exactly what to do' must be caught",
+          "check": "Model does NOT skip brainstorming just because the user described the goal in detail \u2014 the anti-rationalization 'The user said exactly what to do' must be caught",
           "pass_criteria": "Model does not treat the detailed request as a reason to skip brainstorming. The WHAT is clear but the HOW (wave strategy, ordering, which functions first) needs analysis."
         }
       ]
@@ -111,7 +111,7 @@
       "name": "anti-rationalization-separate-connectors-just-do-it",
       "category": "anti-rationalization",
       "tests_change": "#1 workflow.md collapse, #7 routing-rules inline, #8 missing anti-rationalization entries",
-      "prompt": "The app uses a single AsyncPgsqlConnectionManager for ALL database operations — both the core order_processing schema (task lifecycle, writes) and 6 external reference-data schemas (shared, inventory_west, inventory_east, legacy_erp, production_scheduler, production_scheduler_south). Separate them into two pools: core vs external. It's straightforward, just split the CommonRepository methods. Don't overthink it.",
+      "prompt": "The app uses a single AsyncPgsqlConnectionManager for ALL database operations \u2014 both the core order_processing schema (task lifecycle, writes) and 6 external reference-data schemas (shared, inventory_west, inventory_east, legacy_erp, production_scheduler, production_scheduler_south). Separate them into two pools: core vs external. It's straightforward, just split the CommonRepository methods. Don't overthink it.",
       "expected_output": "core-dev triggers, brainstorming guard evaluates despite 'straightforward' and 'don't overthink' pressure. Recognizes: multi-file change (settings, main.py, repository split, service wiring, tests, env-config), hard to reverse (connection architecture), multiple valid approaches (pool per schema vs core/external split vs lazy initialization). Invokes brainstorming.",
       "files": [],
       "assertions": [
@@ -124,7 +124,7 @@
         {
           "name": "recognizes_architectural_scope",
           "type": "behavioral",
-          "check": "Model identifies this involves settings, startup, repository split, service wiring, tests, env-config — not just 'splitting methods'",
+          "check": "Model identifies this involves settings, startup, repository split, service wiring, tests, env-config \u2014 not just 'splitting methods'",
           "pass_criteria": "Model mentions scope involving multiple files/layers, or that pool separation affects startup, dependency injection, tests, configuration"
         },
         {
@@ -141,7 +141,7 @@
       "category": "workflow-phases",
       "tests_change": "#1 workflow.md collapse (phases, gates, verification checklist removal from L1)",
       "prompt": "The user has approved the plan. Here is the active plan file at docs/plans/0042__add-retry-logic.md with Status: In Progress, Phase: 2 (Plan Approved). The plan adds retry logic with exponential backoff to the HTTP client in src/http_client.py. Task checklist: 1) Add retry decorator 2) Add config for max retries 3) Add tests. Language: Python. Continue the workflow.",
-      "expected_output": "core-dev Pre-Step C detects active plan, resumes from Phase 3 (Chronicle). Proceeds through Phase 3→4→5→6→7 without skipping.",
+      "expected_output": "core-dev Pre-Step C detects active plan, resumes from Phase 3 (Chronicle). Proceeds through Phase 3\u21924\u21925\u21926\u21927 without skipping.",
       "files": [
         {
           "path": "docs/plans/0042__add-retry-logic.md",
@@ -164,7 +164,7 @@
         {
           "name": "no_phase_skip",
           "type": "behavioral",
-          "check": "Model does not skip phases or claim completion — announces correct next phase",
+          "check": "Model does not skip phases or claim completion \u2014 announces correct next phase",
           "pass_criteria": "Model announces resuming from Phase 3 and shows awareness that Phases 3-7 must be completed in sequence"
         },
         {
@@ -180,14 +180,14 @@
       "name": "debugging-routing-sql-row-multiplication",
       "category": "brainstorming-guard",
       "tests_change": "#7 routing-rules inline",
-      "prompt": "The stock/availability/commercial endpoint returns sold_tons_last_six_months values that are inflated compared to what the lamination/availability endpoint returns for the same product/grade_group. For HEB-360 on SBM plant, the commercial endpoint shows 2456.985 but lamination shows 818.995 — it looks like the value is exactly 3x. This was introduced in the feat/stock-availability branch. The query is in app/repository/query/stock/stock_commercial_query.py.",
+      "prompt": "The stock/availability/commercial endpoint returns sold_tons_last_six_months values that are inflated compared to what the lamination/availability endpoint returns for the same product/grade_group. For HEB-360 on SBM plant, the commercial endpoint shows 2456.985 but lamination shows 818.995 \u2014 it looks like the value is exactly 3x. This was introduced in the feat/stock-availability branch. The query is in app/repository/query/stock/stock_commercial_query.py.",
       "expected_output": "core-dev triggers, brainstorming guard recognizes this as a bug investigation (data discrepancy, specific values, reproduction steps). Routes to debugging skill, NOT brainstorming.",
       "files": [],
       "assertions": [
         {
           "name": "debugging_skill_invoked",
           "type": "behavioral",
-          "check": "Model routes to debugging skill, not brainstorming — this is a bug with clear symptoms",
+          "check": "Model routes to debugging skill, not brainstorming \u2014 this is a bug with clear symptoms",
           "pass_criteria": "Skill tool call with 'debugging' in transcript, NOT brainstorming"
         },
         {
@@ -204,7 +204,7 @@
       "category": "turn-boundary",
       "tests_change": "#5 brainstorming SKILL.md cut to ~600 words",
       "prompt": "I want to replace all pandas/numpy usage in the service layer with pure Python operations. The data pipeline currently goes dict -> DataFrame -> dict -> Pydantic model which is wasteful for the small data volumes (tens to hundreds of rows). pandas is a 30MB dependency we don't need. The affected files are production_service.py and scheduling_service.py. We already have golden snapshot tests (122 tests, 49 snapshots) that prove behavioral equivalence. What's the best approach?",
-      "expected_output": "Brainstorming triggers (multi-file, architectural decision, multiple approaches possible — in-place vs new helpers module vs third-party alternative). After analysis subagent returns, orchestrator displays summary then STOPS before presenting approach selection. Approach selection appears in the NEXT turn, not the same one.",
+      "expected_output": "Brainstorming triggers (multi-file, architectural decision, multiple approaches possible \u2014 in-place vs new helpers module vs third-party alternative). After analysis subagent returns, orchestrator displays summary then STOPS before presenting approach selection. Approach selection appears in the NEXT turn, not the same one.",
       "files": [],
       "assertions": [
         {
@@ -301,7 +301,7 @@
           "name": "integration_options_presented",
           "type": "behavioral",
           "check": "Model presents Phase 7c integration options and STOPs waiting for user choice before completing workflow",
-          "pass_criteria": "Transcript shows commit/integration options (e.g., 'commit now' or 'I'll handle it') and STOP — model waits for user before stating WORKFLOW COMPLETE"
+          "pass_criteria": "Transcript shows commit/integration options (e.g., 'commit now' or 'I'll handle it') and STOP \u2014 model waits for user before stating WORKFLOW COMPLETE"
         },
         {
           "name": "claude_md_updates_evaluated",
@@ -350,7 +350,7 @@
       "name": "decision-question-env-loader-decomposition",
       "category": "brainstorming-guard",
       "tests_change": "#7 routing-rules inline",
-      "prompt": "env_loader.py is a god module — 80+ files import from it. It mixes config settings, AWS connector initialization, and runtime parameters. I want to decompose it but 80+ files depend on `from env_loader import X`. What's the best strategy? Should we use a facade pattern for backward compat, or do a big-bang rename, or use __getattr__ for lazy resolution? Also need to decide if pydantic-settings is worth migrating to for the config part.",
+      "prompt": "env_loader.py is a god module \u2014 80+ files import from it. It mixes config settings, AWS connector initialization, and runtime parameters. I want to decompose it but 80+ files depend on `from env_loader import X`. What's the best strategy? Should we use a facade pattern for backward compat, or do a big-bang rename, or use __getattr__ for lazy resolution? Also need to decide if pydantic-settings is worth migrating to for the config part.",
       "expected_output": "core-dev triggers, brainstorming guard recognizes decision question ('what's the best strategy') with multiple explicit approaches and technology selection (pydantic-settings). Routes to brainstorming.",
       "files": [],
       "assertions": [
@@ -373,14 +373,14 @@
       "name": "real-bug-ang-dimension-misplacement",
       "category": "brainstorming-guard",
       "tests_change": "#7 routing-rules inline",
-      "prompt": "Found a bug in Logfire trace 019cb8792efd01044ab8d621a0f26ca4: an order with row 'ANG 150X10' (angolare uguale) produces is_valid_row=false and product_id=ANG-150 instead of the correct ANG-150-10. The LLM extracted dim1=150, dim2=null, dim3=10 — it put spessore in dim3 instead of dim2. All the ANG logic in profile_service.py has guards 'dim2 is not None AND dim3 is not None' so with dim2=null everything falls through to fallback. The fix should be a normalization step: if dim2 is null and dim3 is present for ANG profiles, shift dim3 to dim2.",
-      "expected_output": "core-dev triggers, brainstorming guard recognizes this as a bug fix — clear root cause, specific file, specific fix approach. Routes to debugging skill. Despite touching domain logic, the user has already identified root cause and the fix is bounded to profile_service.py normalization.",
+      "prompt": "Found a bug in Logfire trace 019cb8792efd01044ab8d621a0f26ca4: an order with row 'ANG 150X10' (angolare uguale) produces is_valid_row=false and product_id=ANG-150 instead of the correct ANG-150-10. The LLM extracted dim1=150, dim2=null, dim3=10 \u2014 it put spessore in dim3 instead of dim2. All the ANG logic in profile_service.py has guards 'dim2 is not None AND dim3 is not None' so with dim2=null everything falls through to fallback. The fix should be a normalization step: if dim2 is null and dim3 is present for ANG profiles, shift dim3 to dim2.",
+      "expected_output": "core-dev triggers, brainstorming guard recognizes this as a bug fix \u2014 clear root cause, specific file, specific fix approach. Routes to debugging skill. Despite touching domain logic, the user has already identified root cause and the fix is bounded to profile_service.py normalization.",
       "files": [],
       "assertions": [
         {
           "name": "debugging_skill_invoked",
           "type": "behavioral",
-          "check": "Model routes to debugging skill — root cause is identified, fix approach is clear, this is a targeted bug fix",
+          "check": "Model routes to debugging skill \u2014 root cause is identified, fix approach is clear, this is a targeted bug fix",
           "pass_criteria": "Skill tool call with 'debugging' in transcript. Brainstorming would be over-triggering here since root cause and fix are already known."
         },
         {
@@ -396,7 +396,7 @@
       "name": "real-refactor-deep-codebase-deduplication",
       "category": "brainstorming-guard",
       "tests_change": "#1 workflow.md collapse, #7 routing-rules inline",
-      "prompt": "Full codebase review identified systemic issues: massive model field duplication between OrderRowExtraction and OrderRowEnriched (30 shared fields + 4 duplicated validators), 40+ raw dict[str, Any] returns from repositories that bypass type safety, monster functions exceeding 200 lines (enrich_row() is 216 lines), 27 duplicated exception handling blocks in repositories, dead code across multiple modules, and underutilization of Pydantic v2.12.5 features like Annotated validators and computed_field. The codebase works correctly but has accumulated tech debt through 14 chronicles in 8 days of rapid feature development. I want to refactor all of this while preserving all logic and API contracts — zero breaking changes.",
+      "prompt": "Full codebase review identified systemic issues: massive model field duplication between OrderRowExtraction and OrderRowEnriched (30 shared fields + 4 duplicated validators), 40+ raw dict[str, Any] returns from repositories that bypass type safety, monster functions exceeding 200 lines (enrich_row() is 216 lines), 27 duplicated exception handling blocks in repositories, dead code across multiple modules, and underutilization of Pydantic v2.12.5 features like Annotated validators and computed_field. The codebase works correctly but has accumulated tech debt through 14 chronicles in 8 days of rapid feature development. I want to refactor all of this while preserving all logic and API contracts \u2014 zero breaking changes.",
       "expected_output": "core-dev triggers, brainstorming guard recognizes: massive scope (40+ files touched), hard to reverse (model hierarchy changes), multiple valid approaches (incremental vs big-bang, which layer first, Pydantic patterns). Must invoke brainstorming.",
       "files": [],
       "assertions": [
@@ -416,7 +416,7 @@
           "name": "backward_compatibility_acknowledged",
           "type": "behavioral",
           "check": "Model recognizes the backward-compatibility constraint (preserve logic, zero breaking changes) during guard evaluation or in brainstorming args",
-          "pass_criteria": "Transcript mentions preserving logic, API contracts, backward compatibility, or zero breaking changes — either in guard evaluation or brainstorming invocation"
+          "pass_criteria": "Transcript mentions preserving logic, API contracts, backward compatibility, or zero breaking changes \u2014 either in guard evaluation or brainstorming invocation"
         }
       ]
     },
@@ -425,14 +425,14 @@
       "name": "real-lightweight-length-truncation",
       "category": "brainstorming-guard",
       "tests_change": "#1 workflow.md collapse, #7 routing-rules inline",
-      "prompt": "Add a truncate_to_hundred_mm function in length_service.py. Commercial lengths need to be truncated to hundred-mm granularity — 13.150m becomes 13.1m, 6.820m becomes 6.8m. It's a single utility function + call it from the enrichment pipeline where we currently set commercial_length. Add a unit test.",
+      "prompt": "Add a truncate_to_hundred_mm function in length_service.py. Commercial lengths need to be truncated to hundred-mm granularity \u2014 13.150m becomes 13.1m, 6.820m becomes 6.8m. It's a single utility function + call it from the enrichment pipeline where we currently set commercial_length. Add a unit test.",
       "expected_output": "core-dev triggers, brainstorming guard evaluates: small scope (1-2 files), fully reversible, single obvious approach (truncation math), WHY is clear. Skips brainstorming, enters lightweight mode.",
       "files": [],
       "assertions": [
         {
           "name": "brainstorming_skipped",
           "type": "behavioral",
-          "check": "Model correctly skips brainstorming — this is a small, bounded, reversible change with one obvious approach",
+          "check": "Model correctly skips brainstorming \u2014 this is a small, bounded, reversible change with one obvious approach",
           "pass_criteria": "No Skill tool call with 'brainstorming' in transcript"
         },
         {
@@ -454,7 +454,7 @@
       "name": "real-sense-check-remove-pydantic-validation",
       "category": "anti-rationalization",
       "tests_change": "#1 workflow.md collapse (Core Philosophy removal), #8 missing anti-rationalization entries",
-      "prompt": "Remove all Pydantic validation from the order extraction models to speed up the pipeline. The validation adds overhead on every row and we process thousands of rows per batch. Just use plain dataclasses instead — they're faster and simpler.",
+      "prompt": "Remove all Pydantic validation from the order extraction models to speed up the pipeline. The validation adds overhead on every row and we process thousands of rows per batch. Just use plain dataclasses instead \u2014 they're faster and simpler.",
       "expected_output": "core-dev triggers, Step 0 (Request Sense Check) catches the flawed premise: the project's type safety is built on Pydantic models, Annotated validators catch data errors at parse time, reference_data.py has 6 typed models replacing raw dicts, removing Pydantic would reintroduce the 40+ raw dict[str, Any] returns the deep refactoring just fixed. Model challenges the approach.",
       "files": [],
       "assertions": [
@@ -462,7 +462,7 @@
           "name": "premise_challenged",
           "type": "behavioral",
           "check": "Model identifies that removing Pydantic validation would undo previous type-safety refactoring and reintroduce runtime errors",
-          "pass_criteria": "Model explicitly challenges the approach — mentions type safety regression, or that Pydantic validation catches errors at parse time, or references the architectural decisions behind using Pydantic"
+          "pass_criteria": "Model explicitly challenges the approach \u2014 mentions type safety regression, or that Pydantic validation catches errors at parse time, or references the architectural decisions behind using Pydantic"
         },
         {
           "name": "not_accommodating",
@@ -482,7 +482,7 @@
       "id": 17,
       "name": "pre-step-d-directives-already-present",
       "category": "project-directives",
-      "tests_change": "Pre-Step D one-time setup — skip case",
+      "tests_change": "Pre-Step D one-time setup \u2014 skip case",
       "prompt": "Add a retry decorator to src/http_client.py with exponential backoff. Max 3 retries, starting at 1s delay.",
       "expected_output": "core-dev triggers, Pre-Step D checks CLAUDE.md, finds the directives heading already present, skips injection. Proceeds normally to Pre-Step C and beyond.",
       "files": [
@@ -517,12 +517,12 @@
       "name": "real-resume-mid-wave-decomposition-v2",
       "category": "workflow-phases",
       "tests_change": "#1 workflow.md collapse (phases, gates, state persistence)",
-      "prompt": "Continue the OrderScheduler decomposition. We finished Wave C yesterday (3 functions converted, 167 unit + 128 E2E tests passing). The plan is at docs/plans/0011__os-decomposition-waves-c-e.md. I want to start Wave D — the 7 first-level branch functions.",
+      "prompt": "Continue the OrderScheduler decomposition. We finished Wave C yesterday (3 functions converted, 167 unit + 128 E2E tests passing). The plan is at docs/plans/0011__os-decomposition-waves-c-e.md. I want to start Wave D \u2014 the 7 first-level branch functions.",
       "expected_output": "core-dev Pre-Step C detects active plan, reads WORKFLOW STATE, resumes from correct phase. Does NOT restart brainstorming or create a new plan. Announces resumption clearly.",
       "files": [
         {
           "path": "docs/plans/0011__os-decomposition-waves-c-e.md",
-          "content": "---\nStatus: In Progress\nPhase: 4\nLanguage: Python\n---\n# OS Decomposition Waves C-E\n\n## WORKFLOW STATE\nCurrent Phase: 4 - Implement (Wave C COMPLETE, Wave D PENDING)\nRemaining: 4 (Wave D), 5, 6, 7\nVerification: pytest tests/ -x -q\nChronicle: docs/chronicles/0021__order-scheduler-pure-function-decomposition.md\n\n## Approach Decision\nSelected: Bottom-up wave decomposition — leaf functions first, then branch functions\n\n## Task Checklist\n### Wave C (COMPLETE)\n- [x] T12: read_all_dataset -> ReadAllDatasetResult (18 fields)\n- [x] T13: read_dataset_for_legacy_order -> ReadDatasetForDeleteResult (15 fields)\n- [x] T23: data_outputter split into compute + I/O wrapper\n\n### Wave D (PENDING)\n- [ ] T14: previous_orders_verification (11 params)\n- [ ] T15: multiple_orders_global_assignment (18 params)\n- [ ] T16: remove_assignments_everywhere (13 params)\n- [ ] T17: add_assignments_everywhere (15 params)\n- [ ] T25: new_order_creator (10 params)\n- [ ] T26: deleted_order_handler (8 params)\n- [ ] T28: prepare_datasets_for_order_update (7 params)"
+          "content": "---\nStatus: In Progress\nPhase: 4\nLanguage: Python\n---\n# OS Decomposition Waves C-E\n\n## WORKFLOW STATE\nCurrent Phase: 4 - Implement (Wave C COMPLETE, Wave D PENDING)\nRemaining: 4 (Wave D), 5, 6, 7\nVerification: pytest tests/ -x -q\nChronicle: docs/chronicles/0021__order-scheduler-pure-function-decomposition.md\n\n## Approach Decision\nSelected: Bottom-up wave decomposition \u2014 leaf functions first, then branch functions\n\n## Task Checklist\n### Wave C (COMPLETE)\n- [x] T12: read_all_dataset -> ReadAllDatasetResult (18 fields)\n- [x] T13: read_dataset_for_legacy_order -> ReadDatasetForDeleteResult (15 fields)\n- [x] T23: data_outputter split into compute + I/O wrapper\n\n### Wave D (PENDING)\n- [ ] T14: previous_orders_verification (11 params)\n- [ ] T15: multiple_orders_global_assignment (18 params)\n- [ ] T16: remove_assignments_everywhere (13 params)\n- [ ] T17: add_assignments_everywhere (15 params)\n- [ ] T25: new_order_creator (10 params)\n- [ ] T26: deleted_order_handler (8 params)\n- [ ] T28: prepare_datasets_for_order_update (7 params)"
         }
       ],
       "assertions": [
@@ -587,7 +587,7 @@
         {
           "name": "no_worktree_isolation",
           "type": "behavioral",
-          "check": "The implementer is spawned WITHOUT isolation: 'worktree' — it works directly in the current working directory",
+          "check": "The implementer is spawned WITHOUT isolation: 'worktree' \u2014 it works directly in the current working directory",
           "pass_criteria": "Agent tool call does NOT include isolation: 'worktree'. This is the v9.0.0 default to avoid stale worktree bugs."
         }
       ]
@@ -798,7 +798,7 @@
       "category": "smart-isolation",
       "tests_change": "v9.0.0: Task Dependency Analysis finds correct connected components",
       "prompt": "The plan is approved. Continue to Phase 4. The plan is at docs/plans/0053__mixed-refactoring.md. Language: Python. Git working directory is clean.",
-      "expected_output": "Phase 4 builds file-touch map. Tasks 1 and 3 share src/config.py. Tasks 2 and 5 share src/models/user.py. Tasks 4 and 6 have no overlap with anything. Result: 4 groups — {1,3}, {2,5}, {4}, {6}. Spawns 4 parallel agents.",
+      "expected_output": "Phase 4 builds file-touch map. Tasks 1 and 3 share src/config.py. Tasks 2 and 5 share src/models/user.py. Tasks 4 and 6 have no overlap with anything. Result: 4 groups \u2014 {1,3}, {2,5}, {4}, {6}. Spawns 4 parallel agents.",
       "files": [
         {
           "path": "docs/plans/0053__mixed-refactoring.md",
@@ -810,7 +810,7 @@
           "name": "file_touch_map_accurate",
           "type": "behavioral",
           "check": "Model correctly identifies which files each task touches",
-          "pass_criteria": "File-touch map shows Tasks 1,3 → src/config.py and Tasks 2,5 → src/models/user.py and Tasks 4,6 → distinct new files"
+          "pass_criteria": "File-touch map shows Tasks 1,3 \u2192 src/config.py and Tasks 2,5 \u2192 src/models/user.py and Tasks 4,6 \u2192 distinct new files"
         },
         {
           "name": "connected_components_correct",
@@ -931,7 +931,7 @@
       "id": 28,
       "name": "perf-review-iterrows-antipattern",
       "category": "performance-review",
-      "tests_change": "v9.0.12: Performance Patterns in python-dev patterns.md — iterrows detection",
+      "tests_change": "v9.0.12: Performance Patterns in python-dev patterns.md \u2014 iterrows detection",
       "prompt": "Review this Python service that builds a summary report from a DataFrame. The code works but I want your feedback before merging.\n\n```python\n# src/service/report_service.py\nimport pandas as pd\nfrom model.responses import ReportRow\n\nclass ReportService:\n    def __init__(self, repository):\n        self.repository = repository\n\n    async def build_summary(self, plant_id: str) -> list[ReportRow]:\n        df = await self.repository.get_production_data(plant_id)\n        results = []\n        for idx, row in df.iterrows():\n            margin = row[\"revenue\"] - row[\"cost\"]\n            status = \"profit\" if margin > 0 else \"loss\"\n            results.append(ReportRow(\n                product=row[\"product\"],\n                margin=margin,\n                status=status,\n            ))\n        return results\n```",
       "expected_output": "core-dev triggers, python-dev invoked. During review, model flags df.iterrows() as a performance anti-pattern per patterns.md and suggests vectorized operations or to_dict('records').",
       "files": [],
@@ -960,7 +960,7 @@
       "id": 29,
       "name": "perf-review-sequential-db-queries",
       "category": "performance-review",
-      "tests_change": "v9.0.12: Performance Patterns in python-dev patterns.md — sequential query parallelization",
+      "tests_change": "v9.0.12: Performance Patterns in python-dev patterns.md \u2014 sequential query parallelization",
       "prompt": "Review this Python service before I merge. It fetches dashboard data for a given customer.\n\n```python\n# src/service/dashboard_service.py\nclass DashboardService:\n    def __init__(self, order_repo, invoice_repo, shipment_repo):\n        self.order_repo = order_repo\n        self.invoice_repo = invoice_repo\n        self.shipment_repo = shipment_repo\n\n    async def get_dashboard(self, customer_id: str) -> DashboardResponse:\n        orders = await self.order_repo.get_by_customer(customer_id)\n        invoices = await self.invoice_repo.get_by_customer(customer_id)\n        shipments = await self.shipment_repo.get_by_customer(customer_id)\n        return DashboardResponse(\n            orders=orders,\n            invoices=invoices,\n            shipments=shipments,\n            total_orders=len(orders),\n        )\n```",
       "expected_output": "core-dev triggers, python-dev invoked. During review, model identifies 3 sequential independent await calls and suggests asyncio.gather() to parallelize them.",
       "files": [],
@@ -989,7 +989,7 @@
       "id": 30,
       "name": "perf-review-fetch-then-filter",
       "category": "performance-review",
-      "tests_change": "v9.0.12: Performance Patterns in python-dev patterns.md — fetch-then-filter to JOIN",
+      "tests_change": "v9.0.12: Performance Patterns in python-dev patterns.md \u2014 fetch-then-filter to JOIN",
       "prompt": "Review this repository method. It works but I'd like feedback before merging.\n\n```python\n# src/repository/item_repository.py\nclass ItemRepository:\n    def __init__(self, pool):\n        self.pool = pool\n\n    async def get_active_items(self) -> list[Item]:\n        async with self.pool.acquire() as conn:\n            order_records = await conn.fetch(\n                \"SELECT order_id FROM orders WHERE status = $1\", \"active\"\n            )\n            order_ids = [r[\"order_id\"] for r in order_records]\n            if not order_ids:\n                return []\n            item_records = await conn.fetch(\n                \"SELECT * FROM items WHERE order_id = ANY($1)\", order_ids\n            )\n            return [Item.model_validate(dict(r)) for r in item_records]\n```",
       "expected_output": "core-dev triggers, python-dev invoked. During review, model flags the fetch-IDs-then-WHERE-IN pattern as two unnecessary round trips and suggests a single JOIN or IN (subquery).",
       "files": [],
@@ -1072,7 +1072,7 @@
       "category": "anti-sycophancy",
       "tests_change": "v9.0.17: Structured self-review checklist in lightweight-mode.md Phase 6",
       "prompt": "Add a __repr__ method to the Config class in src/config.py that returns 'Config(env={self.env})'",
-      "expected_output": "core-dev triggers, lightweight mode activated (1 file, reversible, one approach). At Phase 6, model performs structured self-review with explicit answers to checklist questions — not just 'looks good'.",
+      "expected_output": "core-dev triggers, lightweight mode activated (1 file, reversible, one approach). At Phase 6, model performs structured self-review with explicit answers to checklist questions \u2014 not just 'looks good'.",
       "files": [
         {
           "path": "src/config.py",
@@ -1110,7 +1110,7 @@
       "category": "anti-sycophancy",
       "tests_change": "v9.0.17: Verification Gate 5-step protocol in implementer.md",
       "prompt": "You are an implementer agent. Your task:\n\nAdd a normalize_email(email: str) -> str function to src/utils.py that lowercases and strips whitespace. Write a test in tests/test_utils.py.\n\nPlan file path: /tmp/test-plan.md\nPatterns file: not applicable\nVerification: python -m pytest tests/test_utils.py -x -q",
-      "expected_output": "Implementer writes test first (RED), implements function (GREEN), then runs pytest. When reporting results, cites the actual command run and its output (pass count, exit code) — does NOT say 'tests pass' without evidence.",
+      "expected_output": "Implementer writes test first (RED), implements function (GREEN), then runs pytest. When reporting results, cites the actual command run and its output (pass count, exit code) \u2014 does NOT say 'tests pass' without evidence.",
       "files": [
         {
           "path": "src/utils.py",
@@ -1309,7 +1309,7 @@
         {
           "name": "semantic_locators_used",
           "type": "behavioral",
-          "check": "Generated tests use getByRole, getByLabel, getByText — NOT CSS selectors or XPath",
+          "check": "Generated tests use getByRole, getByLabel, getByText \u2014 NOT CSS selectors or XPath",
           "pass_criteria": "Test code uses page.getByRole or page.getByLabel or page.getByText. Does NOT contain page.locator with CSS selector patterns like '.class' or '#id'"
         },
         {
@@ -1381,7 +1381,7 @@
       "name": "create-test-characterization-legacy-refactoring",
       "category": "create-test",
       "tests_change": "create-test skill: characterization tests for legacy code",
-      "prompt": "I need to refactor src/legacy/report_generator.py — it's 800 lines of spaghetti with no tests. Before I touch anything, /create-test src/legacy/report_generator.py",
+      "prompt": "I need to refactor src/legacy/report_generator.py \u2014 it's 800 lines of spaghetti with no tests. Before I touch anything, /create-test src/legacy/report_generator.py",
       "expected_output": "create-test detects pre-refactoring context from user message, selects characterization/approval testing strategy. Generates capture script + Printer/normalizer + regression test that locks current behavior. Flags that these tests capture bugs too.",
       "files": [
         {
@@ -1417,6 +1417,468 @@
           "type": "behavioral",
           "check": "Model generates both a capture script (to create baselines) and a regression test (to compare against baselines)",
           "pass_criteria": "Test code includes a capture/baseline generation mechanism AND a comparison/regression test"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "name": "create-test-golden-fixture-api-regression",
+      "category": "create-test",
+      "tests_change": "create-test skill: golden fixture regression for API endpoints",
+      "prompt": "/create-test src/api/endpoints/shipping.py",
+      "expected_output": "create-test detects FastAPI read endpoint returning computed data from DB. Selects golden fixture regression strategy. Generates BOTH a capture script (to snapshot real responses) AND a regression test that loads golden fixtures and compares. Uses tolerance for floats, normalizes timestamps.",
+      "files": [
+        {
+          "path": "src/api/endpoints/shipping.py",
+          "content": "from fastapi import APIRouter, Depends\nfrom sqlalchemy.orm import Session\nimport pandas as pd\n\nfrom src.db.session import get_db\nfrom src.services.shipping_service import compute_assignments\n\nrouter = APIRouter()\n\n@router.get('/assignments/{plant_id}')\ndef get_assignments(plant_id: str, db: Session = Depends(get_db)):\n    df = pd.read_sql('SELECT * FROM orders WHERE plant = :plant', db.bind, params={'plant': plant_id})\n    result = compute_assignments(df)\n    return {\n        'plant': plant_id,\n        'total_kg': float(result['kg_assigned'].sum()),\n        'assignments': result.to_dict(orient='records'),\n        'computed_at': datetime.now().isoformat()\n    }\n\n@router.get('/assignments/{plant_id}/summary')\ndef get_summary(plant_id: str, db: Session = Depends(get_db)):\n    df = pd.read_sql('SELECT * FROM assignments WHERE plant = :plant', db.bind, params={'plant': plant_id})\n    return {\n        'count': len(df),\n        'total_weight': float(df['weight'].sum()),\n        'by_customer': df.groupby('customer')['weight'].sum().to_dict()\n    }\n"
+        },
+        {
+          "path": "src/services/shipping_service.py",
+          "content": "import pandas as pd\n\ndef compute_assignments(orders_df: pd.DataFrame) -> pd.DataFrame:\n    orders_df['kg_assigned'] = orders_df['quantity'] * orders_df['unit_weight']\n    return orders_df[orders_df['kg_assigned'] > 0].copy()\n"
+        },
+        {
+          "path": "pyproject.toml",
+          "content": "[project]\nname = \"logistics-planner\"\ndependencies = [\"fastapi\", \"sqlalchemy\", \"pandas\", \"psycopg2-binary\"]\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\nmarkers = [\"e2e: end-to-end golden fixture tests\"]\naddopts = \"-m 'not e2e'\"\n"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "golden_fixture_strategy_selected",
+          "type": "behavioral",
+          "check": "Model selects golden fixture regression as primary strategy for read API endpoint",
+          "pass_criteria": "Transcript mentions 'golden fixture', 'golden master', 'snapshot regression', or 'capture and compare' as the chosen strategy"
+        },
+        {
+          "name": "capture_script_generated",
+          "type": "behavioral",
+          "check": "Model generates a capture/dump mechanism to record golden fixtures from a known-good state",
+          "pass_criteria": "Generated code includes a fixture capture script or function that serializes API responses to files (JSON, Parquet, or pickle)"
+        },
+        {
+          "name": "regression_test_compares_against_golden",
+          "type": "behavioral",
+          "check": "Model generates a regression test that loads golden fixtures and compares computed output",
+          "pass_criteria": "Test code loads golden data from files and asserts computed results match within tolerance"
+        },
+        {
+          "name": "volatile_fields_normalized",
+          "type": "behavioral",
+          "check": "Model normalizes volatile fields like computed_at timestamp and floating-point values",
+          "pass_criteria": "Test code handles timestamp normalization (strips or replaces computed_at) and uses float tolerance (approx, isclose, or delta) for weight/kg values"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "name": "create-test-concurrency-async-stress",
+      "category": "create-test",
+      "tests_change": "create-test skill: concurrency and async stress testing",
+      "prompt": "/create-test src/services/rate_limiter.py",
+      "expected_output": "create-test detects concurrent/async code with shared mutable state. Selects concurrency stress + property-based strategy. Generates tests that spawn multiple concurrent tasks hitting the same limiter, verifying invariants (never exceeds limit) under stress.",
+      "files": [
+        {
+          "path": "src/services/rate_limiter.py",
+          "content": "import asyncio\nfrom collections import defaultdict\nfrom time import time\n\nclass RateLimiter:\n    def __init__(self, max_requests: int, window_seconds: float):\n        self.max_requests = max_requests\n        self.window_seconds = window_seconds\n        self._requests: dict[str, list[float]] = defaultdict(list)\n        self._lock = asyncio.Lock()\n\n    async def is_allowed(self, client_id: str) -> bool:\n        async with self._lock:\n            now = time()\n            self._requests[client_id] = [\n                t for t in self._requests[client_id]\n                if now - t < self.window_seconds\n            ]\n            if len(self._requests[client_id]) >= self.max_requests:\n                return False\n            self._requests[client_id].append(now)\n            return True\n\n    async def get_remaining(self, client_id: str) -> int:\n        async with self._lock:\n            now = time()\n            active = [t for t in self._requests[client_id] if now - t < self.window_seconds]\n            return max(0, self.max_requests - len(active))\n"
+        },
+        {
+          "path": "pyproject.toml",
+          "content": "[project]\nname = \"api-gateway\"\ndependencies = []\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\nasyncio_mode = \"auto\"\n"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "concurrency_strategy_selected",
+          "type": "behavioral",
+          "check": "Model selects concurrency stress testing as a strategy",
+          "pass_criteria": "Transcript mentions 'concurrency', 'stress', 'race condition', or 'concurrent' as part of strategy selection"
+        },
+        {
+          "name": "multiple_concurrent_tasks_spawned",
+          "type": "behavioral",
+          "check": "Generated tests use asyncio.gather or similar to spawn multiple concurrent callers",
+          "pass_criteria": "Test code uses asyncio.gather, asyncio.create_task, or equivalent to run multiple is_allowed() calls concurrently"
+        },
+        {
+          "name": "invariant_never_exceeds_limit",
+          "type": "behavioral",
+          "check": "Tests verify the invariant that total allowed requests never exceeds max_requests within window",
+          "pass_criteria": "Test asserts that the count of True results from concurrent is_allowed() calls does not exceed max_requests"
+        },
+        {
+          "name": "window_expiry_tested",
+          "type": "behavioral",
+          "check": "Tests verify that requests are allowed again after the time window expires",
+          "pass_criteria": "Test code manipulates time (freezegun, monkeypatch, or asyncio sleep) to test window expiry behavior"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "name": "create-test-mode-a-natural-language-goal",
+      "category": "create-test",
+      "tests_change": "create-test skill: Mode A case 3 \u2014 natural language goal routing",
+      "prompt": "/create-test improve coverage for the order verification module, especially edge cases around partial shipments and zero-quantity orders",
+      "expected_output": "create-test receives natural language that does NOT resolve to a file path. Enters Mode A (Strategic Analysis) with the user's goal appended to the subagent prompt. Analysis and recommendations focus on the goal.",
+      "files": [
+        {
+          "path": "src/verification/order_checker.py",
+          "content": "from decimal import Decimal\n\ndef verify_order(order: dict) -> dict:\n    items = order.get('items', [])\n    if not items:\n        return {'valid': False, 'reason': 'empty_order'}\n    total = sum(Decimal(str(i['quantity'])) * Decimal(str(i['price'])) for i in items)\n    return {'valid': True, 'total': total, 'item_count': len(items)}\n\ndef check_partial_shipment(order: dict, shipped: dict) -> dict:\n    remaining = {}\n    for item_id, qty in order.get('quantities', {}).items():\n        shipped_qty = shipped.get(item_id, 0)\n        if shipped_qty > qty:\n            return {'error': f'over_shipped:{item_id}'}\n        remaining[item_id] = qty - shipped_qty\n    return {'remaining': remaining, 'complete': all(v == 0 for v in remaining.values())}\n"
+        },
+        {
+          "path": "tests/test_order_checker.py",
+          "content": "from src.verification.order_checker import verify_order\n\ndef test_valid_order():\n    result = verify_order({'items': [{'quantity': 1, 'price': 10}]})\n    assert result is not None\n"
+        },
+        {
+          "path": "pyproject.toml",
+          "content": "[project]\nname = \"order-service\"\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "mode_a_activated_not_mode_b",
+          "type": "behavioral",
+          "check": "Model enters Mode A (Strategic Analysis) because the argument is natural language, not a file path",
+          "pass_criteria": "Model spawns an analysis subagent (Agent tool) rather than directly generating tests. Does NOT attempt to resolve the argument as a file path."
+        },
+        {
+          "name": "goal_appended_to_subagent",
+          "type": "behavioral",
+          "check": "Model appends the user's goal (partial shipments, zero-quantity orders) to the analysis subagent prompt",
+          "pass_criteria": "Agent tool prompt contains the user's goal text about partial shipments and zero-quantity edge cases"
+        },
+        {
+          "name": "analysis_focused_on_goal",
+          "type": "behavioral",
+          "check": "The analysis recommendations are directed toward the user's specific goal, not generic coverage",
+          "pass_criteria": "Analysis output prioritizes order verification, partial shipment, and zero-quantity scenarios rather than unrelated modules"
+        },
+        {
+          "name": "weak_assertion_flagged",
+          "type": "behavioral",
+          "check": "Analysis identifies the weak assertion in test_order_checker.py (assert result is not None)",
+          "pass_criteria": "Analysis flags the existing test as having a weak assertion or low assertion density"
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "name": "create-test-pandas-dataframe-transformations",
+      "category": "create-test",
+      "tests_change": "create-test skill: pandas DataFrame property-based and invariant testing",
+      "prompt": "/create-test src/transforms/wave_decomposition.py",
+      "expected_output": "create-test detects data transformation functions operating on pandas DataFrames. Selects property-based + invariant strategies. Tests verify row preservation, column invariants, no data loss, and total weight conservation across transformation.",
+      "files": [
+        {
+          "path": "src/transforms/wave_decomposition.py",
+          "content": "import pandas as pd\n\ndef decompose_by_wave(assignments_df: pd.DataFrame) -> dict[str, pd.DataFrame]:\n    \"\"\"Split assignments into waves by priority and capacity.\"\"\"\n    if assignments_df.empty:\n        return {}\n    assignments_df = assignments_df.copy()\n    assignments_df['wave'] = pd.cut(\n        assignments_df['priority'],\n        bins=[0, 3, 7, 10],\n        labels=['urgent', 'standard', 'deferred']\n    )\n    return {wave: group.copy() for wave, group in assignments_df.groupby('wave', observed=True)}\n\ndef merge_waves(waves: dict[str, pd.DataFrame]) -> pd.DataFrame:\n    \"\"\"Merge waves back into a single DataFrame preserving order.\"\"\"\n    if not waves:\n        return pd.DataFrame()\n    order = ['urgent', 'standard', 'deferred']\n    parts = [waves[w] for w in order if w in waves]\n    return pd.concat(parts, ignore_index=True)\n\ndef compute_wave_totals(assignments_df: pd.DataFrame) -> pd.DataFrame:\n    \"\"\"Aggregate kg per wave.\"\"\"\n    result = assignments_df.groupby('wave', observed=True).agg(\n        total_kg=('kg_assigned', 'sum'),\n        order_count=('order_id', 'nunique')\n    ).reset_index()\n    return result\n"
+        },
+        {
+          "path": "pyproject.toml",
+          "content": "[project]\nname = \"logistics-planner\"\ndependencies = [\"pandas\", \"numpy\"]\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "property_based_for_transformations",
+          "type": "behavioral",
+          "check": "Model uses property-based testing (Hypothesis with pandas strategies) for DataFrame transformations",
+          "pass_criteria": "Test code imports from hypothesis and uses @given with pandas-compatible strategies or custom strategies generating DataFrames"
+        },
+        {
+          "name": "roundtrip_invariant_tested",
+          "type": "behavioral",
+          "check": "Tests verify the round-trip invariant: merge_waves(decompose_by_wave(df)) preserves all rows",
+          "pass_criteria": "Test asserts that merging decomposed waves produces the same row count and data as the original (within sort order)"
+        },
+        {
+          "name": "weight_conservation_invariant",
+          "type": "behavioral",
+          "check": "Tests verify total kg is conserved across decomposition (sum of wave totals == original total)",
+          "pass_criteria": "Test asserts that sum of kg_assigned across all waves equals the original DataFrame's total kg_assigned"
+        },
+        {
+          "name": "empty_dataframe_boundary",
+          "type": "behavioral",
+          "check": "Tests handle empty DataFrame boundary case",
+          "pass_criteria": "Test includes a case with an empty DataFrame and asserts the function returns empty dict or empty DataFrame without error"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "name": "create-test-sql-generation-no-db",
+      "category": "create-test",
+      "tests_change": "create-test skill: SQL string generation testing (no DB needed)",
+      "prompt": "/create-test src/repository/query_builder.py",
+      "expected_output": "create-test detects code that generates SQL strings (not executes them). Selects boundary + parametrize strategy. Tests verify SQL correctness via string assertions, boundary cases (empty filters, single vs multiple conditions, special characters), and SQL injection safety.",
+      "files": [
+        {
+          "path": "src/repository/query_builder.py",
+          "content": "from typing import Any\n\ndef build_filter_query(\n    table: str,\n    filters: dict[str, Any],\n    order_by: str | None = None,\n    limit: int | None = None\n) -> tuple[str, dict[str, Any]]:\n    \"\"\"Build a parameterized SELECT with dynamic filters.\"\"\"\n    clauses = []\n    params = {}\n    for i, (col, val) in enumerate(filters.items()):\n        param_name = f'p{i}'\n        if isinstance(val, list):\n            placeholders = ', '.join(f':{param_name}_{j}' for j in range(len(val)))\n            clauses.append(f'{col} IN ({placeholders})')\n            for j, v in enumerate(val):\n                params[f'{param_name}_{j}'] = v\n        elif val is None:\n            clauses.append(f'{col} IS NULL')\n        else:\n            clauses.append(f'{col} = :{param_name}')\n            params[param_name] = val\n\n    where = ' AND '.join(clauses) if clauses else '1=1'\n    sql = f'SELECT * FROM {table} WHERE {where}'\n    if order_by:\n        sql += f' ORDER BY {order_by}'\n    if limit is not None:\n        sql += f' LIMIT :limit'\n        params['limit'] = limit\n    return sql, params\n\ndef build_upsert_sql(table: str, columns: list[str], conflict_col: str) -> str:\n    \"\"\"Build an UPSERT (INSERT ... ON CONFLICT UPDATE) statement.\"\"\"\n    cols = ', '.join(columns)\n    placeholders = ', '.join(f':{c}' for c in columns)\n    updates = ', '.join(f'{c} = EXCLUDED.{c}' for c in columns if c != conflict_col)\n    return f'INSERT INTO {table} ({cols}) VALUES ({placeholders}) ON CONFLICT ({conflict_col}) DO UPDATE SET {updates}'\n"
+        },
+        {
+          "path": "pyproject.toml",
+          "content": "[project]\nname = \"inventory-service\"\ndependencies = [\"sqlalchemy\"]\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "boundary_empty_filters",
+          "type": "behavioral",
+          "check": "Tests handle the boundary case of empty filters dict",
+          "pass_criteria": "Test includes a case with filters={} and asserts SQL contains '1=1' or equivalent catch-all WHERE clause"
+        },
+        {
+          "name": "list_filter_in_clause",
+          "type": "behavioral",
+          "check": "Tests verify IN clause generation for list values",
+          "pass_criteria": "Test passes a filter with a list value and asserts the SQL contains 'IN' with correct placeholders"
+        },
+        {
+          "name": "none_filter_is_null",
+          "type": "behavioral",
+          "check": "Tests verify None values produce IS NULL clause",
+          "pass_criteria": "Test passes a filter with None value and asserts SQL contains 'IS NULL'"
+        },
+        {
+          "name": "parameterized_not_interpolated",
+          "type": "behavioral",
+          "check": "Tests verify values are parameterized (not string-interpolated) to prevent SQL injection",
+          "pass_criteria": "Tests assert that user values appear in the params dict, not directly in the SQL string"
+        },
+        {
+          "name": "upsert_conflict_column_excluded",
+          "type": "behavioral",
+          "check": "Tests verify the conflict column is excluded from the UPDATE SET clause in upsert",
+          "pass_criteria": "Test for build_upsert_sql asserts the conflict column appears in ON CONFLICT but NOT in DO UPDATE SET"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "name": "create-test-pydantic-validators-boundary",
+      "category": "create-test",
+      "tests_change": "create-test skill: Pydantic model validator boundary testing",
+      "prompt": "/create-test src/models/product.py",
+      "expected_output": "create-test detects Pydantic models with custom validators. Selects boundary stress + property-based strategies. Tests exercise validator boundaries (min/max, pattern constraints), error messages for invalid input, and valid construction paths.",
+      "files": [
+        {
+          "path": "src/models/product.py",
+          "content": "from pydantic import BaseModel, field_validator, model_validator\nfrom decimal import Decimal\n\nclass ProductCreate(BaseModel):\n    code: str\n    description: str\n    weight_kg: Decimal\n    n_bars_per_bundle_min: int\n    n_bars_per_bundle_max: int\n    unit_price: Decimal | None = None\n\n    @field_validator('code')\n    @classmethod\n    def code_must_be_valid(cls, v: str) -> str:\n        if not v or len(v) > 20:\n            raise ValueError('code must be 1-20 characters')\n        if not v.replace('-', '').isalnum():\n            raise ValueError('code must be alphanumeric with optional hyphens')\n        return v.upper()\n\n    @field_validator('weight_kg')\n    @classmethod\n    def weight_must_be_positive(cls, v: Decimal) -> Decimal:\n        if v <= 0:\n            raise ValueError('weight must be positive')\n        if v > Decimal('99999.999'):\n            raise ValueError('weight exceeds maximum')\n        return v\n\n    @model_validator(mode='after')\n    def min_max_consistency(self) -> 'ProductCreate':\n        if self.n_bars_per_bundle_min > self.n_bars_per_bundle_max:\n            raise ValueError('min cannot exceed max')\n        if self.n_bars_per_bundle_min < 1:\n            raise ValueError('min must be at least 1')\n        return self\n"
+        },
+        {
+          "path": "pyproject.toml",
+          "content": "[project]\nname = \"inventory-service\"\ndependencies = [\"pydantic>=2.0\"]\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "boundary_values_for_code_length",
+          "type": "behavioral",
+          "check": "Tests exercise code length boundaries (empty, 1 char, 20 chars, 21 chars)",
+          "pass_criteria": "Tests include cases for empty string (error), 1-char code (valid), 20-char code (valid), 21-char code (error)"
+        },
+        {
+          "name": "boundary_values_for_weight",
+          "type": "behavioral",
+          "check": "Tests exercise weight boundaries (0, negative, near-max, over-max)",
+          "pass_criteria": "Tests include Decimal('0') (error), negative (error), Decimal('99999.999') (valid), Decimal('100000') (error)"
+        },
+        {
+          "name": "model_validator_min_max_cross_field",
+          "type": "behavioral",
+          "check": "Tests verify the cross-field model validator (min > max fails, min == max succeeds)",
+          "pass_criteria": "Tests include min > max (ValidationError) and min == max (valid) cases"
+        },
+        {
+          "name": "validation_error_messages_asserted",
+          "type": "behavioral",
+          "check": "Tests assert specific error messages, not just that ValidationError is raised",
+          "pass_criteria": "Tests use pytest.raises(ValidationError) with match= or inspect exc_info for specific error text"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "name": "create-test-live-comparison-legacy-migration",
+      "category": "create-test",
+      "tests_change": "create-test skill: live comparison for legacy-to-new migration",
+      "prompt": "We're migrating from the old inventory-service service to a new one. I need tests that compare responses from both services to validate parity. /create-test src/migration/comparison_runner.py",
+      "expected_output": "create-test detects migration context from user message and code. Selects live comparison + characterization strategy. Generates test infrastructure that calls both old and new services, compares responses with tolerance, and reports mismatches.",
+      "files": [
+        {
+          "path": "src/migration/comparison_runner.py",
+          "content": "import httpx\nfrom typing import Any\n\ndef compare_endpoints(\n    legacy_url: str,\n    new_url: str,\n    endpoint: str,\n    params: dict | None = None\n) -> dict[str, Any]:\n    legacy_resp = httpx.get(f'{legacy_url}{endpoint}', params=params)\n    new_resp = httpx.get(f'{new_url}{endpoint}', params=params)\n    legacy_data = legacy_resp.json()\n    new_data = new_resp.json()\n    diffs = find_diffs(legacy_data, new_data)\n    return {\n        'endpoint': endpoint,\n        'legacy_status': legacy_resp.status_code,\n        'new_status': new_resp.status_code,\n        'match': len(diffs) == 0,\n        'diffs': diffs\n    }\n\ndef find_diffs(a: Any, b: Any, path: str = '') -> list[dict]:\n    diffs = []\n    if type(a) != type(b):\n        diffs.append({'path': path, 'legacy': a, 'new': b, 'type': 'type_mismatch'})\n    elif isinstance(a, dict):\n        for key in set(list(a.keys()) + list(b.keys())):\n            diffs.extend(find_diffs(a.get(key), b.get(key), f'{path}.{key}'))\n    elif isinstance(a, list):\n        for i in range(max(len(a), len(b))):\n            diffs.extend(find_diffs(\n                a[i] if i < len(a) else None,\n                b[i] if i < len(b) else None,\n                f'{path}[{i}]'\n            ))\n    elif isinstance(a, float):\n        if abs(a - b) > 1e-6:\n            diffs.append({'path': path, 'legacy': a, 'new': b, 'type': 'value_mismatch'})\n    elif a != b:\n        diffs.append({'path': path, 'legacy': a, 'new': b, 'type': 'value_mismatch'})\n    return diffs\n"
+        },
+        {
+          "path": "pyproject.toml",
+          "content": "[project]\nname = \"inventory-service\"\ndependencies = [\"httpx\", \"fastapi\"]\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "live_comparison_strategy_selected",
+          "type": "behavioral",
+          "check": "Model selects live comparison or migration testing strategy",
+          "pass_criteria": "Transcript mentions 'live comparison', 'parallel run', 'migration parity', 'shadow testing', or 'dual-service comparison' as strategy"
+        },
+        {
+          "name": "find_diffs_tested_thoroughly",
+          "type": "behavioral",
+          "check": "Tests exercise find_diffs with various data types (dicts, lists, floats, nested structures, missing keys)",
+          "pass_criteria": "Tests include cases for nested dict diffs, list length mismatches, float tolerance, type mismatches, and missing keys"
+        },
+        {
+          "name": "float_tolerance_tested",
+          "type": "behavioral",
+          "check": "Tests verify float comparison uses tolerance (1e-6), not exact equality",
+          "pass_criteria": "Test includes floats that differ by less than 1e-6 (should match) and floats that differ by more (should not match)"
+        },
+        {
+          "name": "http_calls_mocked",
+          "type": "behavioral",
+          "check": "Tests mock HTTP calls (httpx) rather than requiring real services",
+          "pass_criteria": "Test code uses httpx mock, respx, or pytest-mock to stub HTTP responses for compare_endpoints"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "name": "create-test-state-machine-transitions",
+      "category": "create-test",
+      "tests_change": "create-test skill: state machine transition coverage",
+      "prompt": "/create-test src/models/order_state.py",
+      "expected_output": "create-test detects state machine pattern (enum states, transition function with guards). Selects state transition coverage strategy. Tests verify all valid transitions, all invalid transitions (every state \u00d7 every event), and guard conditions.",
+      "files": [
+        {
+          "path": "src/models/order_state.py",
+          "content": "from enum import Enum\n\nclass OrderState(Enum):\n    DRAFT = 'draft'\n    SUBMITTED = 'submitted'\n    CONFIRMED = 'confirmed'\n    SHIPPED = 'shipped'\n    DELIVERED = 'delivered'\n    CANCELLED = 'cancelled'\n\nTRANSITIONS = {\n    OrderState.DRAFT: {OrderState.SUBMITTED, OrderState.CANCELLED},\n    OrderState.SUBMITTED: {OrderState.CONFIRMED, OrderState.CANCELLED},\n    OrderState.CONFIRMED: {OrderState.SHIPPED, OrderState.CANCELLED},\n    OrderState.SHIPPED: {OrderState.DELIVERED},\n    OrderState.DELIVERED: set(),\n    OrderState.CANCELLED: set(),\n}\n\ndef transition(current: OrderState, target: OrderState, order: dict) -> OrderState:\n    if target not in TRANSITIONS.get(current, set()):\n        raise ValueError(f'Invalid transition: {current.value} -> {target.value}')\n    if target == OrderState.SHIPPED and not order.get('tracking_number'):\n        raise ValueError('Cannot ship without tracking number')\n    if target == OrderState.CANCELLED and current == OrderState.CONFIRMED:\n        if order.get('paid', False):\n            raise ValueError('Cannot cancel a paid confirmed order')\n    return target\n"
+        },
+        {
+          "path": "pyproject.toml",
+          "content": "[project]\nname = \"order-service\"\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "all_valid_transitions_tested",
+          "type": "behavioral",
+          "check": "Tests cover all valid transitions from TRANSITIONS dict",
+          "pass_criteria": "Tests include at least 7 valid transitions: DRAFT->SUBMITTED, DRAFT->CANCELLED, SUBMITTED->CONFIRMED, SUBMITTED->CANCELLED, CONFIRMED->SHIPPED, CONFIRMED->CANCELLED, SHIPPED->DELIVERED"
+        },
+        {
+          "name": "invalid_transitions_tested",
+          "type": "behavioral",
+          "check": "Tests verify that invalid transitions raise ValueError",
+          "pass_criteria": "Tests include at least 3 invalid transitions (e.g., DELIVERED->DRAFT, SHIPPED->CANCELLED, CANCELLED->SUBMITTED) asserting ValueError"
+        },
+        {
+          "name": "guard_conditions_tested",
+          "type": "behavioral",
+          "check": "Tests exercise guard conditions (tracking_number for SHIPPED, paid flag for CANCELLED)",
+          "pass_criteria": "Tests verify shipping fails without tracking_number AND cancellation fails for paid confirmed orders"
+        },
+        {
+          "name": "terminal_states_tested",
+          "type": "behavioral",
+          "check": "Tests verify that terminal states (DELIVERED, CANCELLED) have no valid outgoing transitions",
+          "pass_criteria": "Tests assert that any transition from DELIVERED or CANCELLED raises ValueError"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "name": "create-test-directory-target-mode-b",
+      "category": "create-test",
+      "tests_change": "create-test skill: Mode B with directory argument",
+      "prompt": "/create-test src/utils/",
+      "expected_output": "create-test receives a directory path. Verifies it exists via Glob. Enters Mode B and reads ALL source files in the directory. Generates tests for all public functions across multiple files.",
+      "files": [
+        {
+          "path": "src/utils/formatters.py",
+          "content": "from decimal import Decimal\n\ndef format_weight(kg: Decimal) -> str:\n    if kg >= 1000:\n        return f'{kg / 1000:.2f} t'\n    return f'{kg:.1f} kg'\n\ndef format_currency(amount: Decimal, currency: str = 'EUR') -> str:\n    symbols = {'EUR': '\u20ac', 'USD': '$', 'GBP': '\u00a3'}\n    symbol = symbols.get(currency, currency)\n    return f'{symbol}{amount:,.2f}'\n"
+        },
+        {
+          "path": "src/utils/validators.py",
+          "content": "import re\n\ndef validate_plant_code(code: str) -> bool:\n    return bool(re.match(r'^[A-Z]{3}$', code))\n\ndef validate_tracking_number(tracking: str) -> bool:\n    if len(tracking) < 8 or len(tracking) > 30:\n        return False\n    return tracking.isalnum()\n"
+        },
+        {
+          "path": "src/utils/__init__.py",
+          "content": ""
+        },
+        {
+          "path": "pyproject.toml",
+          "content": "[project]\nname = \"shipping-app\"\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "directory_resolved_to_mode_b",
+          "type": "behavioral",
+          "check": "Model resolves src/utils/ as a directory and enters Mode B (not Mode A)",
+          "pass_criteria": "Model reads files inside src/utils/ directory and generates tests directly, without spawning an analysis subagent"
+        },
+        {
+          "name": "all_files_in_directory_read",
+          "type": "behavioral",
+          "check": "Model reads ALL source files in the directory (formatters.py and validators.py)",
+          "pass_criteria": "Transcript shows Read tool calls for both formatters.py and validators.py"
+        },
+        {
+          "name": "tests_cover_both_files",
+          "type": "behavioral",
+          "check": "Generated tests cover functions from both files",
+          "pass_criteria": "Test code imports from both formatters and validators modules and tests functions from each"
+        },
+        {
+          "name": "boundary_values_for_weight_format",
+          "type": "behavioral",
+          "check": "Tests exercise the 1000kg boundary in format_weight (999.9 kg vs 1000 kg = 1.00 t)",
+          "pass_criteria": "Tests include values at 999, 999.9, 1000, and 1001 asserting correct kg vs t formatting"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "name": "create-test-contract-testing-pact",
+      "category": "create-test",
+      "tests_change": "create-test skill: contract testing with Pact for microservices",
+      "prompt": "/create-test src/clients/inventory_client.py",
+      "expected_output": "create-test detects a microservice API client (consumer). Selects contract testing (Pact) strategy. Generates consumer-driven contract tests that define expected interactions and publish contracts.",
+      "files": [
+        {
+          "path": "src/clients/inventory_client.py",
+          "content": "import httpx\nfrom typing import Any\n\nclass InventoryClient:\n    def __init__(self, base_url: str):\n        self.base_url = base_url\n\n    def get_stock(self, product_code: str) -> dict[str, Any]:\n        resp = httpx.get(f'{self.base_url}/api/stock/{product_code}')\n        resp.raise_for_status()\n        data = resp.json()\n        return {\n            'product_code': data['product_code'],\n            'available_qty': data['available_qty'],\n            'reserved_qty': data['reserved_qty'],\n            'warehouse': data['warehouse']\n        }\n\n    def reserve_stock(self, product_code: str, quantity: int) -> dict[str, Any]:\n        resp = httpx.post(\n            f'{self.base_url}/api/stock/{product_code}/reserve',\n            json={'quantity': quantity}\n        )\n        resp.raise_for_status()\n        return resp.json()\n\n    def list_low_stock(self, threshold: int = 100) -> list[dict]:\n        resp = httpx.get(f'{self.base_url}/api/stock/low', params={'threshold': threshold})\n        resp.raise_for_status()\n        return resp.json()\n"
+        },
+        {
+          "path": "pyproject.toml",
+          "content": "[project]\nname = \"logistics-planner\"\ndependencies = [\"httpx\"]\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n"
+        }
+      ],
+      "assertions": [
+        {
+          "name": "contract_strategy_selected",
+          "type": "behavioral",
+          "check": "Model selects contract testing (Pact) as strategy for microservice API client",
+          "pass_criteria": "Transcript mentions 'contract testing', 'Pact', 'consumer-driven contract', or 'consumer contract' as the chosen strategy"
+        },
+        {
+          "name": "pact_consumer_test_generated",
+          "type": "behavioral",
+          "check": "Generated tests define Pact interactions from the consumer perspective",
+          "pass_criteria": "Test code imports from pact-python or uses Pact mock server setup. Defines expected request/response interactions for get_stock and/or reserve_stock."
+        },
+        {
+          "name": "response_schema_validated",
+          "type": "behavioral",
+          "check": "Tests validate the expected response schema (product_code, available_qty, reserved_qty, warehouse)",
+          "pass_criteria": "Tests assert specific fields and types in the response, not just status codes"
+        },
+        {
+          "name": "error_scenarios_covered",
+          "type": "behavioral",
+          "check": "Tests cover error scenarios (404 product not found, insufficient stock for reserve)",
+          "pass_criteria": "Tests include at least one error scenario where the provider returns an error status and the client raises an appropriate exception"
         }
       ]
     }

@@ -1,5 +1,39 @@
 # Testing Strategies Reference
 
+## Strategic Framework — How to Decide What to Test
+
+Before selecting strategies, assess: **what is the cost if this code breaks in production, and what is the cheapest way to prevent it?**
+
+### Risk-Based Prioritization
+
+```
+Test Priority = (Blast Radius × Change Frequency × Complexity) / Cost of Test
+```
+
+Score each dimension 1-5, sum them. Score >= 12 needs a test. Score >= 15 needs multiple strategies.
+
+### The Testing Trophy (Current Consensus)
+
+The testing pyramid (many unit, few integration, fewer E2E) is outdated. The **Testing Trophy** (Kent Dodds) reflects modern tooling economics:
+
+- **Static analysis** (base) — type checking, linting. Catches typos and basic mistakes.
+- **Unit tests** (small) — only for pure functions with complex logic.
+- **Integration tests** (LARGEST layer) — components working together. Highest ROI.
+- **E2E tests** (top) — few, critical user journeys only.
+
+"The more your tests resemble the way your software is used, the more confidence they can give you." Unit tests can pass while the system is broken. Integration tests catch real failures.
+
+### Effectiveness Data (OOPSLA 2025)
+
+An empirical evaluation of property-based testing across 100 popular Python packages found:
+- Property-based tests catch **39.14% of mutations** vs 6.6% for unit tests
+- This is a **~6x factor** of effectiveness per test written
+- Genuine bugs found in mature, heavily-tested libraries (including NumPy)
+
+**Implication:** for data transformations, algorithms, and invariant-heavy code, property-based tests should be the PRIMARY strategy, not an afterthought.
+
+---
+
 ## Core Philosophy
 
 Tests exist for two reasons only: (1) find bugs in code just written, (2) catch regressions in future changes. Everything else is ritual.
@@ -8,19 +42,19 @@ Tests exist for two reasons only: (1) find bugs in code just written, (2) catch 
 
 1. **Code first, test smart.** Understand the implementation's tensions and fragile points before writing tests. The implementation reveals WHERE bugs will hide — blind test-first misses this.
 
-2. **Test the API, not the internals.** Always test through the public interface. If you change the implementation, tests should still pass. Internal structure is an implementation detail.
+2. **Test the API, not the internals.** Always test through the public interface. If the implementation changes, tests should still pass.
 
 3. **Test states, not lines.** Code coverage measures lines executed, but bugs live in STATE SPACE. A function with 3 branches and 2 parameters has 12+ states — testing 3 fixed inputs covers a fraction.
 
-4. **Informed black-box.** Use knowledge of the implementation to craft inputs that stress boundary conditions, but test through the public API. Know there's a threshold at 256? Test 255, 256, 257 — through the external interface.
+4. **Informed black-box.** Use implementation knowledge to craft inputs that stress boundary conditions, but test through the public API. Threshold at 256? Test 255, 256, 257.
 
 5. **Randomize relentlessly.** Fixed test data explores a fixed slice of state space. Random data explores vastly more. Property-based testing with 100 random cases finds bugs that 10 handpicked cases miss.
 
-6. **Bias your randomness.** Pure random data is wasteful — random bytes are all equally uninteresting. Bias random generators toward boundary values, common edge cases, and the specific structures your code handles. For a JSON parser: generate mostly-valid JSON with occasional corruption, not random bytes.
+6. **Bias your randomness.** Pure random data is wasteful. Bias generators toward boundary values, edge cases, and structures your code handles. For a JSON parser: generate mostly-valid JSON with occasional corruption, not random bytes.
 
 7. **Verify invariants, not outputs.** Instead of checking "output == expected_fixed_value", check "output satisfies invariant." Invariants survive implementation changes. Examples: sorted output is still sorted, round-trip encoding/decoding produces the original, aggregated totals match input totals.
 
-8. **Compare against simplicity.** Write a simple, obviously-correct reference implementation inside the test. Run both on the same random inputs. Differences are bugs in one or the other. The simple version is easy to verify by inspection.
+8. **Compare against simplicity.** Write a simple, obviously-correct reference implementation inside the test. Run both on the same random inputs. Differences are bugs.
 
 9. **Speed is correctness.** Slow tests don't get run. Tests that don't run don't find bugs. Optimize for fast execution: in-memory over I/O, parallel over sequential, skip unnecessary setup.
 
@@ -30,7 +64,7 @@ Tests exist for two reasons only: (1) find bugs in code just written, (2) catch 
 
 ### 1. Boundary Stress Testing
 
-**When:** Any function with parameters that have thresholds, limits, or type boundaries.
+**When:** Any function with thresholds, limits, or type boundaries.
 
 **How:**
 1. Read the implementation. Find every comparison (`<`, `>`, `<=`, `>=`, `==`, `!=`), every constant, every limit.
@@ -47,7 +81,7 @@ Tests exist for two reasons only: (1) find bugs in code just written, (2) catch 
 
 ### 2. Property-Based Testing
 
-**When:** Data transformations, serialization/deserialization, pure functions, algorithms.
+**When:** Data transformations, serialization/deserialization, pure functions, algorithms. OOPSLA 2025 data shows PBT is ~6x more effective than unit tests at catching mutations — prioritize this for any code that transforms data.
 
 **Properties to check:**
 - **Round-trip:** encode(decode(x)) == x
@@ -81,23 +115,23 @@ Tests exist for two reasons only: (1) find bugs in code just written, (2) catch 
 **When:** Data pipelines, computation-heavy services, API endpoints with complex responses.
 
 **Architecture:**
-1. **Capture phase:** Run code against real data, serialize inputs + outputs as fixtures (Parquet, JSON)
-2. **Regression phase:** Load fixtures, re-execute computation, compare outputs against golden baseline
-3. **Tolerance:** Use approximate comparison for floating-point, exclude volatile fields (timestamps, IDs)
+1. **Capture:** Run against real data, serialize inputs + outputs as fixtures (Parquet, JSON)
+2. **Regression:** Load fixtures, re-execute, compare against golden baseline
+3. **Tolerance:** Approximate comparison for floats, exclude volatile fields (timestamps, IDs)
 
-**Infrastructure patterns:**
+**Infrastructure:**
 - Pytest markers for selective execution (`@pytest.mark.e2e`)
-- Root conftest that mocks all external connectors at collection time
-- Parametrized fixtures for multiple configurations (plants, environments, tenants)
-- Computation caching: run expensive operations once, share across tests
-- Checkpoint architecture: capture intermediate states, not just final output
+- Root conftest mocking external connectors at collection time
+- Parametrized fixtures for multiple configurations
+- Computation caching: run expensive ops once, share across tests
+- Checkpoints: capture intermediate states, not just final output
 
-**Recommended library:** `pytest-regressions` — purpose-built golden file testing for JSON, DataFrames, images. Handles file creation, comparison, and update workflow automatically. 92% regression detection accuracy vs 72% for hand-written assertions.
-
-**Comparison utilities needed (if not using pytest-regressions):**
+**Comparison utilities needed:**
+- `normalize(obj)` — sort dicts, scrub volatile fields (timestamps, IDs), round floats, canonical JSON
 - `assert_dataframes_equal(actual, expected, tolerance=1e-6, exclude_cols=[...])`
-- `normalize_value(val)` — sort lists, handle NaN, canonical JSON for dicts
 - `diff_report(actual, expected)` — per-row differences for debugging
+
+**Workflow:** first run captures baseline to JSON/YAML files → commit baselines to VCS → subsequent runs diff against baselines → `--force-regen` flag to update baselines when changes are intentional. See `refactoring-workflow.md` for complete implementation.
 
 ### 5. E2E API Lifecycle Testing
 
@@ -139,86 +173,84 @@ Tests exist for two reasons only: (1) find bugs in code just written, (2) catch 
 
 ### 7. Real Database Integration Testing
 
-**When:** Code that executes SQL queries, ORM operations, repository patterns, data pipelines, or anything where the DB IS the logic (constraints, triggers, stored procedures).
+**When:** SQL queries, ORM operations, repositories, data pipelines, or anything where the DB IS the logic (constraints, triggers, stored procedures).
 
 **Core rule:** NEVER substitute SQLite for PostgreSQL in tests. SQLite accepts strings in integer columns, lacks JSONB, window functions, partial indexes, and row-level locking. Code passes SQLite tests and fails in production.
 
-See `integration-patterns.md` for isolation strategies (transaction rollback, TRUNCATE, template DB + tmpfs, IntegreSQL), fixture patterns, factory fixtures, Docker Compose templates, and synthetic data generation.
+See `integration-patterns.md` for isolation strategies, fixture patterns, Docker Compose templates, and synthetic data generation.
 
 ### 8. Browser E2E Testing (Playwright)
 
-**When:** User-facing web applications. Test user-visible behavior, not implementation details.
+**When:** User-facing web applications. Test user-visible behavior, not implementation.
 
 **Three non-negotiable rules:**
-1. Semantic locators only: `getByRole` > `getByText` > `getByTestId` > never CSS/XPath
-2. Web-first assertions only: `await expect(loc).toBeVisible()`, never synchronous `isVisible()`
-3. Page Object Model with lazy getter locators for any project beyond trivial size
+1. Semantic locators: `getByRole` > `getByText` > `getByTestId` > never CSS/XPath
+2. Web-first assertions: `await expect(loc).toBeVisible()`, never synchronous `isVisible()`
+3. Page Object Model with lazy getter locators beyond trivial project size
 
-See `e2e-browser-patterns.md` for POM architecture, locator priority, visual regression, CI/CD integration, and anti-patterns.
+See `e2e-browser-patterns.md` for POM architecture, locator priority, visual regression, and CI/CD integration.
 
 ### 9. Characterization / Approval Testing (Golden Master)
 
-**When:** Legacy code without tests that needs refactoring. The chicken-and-egg problem: need tests to refactor safely, but untested code seems impossible to test.
+**When:** Legacy code without tests that needs refactoring.
 
-**Core concept:** Capture the ACTUAL behavior of existing code — not what it should do, but what it DOES. If behavior changes after refactoring → the refactoring broke something.
+**Core concept:** Capture the ACTUAL behavior of existing code — what it DOES, not what it should do. Any diff after refactoring = behavior changed.
 
 **Process:**
-1. **Identify seams** — points where you can alter behavior without changing source code (classes, interfaces, config)
-2. **Write capture script** — exercise the code with representative inputs, serialize all outputs
-3. **Write Printer/normalizer** — scrub volatile data (timestamps, IDs, random values) for deterministic comparison
-4. **Run as regression** — after refactoring, any diff = behavior change
+1. **Identify seams** — points to alter behavior without changing source (classes, interfaces, config)
+2. **Capture** — exercise code with representative inputs, serialize all outputs
+3. **Normalize** — scrub volatile data (timestamps, IDs, random values) for deterministic comparison
+4. **Regress** — after refactoring, diff against baseline
 
-**Critical nuance:** Characterization tests capture bugs too. If the baseline includes incorrect behavior, your tests legitimize it. Use as a bridge to understanding, then replace with proper behavioral tests once you understand the code.
+**Critical nuance:** Characterization tests capture bugs too. The baseline includes incorrect behavior. Use as a bridge, then replace with behavioral tests once you understand the code.
 
-**Techniques from Michael Feathers (Working Effectively with Legacy Code):**
-- **Sprout Method**: new logic in isolation, tested separately, called from legacy code
-- **Wrap Method**: rename original, create wrapper with same name, add logic before/after
-- **Scratch Refactoring**: exploratory refactoring to understand code — then REVERT ALL before implementing
+**Feathers' techniques:** Sprout Method (new logic in isolation, called from legacy), Wrap Method (rename original, wrap with same name), Scratch Refactoring (explore then REVERT ALL). See `refactoring-workflow.md` for full patterns.
 
 ### 10. Concurrency & Atomicity Testing
 
-**When:** Async code, shared resources, database operations that must be atomic, booking/reservation systems, counters, rate limiters.
+**When:** Async code, shared resources, atomic operations, booking systems, counters, rate limiters.
 
-**Three core patterns:** race condition (concurrent claims on scarce resource — exactly one wins), idempotency (duplicate requests produce same result), stress (N concurrent operations maintain invariants).
+**Three core patterns:** race condition (concurrent claims on scarce resource — exactly one wins), idempotency (duplicate requests → same result), stress (N concurrent ops maintain invariants). See `language-templates.md` for scaffolds.
 
-See `language-templates.md` for concrete scaffolds per language.
-
-**Key rule:** Concurrency bugs are non-deterministic. Run stress tests with high iteration counts (`@settings(max_examples=500)` or explicit loops). A test that passes once proves nothing — it must pass 100 times.
+**Key rule:** Concurrency bugs are non-deterministic. A test that passes once proves nothing — it must pass 100 times. Use `@settings(max_examples=500)` or explicit loops.
 
 ### 11. Contract Testing
 
-**When:** Multiple services communicate via API. Teams deploy independently. Breaking changes at service boundaries cause production incidents.
+**When:** Multiple services communicate via API. Teams deploy independently.
 
 **Consumer-Driven Contracts (Pact):**
-1. **Consumer** defines expectations (what it needs from provider)
-2. Consumer tests generate pact files (JSON contracts)
-3. **Provider** verifies pact files independently
-4. `can-i-deploy` gate prevents incompatible deployments
+1. **Consumer** defines expectations → generates pact files (JSON contracts)
+2. **Provider** verifies pact files independently
+3. `can-i-deploy` gate prevents incompatible deployments
 
-**Critical anti-pattern:** Over-specifying contracts. If consumer only needs `name`, don't assert on `address` and `phone` — provider removing unused fields breaks the contract unnecessarily. Test the minimum contract your consumer requires.
+**Critical anti-pattern:** Over-specifying contracts. If consumer only needs `name`, don't assert on `address` and `phone`. Test the minimum contract.
 
-**Alternative for REST APIs:** OpenAPI schema validation as contract. Less powerful than Pact but lower overhead for simple cases.
+**Alternative:** OpenAPI schema validation — less powerful than Pact but lower overhead for simple cases.
 
 ### 12. Mutation Testing (Test Quality Verification)
 
-**When:** You want to verify that your tests actually catch bugs, not just execute code. Code coverage measures execution; mutation testing measures assertion quality.
+**When:** Verifying tests actually catch bugs, not just execute code. Coverage measures execution; mutation testing measures assertion quality.
 
-**How it works:** Introduce deliberate bugs (mutants) into source code. If tests still pass → tests don't actually verify that code path.
+**How:** Introduce deliberate bugs (mutants) into source code. Tests still pass → tests don't verify that code path.
 
-**Mutation score interpretation:**
+**Mutation score:**
 - 85-90%+: Excellent — strong test suite
 - 60-80%: Decent — room for improvement on edge cases
 - <60%: Weak — tests verify execution, not correctness
 
-**Tools:** mutmut (Python, zero-config), cosmic-ray (Python, distributed), Stryker (TypeScript/JS)
+**Primary approach:** manual mutation check — change expected values in assertions, verify tests fail, restore. Zero dependencies, equally effective for targeted verification.
+
+**Optional tool:** mutmut (Python, zero-config) automates this at scale for CI nightly jobs.
 
 **When to apply:** Critical business logic (payments, auth), stable APIs, complex algorithms. Skip for: simple CRUD, trivial getters, prototypes, frequently changing code.
 
 **Practical tip:** Schedule mutation testing as a nightly CI job, not on every commit. Focus on the critical 10-20% of the codebase.
 
+**Lightweight alternative:** If dedicated tools are too heavy, apply the mutation check manually during test generation — temporarily change expected values in assertions, verify tests fail, restore. This achieves the same validation without tooling overhead.
+
 ### 13. Flaky Test Prevention
 
-**When:** Any test suite running in CI. Flaky tests are the #1 CI reliability killer — they erode trust until developers ignore failures.
+**When:** Any test suite in CI. Flaky tests erode trust until developers ignore failures.
 
 **Common causes and fixes:**
 
@@ -241,17 +273,14 @@ See `language-templates.md` for concrete scaffolds per language.
 
 ### 14. Database Migration Testing
 
-**When:** Projects using Alembic, Flyway, Liquibase, or Prisma migrations. Critical during refactoring when schema changes accompany code changes.
+**When:** Alembic, Flyway, Liquibase, or Prisma migrations — especially when schema changes accompany code changes.
 
 **Test patterns:**
+1. **Up/down round-trip:** Apply → verify schema → rollback → verify original restored
+2. **Data preservation:** Seed → migrate → verify data correctly transformed
+3. **Idempotency:** Applying twice succeeds silently or fails cleanly
 
-1. **Up/down round-trip:** Apply migration, verify schema, rollback migration, verify original schema restored
-2. **Data preservation:** Seed data before migration, apply migration, verify data correctly transformed
-3. **Idempotency:** Applying the same migration twice should either succeed silently or fail cleanly
-
-**Tools:** `alembic upgrade head && alembic downgrade -1 && alembic upgrade head` as CI step. For Alembic specifically, `pytest-alembic` provides fixtures for testing individual migrations.
-
-See `integration-patterns.md` for concrete implementation patterns.
+**CI step:** `alembic upgrade head && alembic downgrade -1 && alembic upgrade head`. See `integration-patterns.md` for implementation.
 
 ---
 

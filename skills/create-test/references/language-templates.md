@@ -158,6 +158,99 @@ settings.register_profile("debug", max_examples=10,
 # default = "dev"
 ```
 
+### Stateful testing scaffold (hypothesis RuleBasedStateMachine)
+
+```python
+"""Stateful tests for {module_name} — generates random sequences of operations."""
+from hypothesis.stateful import (
+    RuleBasedStateMachine, rule, invariant, precondition, initialize, Bundle, consumes,
+)
+from hypothesis import settings
+from hypothesis import strategies as st
+
+from {module_path} import {SystemUnderTest}
+
+
+class {SystemName}StateMachine(RuleBasedStateMachine):
+    """Models {system} as a state machine. Hypothesis generates random operation
+    sequences and verifies invariants after every step.
+
+    Pattern: maintain both the real implementation and a simple in-memory model.
+    Run identical operations on both. Assert equivalence.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.system = {SystemUnderTest}()
+        self.model = {}  # simple dict as reference implementation
+
+    # --- Bundles: reusable values across operations ---
+    keys = Bundle("keys")
+
+    # --- Initialize: runs exactly once before any rule ---
+    @initialize(target=keys, k=st.text(min_size=1, max_size=50))
+    def seed_initial_key(self, k):
+        self.system.create(k, "initial")
+        self.model[k] = "initial"
+        return k
+
+    # --- Rules: operations that can be chained in any order ---
+    @rule(target=keys, k=st.text(min_size=1, max_size=50), v=st.text())
+    def create(self, k, v):
+        self.system.create(k, v)
+        self.model[k] = v
+        return k
+
+    @rule(k=keys, v=st.text())
+    def update(self, k, v):
+        self.system.update(k, v)
+        self.model[k] = v
+
+    @rule(k=consumes(keys))  # consumes: removes from bundle after use
+    def delete(self, k):
+        self.system.delete(k)
+        del self.model[k]
+
+    @rule(k=keys)
+    def read(self, k):
+        assert self.system.get(k) == self.model[k]
+
+    # --- Preconditions: filter when rules execute ---
+    @precondition(lambda self: len(self.model) > 0)
+    @rule()
+    def count(self):
+        assert self.system.count() == len(self.model)
+
+    # --- Invariants: checked after EVERY step ---
+    @invariant()
+    def model_matches_system(self):
+        for k, v in self.model.items():
+            assert self.system.get(k) == v
+
+    @invariant()
+    def count_non_negative(self):
+        assert self.system.count() >= 0
+
+
+# Run as pytest test
+Test{SystemName} = {SystemName}StateMachine.TestCase
+Test{SystemName}.settings = settings(max_examples=100, stateful_step_count=30)
+```
+
+**Key patterns:**
+- `Bundle("name")` — pool of values reusable across rules
+- `target=bundle` on rule return → adds value to bundle
+- `consumes(bundle)` — draws AND removes from bundle
+- `@precondition(lambda self: ...)` — skip rule if condition is false
+- `@invariant()` — checked after every single step
+- `@initialize(target=...)` — runs exactly once, before any rule
+
+**Use stateful testing when:**
+- System has mutable state (caches, databases, shopping carts, state machines)
+- Operations can be chained in any order
+- Bugs emerge from specific sequences of operations (race conditions, state corruption)
+- You need to verify invariants hold across ALL possible operation sequences
+
 ### Mutation testing setup (mutmut)
 
 ```bash
@@ -443,392 +536,100 @@ def capture_baselines():
 
 ---
 
-## Java (JUnit 5 + jqwik)
+## Java (JUnit 5 + jqwik) — Key Patterns
 
-### Test file scaffold
+Same concepts as Python. Key syntax differences:
 
 ```java
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import net.jqwik.api.*;
-import static org.assertj.core.api.Assertions.*;
-
-class {ClassName}Test {
-
-    // --- Boundary Tests ---
-
-    @ParameterizedTest
-    @CsvSource({
-        "255, EXPECTED_BELOW",    // Below boundary
-        "256, EXPECTED_AT",       // At boundary
-        "257, EXPECTED_ABOVE",    // Above boundary
-    })
-    void boundaryTest(int input, String expected) {
-        var result = subject.method(input);
-        assertThat(result).isEqualTo(expected);
-    }
-
-    @Test
-    void emptyInputReturnsDefault() {
-        var result = subject.method(List.of());
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void nullInputThrows() {
-        assertThatThrownBy(() -> subject.method(null))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    // --- Property-Based Tests (jqwik) ---
-
-    @Property(tries = 200)
-    void roundTrip(@ForAll String input) {
-        var encoded = subject.encode(input);
-        var decoded = subject.decode(encoded);
-        assertThat(decoded).isEqualTo(input);
-    }
-
-    @Property
-    void outputAlwaysSorted(@ForAll List<@IntRange(min = -1000, max = 1000) Integer> input) {
-        var result = subject.sort(input);
-        assertThat(result).isSorted();
-        assertThat(result).hasSameSizeAs(input);
-    }
-
-    // --- Reference Implementation ---
-
-    @Property(tries = 500)
-    void matchesReference(@ForAll @Size(max = 100) List<Integer> data) {
-        var optimized = subject.process(data);
-        var reference = referenceImpl(data);
-        assertThat(optimized).isEqualTo(reference);
-    }
-
-    private List<Integer> referenceImpl(List<Integer> data) {
-        // Simple, obviously correct version
-        return data.stream().sorted().toList();
-    }
+// Boundary: @ParameterizedTest + @CsvSource
+@ParameterizedTest
+@CsvSource({"255, BELOW", "256, AT", "257, ABOVE"})
+void boundaryTest(int input, String expected) {
+    assertThat(subject.method(input)).isEqualTo(expected);
 }
+
+// Property-based: jqwik @Property
+@Property(tries = 200)
+void roundTrip(@ForAll String input) {
+    assertThat(subject.decode(subject.encode(input))).isEqualTo(input);
+}
+
+// Reference implementation
+@Property(tries = 500)
+void matchesReference(@ForAll @Size(max = 100) List<Integer> data) {
+    assertThat(subject.process(data)).isEqualTo(data.stream().sorted().toList());
+}
+
+// Null handling: AssertJ
+assertThatThrownBy(() -> subject.method(null)).isInstanceOf(IllegalArgumentException.class);
 ```
 
 ---
 
-## TypeScript (vitest + fast-check)
+## TypeScript (vitest + fast-check) — Key Patterns
 
-### Test file scaffold
-
-```typescript
-import { describe, it, expect } from 'vitest';
-import * as fc from 'fast-check';
-import { functionUnderTest } from '../src/module';
-
-describe('functionUnderTest', () => {
-
-  // --- Boundary Tests ---
-
-  it.each([
-    [THRESHOLD - 1, EXPECTED_BELOW],
-    [THRESHOLD, EXPECTED_AT],
-    [THRESHOLD + 1, EXPECTED_ABOVE],
-  ])('handles boundary value %i', (input, expected) => {
-    expect(functionUnderTest(input)).toEqual(expected);
-  });
-
-  it('handles empty input', () => {
-    expect(functionUnderTest([])).toEqual([]);
-  });
-
-  it('throws on null input', () => {
-    expect(() => functionUnderTest(null as any)).toThrow();
-  });
-
-  // --- Property-Based Tests ---
-
-  it('round-trip encoding', () => {
-    fc.assert(
-      fc.property(fc.string(), (input) => {
-        const encoded = encode(input);
-        const decoded = decode(encoded);
-        expect(decoded).toEqual(input);
-      }),
-      { numRuns: 200 },
-    );
-  });
-
-  it('output preserves invariant', () => {
-    fc.assert(
-      fc.property(fc.array(fc.integer()), (data) => {
-        const result = functionUnderTest(data);
-        // Invariant: output length matches input
-        expect(result).toHaveLength(data.length);
-        // Invariant: output is sorted
-        for (let i = 1; i < result.length; i++) {
-          expect(result[i]).toBeGreaterThanOrEqual(result[i - 1]);
-        }
-      }),
-    );
-  });
-
-  // --- Reference Implementation ---
-
-  it('matches naive implementation', () => {
-    fc.assert(
-      fc.property(fc.array(fc.integer(), { maxLength: 100 }), (data) => {
-        const optimized = functionUnderTest(data);
-        const reference = [...data].sort((a, b) => a - b); // naive
-        expect(optimized).toEqual(reference);
-      }),
-      { numRuns: 500 },
-    );
-  });
-});
-```
-
-### API endpoint test (golden fixture)
+Same concepts as Python. Key syntax differences:
 
 ```typescript
-import { describe, it, expect, beforeAll } from 'vitest';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-
-const FIXTURES_DIR = join(__dirname, 'fixtures', 'golden');
-
-describe('GET /api/resource', () => {
-  let goldenResponse: any;
-
-  beforeAll(() => {
-    goldenResponse = JSON.parse(
-      readFileSync(join(FIXTURES_DIR, 'resource-list.json'), 'utf-8')
-    );
-  });
-
-  it('matches golden fixture', async () => {
-    const response = await app.request('/api/resource');
-    const body = await response.json();
-    const normalized = normalize(body);
-    expect(normalized).toEqual(normalize(goldenResponse));
-  });
+// Boundary: it.each
+it.each([
+  [THRESHOLD - 1, EXPECTED_BELOW],
+  [THRESHOLD, EXPECTED_AT],
+  [THRESHOLD + 1, EXPECTED_ABOVE],
+])('boundary %i', (input, expected) => {
+  expect(functionUnderTest(input)).toEqual(expected);
 });
 
-function normalize(obj: unknown): unknown {
-  if (Array.isArray(obj)) return obj.map(normalize).sort(byNaturalKey);
-  if (obj && typeof obj === 'object') {
-    const { timestamp, updatedAt, ...rest } = obj as Record<string, unknown>;
-    return Object.fromEntries(
-      Object.entries(rest).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => [k, normalize(v)])
-    );
-  }
-  return obj;
-}
-```
-
-### Playwright E2E scaffold
-
-```typescript
-import { test, expect, type Page, type Locator } from '@playwright/test';
-
-// --- Page Object ---
-
-class {PageName}Page {
-  constructor(private readonly page: Page) {}
-
-  get url() { return '/{route}'; }
-
-  // Lazy getters — resolved when accessed, never stale
-  get heading(): Locator {
-    return this.page.getByRole('heading', { level: 1 });
-  }
-
-  get submitButton(): Locator {
-    return this.page.getByRole('button', { name: '{ActionLabel}' });
-  }
-
-  get inputField(): Locator {
-    return this.page.getByLabel('{FieldLabel}');
-  }
-
-  get errorMessage(): Locator {
-    return this.page.getByRole('alert');
-  }
-
-  async goto(): Promise<void> {
-    await this.page.goto(this.url);
-  }
-
-  async fillAndSubmit(value: string): Promise<void> {
-    await this.inputField.fill(value);
-    await this.submitButton.click();
-  }
-}
-
-
-// --- Custom Fixture ---
-
-const pageTest = test.extend<{ {pageName}Page: {PageName}Page }>({
-  {pageName}Page: async ({ page }, use) => {
-    await use(new {PageName}Page(page));
-  },
+// Property-based: fast-check
+it('round-trip', () => {
+  fc.assert(fc.property(fc.string(), (input) => {
+    expect(decode(encode(input))).toEqual(input);
+  }), { numRuns: 200 });
 });
 
-
-// --- E2E Tests ---
-
-pageTest.describe('{Feature} flows', () => {
-
-  pageTest('happy path: complete {action}', async ({ {pageName}Page }) => {
-    await {pageName}Page.goto();
-    await expect({pageName}Page.heading).toBeVisible();
-
-    await {pageName}Page.fillAndSubmit('valid input');
-
-    // Web-first assertion — auto-retries until timeout
-    await expect({pageName}Page.page).toHaveURL(/\/success/);
-  });
-
-  pageTest('validation: shows error on invalid input', async ({ {pageName}Page }) => {
-    await {pageName}Page.goto();
-    await {pageName}Page.fillAndSubmit('');
-
-    await expect({pageName}Page.errorMessage).toContainText('required');
-  });
-
-  pageTest('handles API error gracefully', async ({ {pageName}Page }) => {
-    // Mock API failure
-    await {pageName}Page.page.route('**/api/{endpoint}', (route) =>
-      route.fulfill({ status: 500, body: '{"error": "Server Error"}' })
-    );
-
-    await {pageName}Page.goto();
-    await {pageName}Page.fillAndSubmit('valid input');
-
-    await expect({pageName}Page.errorMessage).toContainText('try again');
-  });
-});
-
-
-// --- Visual Regression ---
-
-pageTest.describe('@visual {Feature} snapshots', () => {
-
-  pageTest('default state renders correctly', async ({ {pageName}Page }) => {
-    await {pageName}Page.goto();
-    await expect({pageName}Page.page.locator('main')).toHaveScreenshot(
-      '{feature}-default.png',
-      {
-        animations: 'disabled',
-        mask: [{pageName}Page.page.locator('[data-testid="timestamp"]')],
-      }
-    );
-  });
+// Reference implementation
+it('matches naive', () => {
+  fc.assert(fc.property(fc.array(fc.integer(), { maxLength: 100 }), (data) => {
+    expect(functionUnderTest(data)).toEqual([...data].sort((a, b) => a - b));
+  }), { numRuns: 500 });
 });
 ```
 
-### Contract testing scaffold (Pact — TypeScript consumer)
-
-```typescript
-import { PactV4, MatchersV3 } from '@pact-foundation/pact';
-
-const provider = new PactV4({
-  consumer: 'my-frontend',
-  provider: 'user-api',
-});
-
-describe('User API Contract', () => {
-  it('fetches a user by ID', async () => {
-    await provider
-      .addInteraction()
-      .given('user 123 exists')
-      .uponReceiving('a request for user 123')
-      .withRequest('GET', '/users/123')
-      .willRespondWith(200, (builder) => {
-        builder.jsonBody({
-          id: MatchersV3.integer(123),
-          name: MatchersV3.string('Alice'),
-          email: MatchersV3.regex(/.*@.*\..*/, 'alice@example.com'),
-        });
-      })
-      .executeTest(async (mockserver) => {
-        const client = new UserClient(mockserver.url);
-        const user = await client.getUser(123);
-        expect(user.name).toBe('Alice');
-      });
-  });
-});
-```
-
-### Mutation testing setup (Stryker — TypeScript)
-
-```bash
-# Install
-npm install --save-dev @stryker-mutator/core @stryker-mutator/vitest-runner
-
-# Init config
-npx stryker init
-
-# Run
-npx stryker run
-
-# CI: check threshold in stryker.config.mjs
-# thresholds: { high: 90, low: 80, break: 75 }
-```
+For Playwright E2E and Pact contract scaffolds, see `e2e-browser-patterns.md`.
 
 ---
 
-## Swift (XCTest + swift-testing)
+## Swift (swift-testing) — Key Patterns
 
-### Test file scaffold
+Same concepts as Python. Key syntax differences:
 
 ```swift
 import Testing
 @testable import ModuleName
 
-struct FunctionNameTests {
+// Boundary: @Test with arguments
+@Test("boundary", arguments: [
+    (THRESHOLD - 1, ExpectedBelow), (THRESHOLD, ExpectedAt), (THRESHOLD + 1, ExpectedAbove),
+])
+func boundary(input: Int, expected: Output) {
+    #expect(functionUnderTest(input) == expected)
+}
 
-    // --- Boundary Tests ---
-
-    @Test("Handles value at boundary", arguments: [
-        (THRESHOLD - 1, ExpectedBelow),
-        (THRESHOLD, ExpectedAt),
-        (THRESHOLD + 1, ExpectedAbove),
-    ])
-    func boundary(input: Int, expected: Output) {
-        let result = functionUnderTest(input)
-        #expect(result == expected)
+// Invariant: loop with random inputs (no hypothesis equivalent in Swift)
+@Test("round-trip")
+func roundTrip() {
+    for _ in 0..<200 {
+        let input = randomInput()
+        #expect(decode(encode(input)) == input)
     }
+}
 
-    @Test("Handles empty input")
-    func emptyInput() {
-        let result = functionUnderTest([])
-        #expect(result.isEmpty)
-    }
-
-    // --- Invariant Tests ---
-
-    @Test("Round-trip encode/decode preserves data")
-    func roundTrip() {
-        for _ in 0..<200 {
-            let input = randomInput()
-            let encoded = encode(input)
-            let decoded = decode(encoded)
-            #expect(decoded == input)
-        }
-    }
-
-    @Test("Output matches reference implementation")
-    func matchesReference() {
-        for _ in 0..<500 {
-            let data = (0..<Int.random(in: 0...100)).map { _ in Int.random(in: -1000...1000) }
-            let optimized = functionUnderTest(data)
-            let reference = data.sorted() // naive
-            #expect(optimized == reference)
-        }
-    }
-
-    private func randomInput() -> String {
-        let length = Int.random(in: 0...300)
-        return String((0..<length).map { _ in Character(UnicodeScalar(Int.random(in: 32...126))!) })
+// Reference implementation
+@Test("matches reference")
+func matchesReference() {
+    for _ in 0..<500 {
+        let data = (0..<Int.random(in: 0...100)).map { _ in Int.random(in: -1000...1000) }
+        #expect(functionUnderTest(data) == data.sorted())
     }
 }
 ```

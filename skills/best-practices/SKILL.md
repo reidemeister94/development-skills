@@ -126,8 +126,23 @@ From ALL search results, rank by authority. Prioritize:
 | **S** | Official docs, RFCs, seminal papers | RFC docs, Martin Fowler, research papers |
 | **A** | Major tech engineering blogs | Netflix Tech Blog, Uber Engineering, Stripe Blog, Google AI Blog |
 | **B** | Well-known industry authors/blogs | Pragmatic Engineer, Architecture Notes, InfoQ, ThoughtWorks Radar |
-| **C** | GitHub projects > 5k stars, curated awesome-lists | awesome-* repos, major OSS projects |
+| **C** | GitHub projects ≥ 1k stars + actively maintained, curated awesome-lists | awesome-* repos, major OSS projects |
 | **D** | High-quality community (HN, Reddit top posts) | Top HN discussions, r/programming top posts |
+
+### HARD QUALITY GATES — Zero Exceptions
+
+These gates are **mandatory filters** applied to every resource before it enters the report. A resource that fails any gate is silently dropped — never mentioned, never linked, never recommended.
+
+| Resource type | Minimum bar | How to verify |
+|---------------|-------------|---------------|
+| **GitHub repo** | ≥ 1,000 stars AND last commit within 6 months | Check stars AND recent commit activity via search snippet or WebFetch. Both conditions must be met. A repo with 1k stars and active commits beats one with 5k stars abandoned 2 years ago. If either metric is unknown and cannot be verified, drop it. |
+| **Article / blog post** | Author or publication has established authority (Tier S/A/B sources, or recognized individual experts with verifiable track record) | Must be from the named Tier S/A/B domains, or from a named author with a known body of work (conference talks, books, major OSS contributions). Anonymous or first-time bloggers on Medium/Dev.to/personal sites: drop. |
+| **Engineering blog** | From a company with at-scale production systems | Must be a recognized engineering organization (see `references/research-strategy.md` Tier A list, or comparable). Startup vanity blogs without technical depth: drop. |
+| **Book** | Multiple editions OR ≥ 100 citations OR recommended by ≥ 2 independent authoritative sources | Cross-reference against authoritative reading lists, conference recommendations, or citation counts. Self-published books with no external validation: drop. |
+| **Conference talk / video** | Major conference (QCon, Strange Loop, KubeCon, GOTO, re:Invent, Google I/O, PyCon, JSConf, etc.) OR speaker with recognized expertise | Random YouTube tutorials or meetup recordings from unknown speakers: drop. |
+| **Community discussion** | Top-voted HN/Reddit post with substantive first-hand experience | Low-engagement threads, anecdotal comments without evidence: drop. |
+
+**Rationale:** The user's time is the scarcest resource. Every recommendation carries implicit endorsement. Recommending obscure, unvetted, or low-signal resources wastes time and erodes trust. When in doubt, drop it — a shorter list of excellent resources beats a long list with filler.
 
 Discard: SEO spam, low-effort listicles, outdated content (older than 4 years from TODAY unless foundational/seminal), content farms, AI-generated summaries.
 
@@ -221,7 +236,7 @@ code patterns, and infrastructure choices.]
 
 ## 6. Ecosystem & Tooling
 
-### Key Libraries & Frameworks
+### Key Libraries & Frameworks (≥ 1k stars + active within 6 months)
 | Name | Stars | Language | Best for | Link |
 |------|-------|----------|----------|------|
 
@@ -271,3 +286,4 @@ Grouped by tier (S/A/B/C/D) to signal authority level.]
 6. **Acknowledge knowledge gaps.** If research couldn't find authoritative answers for a sub-topic, say so rather than speculate.
 7. **No AI summaries of AI summaries.** Use primary sources. If a result looks AI-generated, skip it.
 8. **Language matching.** Write the report in the SAME LANGUAGE the user used in their prompt. If the user wrote in Italian, respond in Italian. If in English, respond in English. Match the user's language exactly.
+9. **Hard quality gates are non-negotiable.** Never recommend GitHub repos with < 1k stars or inactive for > 6 months (both conditions must pass). Never cite articles from unknown/unvetted authors or publications. Never link engineering blogs from companies without at-scale production credibility. Apply the gates from Phase 2 to every single resource in the final report — including the Ecosystem & Tooling table, Recommended Reading, and inline citations. If enforcing these gates leaves a section empty, state "No resources met the quality bar" rather than lowering standards.

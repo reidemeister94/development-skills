@@ -38,7 +38,8 @@ When evaluating sources for best practices research, apply this hierarchy strict
 - ACM Queue (queue.acm.org)
 
 ### Tier C — Curated Open Source
-- GitHub awesome-* lists (>5k stars)
+- GitHub repos with ≥ 1,000 stars AND last commit within 6 months (both required — popularity without activity = abandoned)
+- GitHub awesome-* lists (≥ 1k stars, actively maintained)
 - Major OSS project documentation
 - CNCF graduated/incubating projects
 - Curated reading lists from recognized engineers
@@ -56,6 +57,11 @@ When evaluating sources for best practices research, apply this hierarchy strict
 - Outdated content (>4 years from current date) unless foundational/seminal
 - Vendor marketing disguised as technical content
 - Tutorial sites recycling official docs
+- **GitHub repos with < 1,000 stars OR last commit > 6 months ago** — both conditions must pass. A 1k-star active repo beats a 5k-star repo abandoned 2 years ago
+- **Blog posts / articles by unknown authors** — if the author has no verifiable track record (books, conference talks, major OSS contributions, staff+ role at a recognized company), drop the resource
+- **Engineering blogs from companies without at-scale production systems** — startup vanity blogs, agency blogs, and consultancy marketing posts are not credible engineering sources
+- **Self-published books with no external validation** — must have multiple editions, ≥ 100 citations, or independent recommendations from authoritative sources
+- **Random YouTube tutorials and meetup recordings** — only major conference talks (QCon, Strange Loop, KubeCon, GOTO, re:Invent, PyCon, etc.) from recognized speakers qualify
 
 ## Search Query Construction
 
