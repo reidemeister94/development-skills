@@ -162,6 +162,7 @@ Each phase is a **gate** — the agent cannot proceed until the gate conditions 
 | `update-precommit` | `/update-precommit` | Update `.pre-commit-config.yaml` hooks to latest versions |
 | `update-reqs` | `/update-reqs` | Update `requirements.in` with latest PyPI versions |
 | `update-reqs-dev` | `/update-reqs-dev` | Update `requirements-dev.in` with latest PyPI versions |
+| `roast-my-code` | `/roast-my-code` | Brutally honest code critique + AI-readiness audit. Use `--fix` to auto-fix CRITICAL/HIGH issues via core-dev workflow |
 | `resolve-merge` | `/resolve-merge` | Systematic merge conflict resolution with numbered docs renumbering support |
 | `best-practices` | `/best-practices <topic>` | Deep web research from authoritative sources (engineering blogs, official docs, books, GitHub projects >5k stars). Produces structured state-of-the-art report with trade-offs, decision frameworks, anti-patterns, and cited sources |
 

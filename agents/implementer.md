@@ -109,6 +109,16 @@ Every task: **RED** (failing test) → **GREEN** (minimal pass) → **REFACTOR**
 - **If you wrote production code before the test:** Delete it. Start with the test.
 - **If a test is hard to write:** Simplify the interface, use dependency injection.
 
+### Anti-Slop Self-Check (REFACTOR phase)
+
+During REFACTOR, also check for LLM-typical slop patterns:
+
+- **Restating comments?** — Delete any comment that says what the next line already says. `x += 1  # increment x` is noise.
+- **Defensive error handling on safe paths?** — Remove try/catch wrapping internal calls that cannot throw. Only handle errors at boundaries.
+- **Wrapper for nothing?** — If a function/class wraps a single call without adding logic, inline it.
+- **Naming drift?** — Are new names consistent with existing codebase conventions? Grep for similar entities.
+- **Added dependencies for trivial ops?** — Can this be done with stdlib? New deps need justification.
+
 ## Protocol
 
 1. **Read the research file and patterns file(s).** Do NOT skip.

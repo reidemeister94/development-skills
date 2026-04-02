@@ -1,6 +1,6 @@
 ---
 name: roast-my-code
-description: "Use when user wants a brutally honest code roast, quality critique, or AI-readiness audit. Use when user says roast, roast my code, critique my code, tear apart my code, review quality, or AI-readiness check."
+description: "Use when user wants a brutally honest code roast, quality critique, or AI-readiness audit. Use when user says roast, roast my code, critique my code, tear apart my code, review quality, or AI-readiness check. Supports --fix flag to auto-fix CRITICAL and HIGH issues via core-dev workflow."
 user-invocable: true
 allowed-tools: Glob, Grep, Read, Bash, Agent
 effort: max
@@ -12,11 +12,13 @@ effort: max
 
 ## Target Resolution
 
-Determine the scope from `$ARGUMENTS`:
+Parse `$ARGUMENTS` for the `--fix` flag. If present, enable fix mode. The target scope is everything in `$ARGUMENTS` except `--fix`.
 
-1. **Empty** (`$ARGUMENTS` is blank): Roast the entire repository from the current working directory.
-2. **Directory**: if `$ARGUMENTS` is a directory path, roast all code files in that directory (recursive).
-3. **File**: if `$ARGUMENTS` is a single file path, roast that file and its interactions with the rest of the codebase.
+Determine the scope from the remaining arguments:
+
+1. **Empty** (no target after removing `--fix`): Roast the entire repository from the current working directory.
+2. **Directory**: if target is a directory path, roast all code files in that directory (recursive).
+3. **File**: if target is a single file path, roast that file and its interactions with the rest of the codebase.
 
 ## Step 1 — Reconnaissance
 
@@ -123,6 +125,25 @@ Combine both outputs into a single roast report. Use this format:
 ```
 
 Display the full report to the user.
+
+## Step 5 — Fix Mode (only if --fix flag present)
+
+If `--fix` was NOT in `$ARGUMENTS`, STOP here. The roast is delivered.
+
+If `--fix` WAS present:
+
+1. **Extract actionable issues** from the roast report. Only CRITICAL and HIGH severity issues are eligible for auto-fix. MEDIUM issues are informational only.
+2. **Present the fix list** as numbered items:
+   ```
+   Fixable issues from the roast:
+   1. [file:line] [CRITICAL] Description — Fix: specific action
+   2. [file:line] [HIGH] Description — Fix: specific action
+   ...
+
+   Which issues should I fix? (all / comma-separated numbers / none)
+   ```
+3. **STOP. Wait for user selection.**
+4. **On user selection:** Invoke `development-skills:core-dev` via Skill tool with task: "Fix the following issues identified by code roast: [selected items with file:line and fix actions]". This triggers the standard development workflow (TDD, staff review), ensuring fixes are properly tested and reviewed by a separate agent.
 
 ## Rules
 
