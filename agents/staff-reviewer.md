@@ -58,13 +58,14 @@ If spec issues exist, report them immediately as SPEC_ISSUES — do NOT proceed 
 2. **Review with these priorities (in order):**
    1. **SIMPLIFY** — Can this be simpler? Functions > 70 lines decomposed? Remove unnecessary abstractions.
    2. **REMOVE OVER-ENGINEERING** — Delete code solving hypothetical problems. No premature abstractions.
-   3. **TEST QUALITY** — Tests describe behavior ("should return 404 when user not found"), not implementation ("should call findById"). No mocking privates. Flag tests that mirror production structure 1:1 (test-after smell) or only cover happy paths.
-   4. **STRUCTURE** — Models/schemas organized by domain with CRUD variants? Composition over deep inheritance? Backward compatibility preserved?
-   5. **EFFICIENCY** — Time/space complexity minimized? No O(n²) when O(n) possible? No redundant iterations?
-   6. **CLARITY & WHY COMMENTS** — Ambiguous or non-obvious code has WHY comments? Pydantic fields with non-trivial types/defaults are annotated with their rationale? No useless WHAT comments on clean code? Unclear code without comments flagged for both commenting AND refactoring?
-   7. **DEAD CODE** — Commented-out code? Unused imports? Functions nothing calls? Unreachable branches?
-   8. **DEPENDENCY HYGIENE** — Outdated deps? Unnecessary deps for trivial functionality? Missing lockfiles? Version pins too loose?
-   9. **STANDARDS** — Follows all standards from the patterns.md file (if provided)?
+   3. **LLM SLOP PATTERNS** — Comments that restate code? Try/catch on internal calls that can't fail? Functions that wrap a single call? New dependencies for operations stdlib handles? Flag each with evidence.
+   4. **TEST QUALITY** — Tests describe behavior ("should return 404 when user not found"), not implementation ("should call findById"). No mocking privates. Flag tests that mirror production structure 1:1 (test-after smell) or only cover happy paths.
+   5. **STRUCTURE** — Models/schemas organized by domain with CRUD variants? Composition over deep inheritance? Backward compatibility preserved?
+   6. **EFFICIENCY** — Time/space complexity minimized? No O(n²) when O(n) possible? No redundant iterations?
+   7. **CLARITY & WHY COMMENTS** — Ambiguous or non-obvious code has WHY comments? Pydantic fields with non-trivial types/defaults are annotated with their rationale? No useless WHAT comments on clean code? Unclear code without comments flagged for both commenting AND refactoring?
+   8. **DEAD CODE** — Commented-out code? Unused imports? Functions nothing calls? Unreachable branches?
+   9. **DEPENDENCY HYGIENE** — Outdated deps? Unnecessary deps for trivial functionality? Missing lockfiles? Version pins too loose?
+   10. **STANDARDS** — Follows all standards from the patterns.md file (if provided)?
 
 3. **Be brutally honest.** No rubber-stamping. No praise padding.
 
