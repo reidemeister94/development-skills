@@ -35,6 +35,24 @@ Small tasks (3 files or fewer, single obvious approach) get a fast track — sam
 
 ---
 
+## Plans and Chronicles
+
+Every task produces persistent artifacts on disk, numbered incrementally like SQL migrations (`0001`, `0002`, ...). Context windows get compacted. These files don't.
+
+**Plan files** (`docs/plans/0042__2026-03-15__implementation_plan__auth-refactor.md`) are the single source of truth for a task. They accumulate across phases: research notes, implementation checklist, verification results, review log. Subagents read from and write to the same plan file. When the context window clears, the agent picks up where it left off by reading the plan.
+
+**Chronicles** (`docs/chronicles/0042__2026-03-15__auth-refactor.md`) capture what code and plans don't — **WHY**. The user's original request, the business context behind it, rejected alternatives, discoveries made during implementation. Without chronicles, a conversation with Claude disappears when the session ends. With chronicles, the reasoning survives: why cursor-based pagination instead of offset, why the auth middleware was rewritten, why a simpler approach was rejected.
+
+```
+Code + Git    →  WHAT changed    (diffs)
+Plan files    →  HOW it was built (steps, checklist, verification)
+Chronicles    →  WHY it happened  (intent, context, decisions)
+```
+
+Full details on templates and lifecycle in the **[in-depth guide](docs/GUIDE.md)**.
+
+---
+
 ## 19 Skills
 
 **Workflow** — `core-dev` (auto-activates), `brainstorming`, `debugging`, `chronicles`
