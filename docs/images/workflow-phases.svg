@@ -1,148 +1,95 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" font-family="'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace">
   <defs>
-    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-      <polygon points="0 0, 8 3, 0 6" fill="#484f58"/>
+    <marker id="arrow" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0, 6 2.5, 0 5" fill="#484f58"/>
     </marker>
   </defs>
 
   <!-- Background -->
-  <rect width="1100" height="620" rx="16" fill="#0d1117"/>
+  <rect width="720" height="340" rx="8" fill="#0d1117"/>
 
   <!-- Title -->
-  <text x="550" y="48" text-anchor="middle" fill="#e6edf3" font-size="22" font-weight="700">Mandatory 7-Phase Development Workflow</text>
-  <text x="550" y="72" text-anchor="middle" fill="#7d8590" font-size="13">Every phase is a gate. No skipping. No combining. Evidence before assertions.</text>
+  <text x="360" y="32" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700">7-Phase Gated Workflow</text>
+  <text x="360" y="50" text-anchor="middle" fill="#484f58" font-size="10">Each phase is a gate. No skipping. Evidence required.</text>
 
-  <!-- Brainstorming Guard -->
-  <rect x="30" y="100" width="160" height="110" rx="12" fill="#9e6a03" opacity="0.85"/>
-  <text x="110" y="128" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" letter-spacing="1">PHASE 0</text>
-  <text x="110" y="150" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">Brainstorming</text>
-  <text x="110" y="168" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">Guard</text>
-  <line x1="50" y1="178" x2="170" y2="178" stroke="#fff" stroke-opacity="0.3" stroke-width="1"/>
-  <text x="110" y="196" text-anchor="middle" fill="#ffd8b2" font-size="10">Default: ANALYZE</text>
+  <!-- Phase 0 -->
+  <rect x="20" y="72" width="88" height="56" rx="4" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="64" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 0</text>
+  <text x="64" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Brainstorm</text>
+  <text x="64" y="122" text-anchor="middle" fill="#484f58" font-size="8">guard</text>
 
-  <!-- Arrow -->
-  <line x1="190" y1="155" x2="216" y2="155" stroke="#484f58" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <rect x="196" y="132" width="18" height="18" rx="9" fill="#30363d"/>
-  <text x="205" y="145" text-anchor="middle" fill="#7d8590" font-size="10" font-weight="600">G</text>
+  <line x1="108" y1="100" x2="122" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
 
-  <!-- Phase 1: Research -->
-  <rect x="220" y="100" width="120" height="110" rx="12" fill="#1f6feb" opacity="0.85"/>
-  <text x="280" y="128" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" letter-spacing="1">PHASE 1</text>
-  <text x="280" y="152" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Research</text>
-  <line x1="238" y1="164" x2="322" y2="164" stroke="#fff" stroke-opacity="0.3" stroke-width="1"/>
-  <text x="280" y="180" text-anchor="middle" fill="#c8e1ff" font-size="10">Explore codebase</text>
-  <text x="280" y="194" text-anchor="middle" fill="#c8e1ff" font-size="10">Gather context</text>
+  <!-- Phase 1 -->
+  <rect x="124" y="72" width="78" height="56" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="163" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 1</text>
+  <text x="163" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Research</text>
 
-  <!-- Arrow -->
-  <line x1="340" y1="155" x2="356" y2="155" stroke="#484f58" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <rect x="342" y="132" width="18" height="18" rx="9" fill="#30363d"/>
-  <text x="351" y="145" text-anchor="middle" fill="#7d8590" font-size="10" font-weight="600">G</text>
+  <line x1="202" y1="100" x2="216" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
 
-  <!-- Phase 2: Plan -->
-  <rect x="360" y="100" width="120" height="110" rx="12" fill="#238636" opacity="0.85"/>
-  <text x="420" y="128" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" letter-spacing="1">PHASE 2</text>
-  <text x="420" y="152" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Plan</text>
-  <line x1="378" y1="164" x2="462" y2="164" stroke="#fff" stroke-opacity="0.3" stroke-width="1"/>
-  <text x="420" y="180" text-anchor="middle" fill="#c8f7c5" font-size="10">Write to disk</text>
-  <text x="420" y="194" text-anchor="middle" fill="#c8f7c5" font-size="10">User approves</text>
+  <!-- Phase 2 -->
+  <rect x="218" y="72" width="78" height="56" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="257" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 2</text>
+  <text x="257" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Plan</text>
+  <text x="257" y="122" text-anchor="middle" fill="#484f58" font-size="8">user approves</text>
 
-  <!-- Arrow -->
-  <line x1="480" y1="155" x2="496" y2="155" stroke="#484f58" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <rect x="482" y="132" width="18" height="18" rx="9" fill="#30363d"/>
-  <text x="491" y="145" text-anchor="middle" fill="#7d8590" font-size="10" font-weight="600">G</text>
+  <line x1="296" y1="100" x2="310" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
 
-  <!-- Phase 3: Chronicle -->
-  <rect x="500" y="100" width="120" height="110" rx="12" fill="#8b5cf6" opacity="0.85"/>
-  <text x="560" y="128" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" letter-spacing="1">PHASE 3</text>
-  <text x="560" y="152" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Chronicle</text>
-  <line x1="518" y1="164" x2="602" y2="164" stroke="#fff" stroke-opacity="0.3" stroke-width="1"/>
-  <text x="560" y="180" text-anchor="middle" fill="#e8d5ff" font-size="10">Document WHY</text>
-  <text x="560" y="194" text-anchor="middle" fill="#e8d5ff" font-size="10">Business context</text>
+  <!-- Phase 3 -->
+  <rect x="312" y="72" width="78" height="56" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="351" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 3</text>
+  <text x="351" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Chronicle</text>
+  <text x="351" y="122" text-anchor="middle" fill="#484f58" font-size="8">document WHY</text>
 
-  <!-- Arrow -->
-  <line x1="620" y1="155" x2="636" y2="155" stroke="#484f58" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <rect x="622" y="132" width="18" height="18" rx="9" fill="#30363d"/>
-  <text x="631" y="145" text-anchor="middle" fill="#7d8590" font-size="10" font-weight="600">G</text>
+  <line x1="390" y1="100" x2="404" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
 
-  <!-- Phase 4: Implement -->
-  <rect x="640" y="100" width="120" height="110" rx="12" fill="#d97706" opacity="0.85"/>
-  <text x="700" y="128" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" letter-spacing="1">PHASE 4</text>
-  <text x="700" y="152" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Implement</text>
-  <line x1="658" y1="164" x2="742" y2="164" stroke="#fff" stroke-opacity="0.3" stroke-width="1"/>
-  <text x="700" y="180" text-anchor="middle" fill="#ffe4c4" font-size="10">TDD cycles</text>
-  <text x="700" y="194" text-anchor="middle" fill="#ffe4c4" font-size="10">RED &gt; GREEN &gt; REFACTOR</text>
+  <!-- Phase 4 -->
+  <rect x="406" y="72" width="88" height="56" rx="4" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="450" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 4</text>
+  <text x="450" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Implement</text>
+  <text x="450" y="122" text-anchor="middle" fill="#484f58" font-size="8">TDD cycles</text>
 
-  <!-- Arrow -->
-  <line x1="760" y1="155" x2="776" y2="155" stroke="#484f58" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <rect x="762" y="132" width="18" height="18" rx="9" fill="#30363d"/>
-  <text x="771" y="145" text-anchor="middle" fill="#7d8590" font-size="10" font-weight="600">G</text>
+  <line x1="494" y1="100" x2="508" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
 
-  <!-- Phase 5: Verify -->
-  <rect x="780" y="100" width="120" height="110" rx="12" fill="#da3633" opacity="0.85"/>
-  <text x="840" y="128" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" letter-spacing="1">PHASE 5</text>
-  <text x="840" y="152" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Verify</text>
-  <line x1="798" y1="164" x2="882" y2="164" stroke="#fff" stroke-opacity="0.3" stroke-width="1"/>
-  <text x="840" y="180" text-anchor="middle" fill="#ffc0c0" font-size="10">test-verifier agent</text>
-  <text x="840" y="194" text-anchor="middle" fill="#ffc0c0" font-size="10">Evidence required</text>
+  <!-- Phase 5 -->
+  <rect x="510" y="72" width="78" height="56" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="549" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 5</text>
+  <text x="549" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Verify</text>
+  <text x="549" y="122" text-anchor="middle" fill="#484f58" font-size="8">evidence req.</text>
 
-  <!-- Arrow -->
-  <line x1="900" y1="155" x2="916" y2="155" stroke="#484f58" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <rect x="902" y="132" width="18" height="18" rx="9" fill="#30363d"/>
-  <text x="911" y="145" text-anchor="middle" fill="#7d8590" font-size="10" font-weight="600">G</text>
+  <line x1="588" y1="100" x2="602" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
 
-  <!-- Phase 6: Review -->
-  <rect x="920" y="100" width="150" height="110" rx="12" fill="#388bfd" opacity="0.85"/>
-  <text x="995" y="128" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" letter-spacing="1">PHASE 6</text>
-  <text x="995" y="152" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Staff Review</text>
-  <line x1="938" y1="164" x2="1052" y2="164" stroke="#fff" stroke-opacity="0.3" stroke-width="1"/>
-  <text x="995" y="180" text-anchor="middle" fill="#c8e1ff" font-size="10">Spec compliance</text>
-  <text x="995" y="194" text-anchor="middle" fill="#c8e1ff" font-size="10">then code quality</text>
+  <!-- Phase 6 -->
+  <rect x="604" y="72" width="96" height="56" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="652" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 6</text>
+  <text x="652" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Staff Review</text>
+  <text x="652" y="122" text-anchor="middle" fill="#484f58" font-size="8">spec + quality</text>
 
   <!-- Arrow down to Phase 7 -->
-  <line x1="995" y1="210" x2="995" y2="248" stroke="#484f58" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="652" y1="128" x2="652" y2="148" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
 
-  <!-- Phase 7: Finalize -->
-  <rect x="910" y="250" width="170" height="80" rx="12" fill="#2ea043" opacity="0.85"/>
-  <text x="995" y="278" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" letter-spacing="1">PHASE 7</text>
-  <text x="995" y="302" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Finalize</text>
-  <text x="995" y="322" text-anchor="middle" fill="#c8f7c5" font-size="10">Docs, chronicle, integration</text>
+  <!-- Phase 7 -->
+  <rect x="604" y="150" width="96" height="40" rx="4" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="652" y="166" text-anchor="middle" fill="#484f58" font-size="9">PHASE 7</text>
+  <text x="652" y="180" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Finalize</text>
 
-  <!-- ======= Bottom: Three Layers ======= -->
-  <text x="550" y="390" text-anchor="middle" fill="#e6edf3" font-size="18" font-weight="700">Three Layers of Project Memory</text>
-  <text x="550" y="412" text-anchor="middle" fill="#7d8590" font-size="12">Everything persists to disk. Context compaction cannot erase your decisions.</text>
+  <!-- Gate legend -->
+  <text x="20" y="220" fill="#484f58" font-size="9">Gates:</text>
+  <g font-size="9" fill="#7d8590">
+    <text x="20" y="238">0  Scope &gt; 3 files or ambiguous → analyze</text>
+    <text x="20" y="254">1  "RESEARCH COMPLETE"</text>
+    <text x="20" y="270">2  User approves plan on disk</text>
+    <text x="20" y="286">3  "CHRONICLE INITIATED"</text>
+    <text x="360" y="238">4  "SOLUTION COMPLETE"</text>
+    <text x="360" y="254">5  Test evidence attached</text>
+    <text x="360" y="270">6  "APPROVED" (two-stage review)</text>
+    <text x="360" y="286">7  "WORKFLOW COMPLETE"</text>
+  </g>
 
-  <!-- WHAT -->
-  <rect x="80" y="435" width="280" height="140" rx="12" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
-  <rect x="80" y="435" width="280" height="36" rx="12" fill="#1f6feb" opacity="0.15"/>
-  <rect x="80" y="463" width="280" height="8" rx="0" fill="#161b22"/>
-  <text x="100" y="460" fill="#58a6ff" font-size="14" font-weight="700">WHAT changed</text>
-  <text x="100" y="496" fill="#7d8590" font-size="12">Git diff + code</text>
-  <text x="100" y="516" fill="#484f58" font-size="11" font-family="monospace">src/api/routes.py</text>
-  <text x="100" y="534" fill="#484f58" font-size="11" font-family="monospace">tests/test_routes.py</text>
-  <text x="100" y="556" fill="#3fb950" font-size="11" font-family="monospace">+ def get_user(id: int):</text>
+  <!-- Accent explanation -->
+  <rect x="20" y="308" width="10" height="10" rx="2" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="36" y="317" fill="#484f58" font-size="9">= key decision points</text>
 
-  <!-- HOW -->
-  <rect x="410" y="435" width="280" height="140" rx="12" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
-  <rect x="410" y="435" width="280" height="36" rx="12" fill="#238636" opacity="0.15"/>
-  <rect x="410" y="463" width="280" height="8" rx="0" fill="#161b22"/>
-  <text x="430" y="460" fill="#7ee787" font-size="14" font-weight="700">HOW it was built</text>
-  <text x="430" y="496" fill="#7d8590" font-size="12">Plan files on disk</text>
-  <text x="430" y="516" fill="#484f58" font-size="11" font-family="monospace">docs/plans/</text>
-  <text x="430" y="534" fill="#484f58" font-size="11" font-family="monospace">  0042__implementation_plan</text>
-  <text x="430" y="556" fill="#484f58" font-size="11" font-family="monospace">  __user-api-endpoint.md</text>
-
-  <!-- WHY -->
-  <rect x="740" y="435" width="280" height="140" rx="12" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
-  <rect x="740" y="435" width="280" height="36" rx="12" fill="#8b5cf6" opacity="0.15"/>
-  <rect x="740" y="463" width="280" height="8" rx="0" fill="#161b22"/>
-  <text x="760" y="460" fill="#d2a8ff" font-size="14" font-weight="700">WHY it was decided</text>
-  <text x="760" y="496" fill="#7d8590" font-size="12">Chronicles on disk</text>
-  <text x="760" y="516" fill="#484f58" font-size="11" font-family="monospace">docs/chronicles/</text>
-  <text x="760" y="534" fill="#484f58" font-size="11" font-family="monospace">  0042__2026-03-25__user-api</text>
-  <text x="760" y="556" fill="#484f58" font-size="11" font-family="monospace">  -natural-key-migration.md</text>
-
-  <!-- Legend -->
-  <rect x="30" y="588" width="18" height="18" rx="9" fill="#30363d"/>
-  <text x="39" y="601" text-anchor="middle" fill="#7d8590" font-size="10" font-weight="600">G</text>
-  <text x="56" y="601" fill="#7d8590" font-size="11">= Mandatory gate (cannot proceed without meeting conditions)</text>
+  <rect x="120" y="308" width="10" height="10" rx="2" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="136" y="317" fill="#484f58" font-size="9">= execution phases</text>
 </svg>

@@ -1,26 +1,10 @@
-<p align="center">
-  <img src="docs/images/social-preview.svg" alt="development-skills" width="100%"/>
-</p>
+# development-skills
 
-<p align="center">
-  <a href="https://github.com/reidemeister94/development-skills/releases"><img src="https://img.shields.io/github/v/release/reidemeister94/development-skills?style=flat-square&color=blue" alt="Release"/></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/reidemeister94/development-skills?style=flat-square" alt="License"/></a>
-  <a href="https://github.com/reidemeister94/development-skills/stargazers"><img src="https://img.shields.io/github/stars/reidemeister94/development-skills?style=flat-square&color=yellow" alt="Stars"/></a>
-  <a href="https://github.com/reidemeister94/development-skills/issues"><img src="https://img.shields.io/github/issues/reidemeister94/development-skills?style=flat-square" alt="Issues"/></a>
-  <img src="https://img.shields.io/badge/Claude_Code-plugin-7c3aed?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48L3N2Zz4=" alt="Claude Code"/>
-</p>
+A Claude Code plugin that turns your AI agent into a disciplined software engineer.
 
-<p align="center">
-  <b>A Claude Code plugin that turns your AI agent into a disciplined software engineer.</b>
-</p>
-
-<p align="center">
-  <a href="#installation">Installation</a> &middot;
-  <a href="#how-it-works">How It Works</a> &middot;
-  <a href="#19-skills-5-languages">19 Skills</a> &middot;
-  <a href="#design-philosophy">Philosophy</a> &middot;
-  <a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54">Blog Post</a>
-</p>
+<a href="https://github.com/reidemeister94/development-skills/releases"><img src="https://img.shields.io/github/v/release/reidemeister94/development-skills?style=flat-square&color=blue" alt="Release"/></a>
+<a href="LICENSE"><img src="https://img.shields.io/github/license/reidemeister94/development-skills?style=flat-square" alt="License"/></a>
+<a href="https://github.com/reidemeister94/development-skills/stargazers"><img src="https://img.shields.io/github/stars/reidemeister94/development-skills?style=flat-square&color=yellow" alt="Stars"/></a>
 
 ---
 
@@ -70,9 +54,7 @@ The [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plu
 
 ---
 
-<p align="center">
-  <img src="docs/images/terminal-demo.svg" alt="development-skills in action" width="100%"/>
-</p>
+<img src="docs/images/terminal-demo.svg" alt="development-skills in action" width="640"/>
 
 ## Why This Exists
 
@@ -82,19 +64,13 @@ AI agents are fast but undisciplined. [67% of developers](https://addyo.substack
 
 > *As Anthropic's [2026 Agentic Coding Trends Report](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf) concluded: success comes from treating agentic development as a "workflow design problem, not a tool adoption problem."*
 
-<p align="center">
-  <img src="docs/images/before-after.svg" alt="Without vs With development-skills" width="100%"/>
-</p>
-
 ---
 
 ## How It Works
 
 When you give Claude Code a development task with this plugin installed, it doesn't just start writing code. Instead, it follows a mandatory gated workflow:
 
-<p align="center">
-  <img src="docs/images/workflow-phases.svg" alt="7-Phase Development Workflow" width="100%"/>
-</p>
+<img src="docs/images/workflow-phases.svg" alt="7-Phase Development Workflow" width="640"/>
 
 Each phase is a **gate** — the agent cannot proceed until the gate conditions are met. No skipping. No combining. No "this is trivial, I'll just code it."
 
@@ -116,9 +92,7 @@ Each phase is a **gate** — the agent cannot proceed until the gate conditions 
 
 ## Key Features
 
-<p align="center">
-  <img src="docs/images/subagent-architecture.svg" alt="Subagent Orchestration" width="100%"/>
-</p>
+<img src="docs/images/subagent-architecture.svg" alt="Subagent Orchestration" width="640"/>
 
 **Brainstorming Guard** — Before coding, evaluates scope, reversibility, and approach clarity. If anything is ambiguous, spawns an isolated analysis agent. The default is to analyze; burden of proof is on *skipping*. Anti-rationalization tables counter the model's tendency to justify shortcuts. Without this guard, the agent skips analysis [~40% of the time](https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54) on tasks that need it.
 
@@ -213,10 +187,6 @@ Context is loaded progressively following Anthropic's [just-in-time pattern](htt
 
 Implements patterns from Anthropic's [Context Engineering guide](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) and validated by [Manus](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) across millions of production users:
 
-<p align="center">
-  <img src="docs/images/context-engineering.svg" alt="Context Engineering: Progressive Disclosure" width="100%"/>
-</p>
-
 - **Progressive disclosure** — phase instructions loaded just-in-time, not all at once
 - **Observation masking** — verbose output on disk, condensed summaries in conversation
 - **Filesystem as extended context** — plans, chronicles, workflow state, implementation logs
@@ -259,18 +229,3 @@ Contributions welcome — especially new language skills (Rust, Go, Kotlin, Ruby
 ## License
 
 MIT
-
----
-
-<p align="center">
-  <b>If this plugin makes your AI agent more disciplined, consider giving it a star.</b><br/>
-  <sub>It helps others discover the project and motivates continued development.</sub>
-</p>
-
-<p align="center">
-  <a href="https://github.com/reidemeister94/development-skills/stargazers"><img src="https://img.shields.io/github/stars/reidemeister94/development-skills?style=social" alt="Star on GitHub"/></a>
-</p>
-
-<p align="center">
-  <a href="https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54">Read the full story</a> &middot; <a href="https://github.com/reidemeister94/development-skills/issues">Report an issue</a> &middot; <a href="CONTRIBUTING.md">Contribute</a>
-</p>
