@@ -53,9 +53,88 @@ Plans, chronicles, and workflow state survive context compaction. The agent resu
 
 For 4+ independent tasks, analyzes file-touch maps and spawns parallel agents in git worktrees — but only when proven safe via dependency analysis. Naive parallelization [produced 100% unusable code](https://medium.com/@silvio.pavanetto/how-i-taught-agents-to-follow-a-process-not-just-write-code-b135b6573c54); single-agent is the safe default.
 
+---
+
+## Plans and Chronicles
+
+Every task produces persistent artifacts on disk, numbered incrementally like SQL migrations.
+
+### Numbering
+
+Both plans and chronicles use a shared 4-digit zero-padded counter (`0001`, `0002`, ...) that increments per task. The plugin finds the highest existing number and adds 1. A task that gets both a plan and a chronicle shares the same prefix:
+
+```
+docs/plans/0042__research.md
+docs/plans/0042__2026-03-15__implementation_plan__auth-refactor.md
+docs/chronicles/0042__2026-03-15__auth-refactor.md
+```
+
+If merging branches creates duplicate numbers, the `resolve-merge` skill renumbers automatically.
+
+### Plan Files
+
+The single source of truth for a task. Created in Phase 2, updated through Phase 7. Sections accumulate:
+
+| Phase | What gets added |
+|-------|----------------|
+| 1 | Research notes, codebase analysis |
+| 2 | Implementation steps, task checklist |
+| 3 | Chronicle reference |
+| 4 | Implementation log, file-touch map, task completion |
+| 5 | Verification results (test output) |
+| 6 | Review log (feedback + fixes) |
+| 7 | Status: Completed |
+
+Subagents read from and write to the same plan file. When context compaction clears the conversation, the agent resumes by reading the plan — no progress is lost.
+
+Each plan also has a companion **research file** (`NNNN__research.md`) written during brainstorming: web research with sources, codebase analysis, rejected alternatives with reasoning, and reusable code patterns found.
+
 ### Chronicles
 
-The missing documentation layer. Code says WHAT, plans say HOW, chronicles capture **WHY**. Business context, decisions, and failed approaches — timestamped and browseable.
+Chronicles capture what code and plans don't — **WHY**.
+
+A conversation with Claude disappears when the session ends. The prompts you gave, the business context behind a request, the trade-offs you discussed — gone. Chronicles preserve this:
+
+- **User requirements** — the original request, complete, not summarized
+- **Business context** — why this change matters, who asked for it, what constraint drives it
+- **Decisions and rejected alternatives** — what was considered and why it was discarded
+- **Discoveries** — unexpected findings during implementation, gotchas, patterns
+- **Project state transitions** — before and after
+
+**When a chronicle is created:**
+- New feature or architectural change
+- Complex bug fix with non-obvious root cause
+- Breaking change or multi-file refactoring
+- Significant business logic or research
+
+**When it's NOT needed** (all must apply): single-line fix, no new patterns, self-evident from diff, no business context.
+
+**Chronicle template:**
+
+```markdown
+# [Brief Title]
+
+> Chronicle: 0042__2026-03-15__auth-refactor.md
+> Status: Draft | In Progress | Completed
+
+## User Requirements (Complete)
+[FULL user communication — preserve ALL signal]
+
+## Context
+[Background, project state, technical context]
+
+## Objective (The WHY)
+[Business context, user needs, problems being solved]
+
+## Affected Areas
+| Area | Files/Modules | Impact |
+|------|---------------|--------|
+
+## Discoveries & Insights
+- **[Date]**: [Discovery or insight added during implementation]
+```
+
+The chronicle is created in Phase 3, updated during Phase 4 (implementer appends discoveries), and finalized in Phase 7 (status set to Completed, "after" state filled in).
 
 ---
 
