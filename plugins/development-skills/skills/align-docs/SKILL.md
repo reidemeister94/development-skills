@@ -2,6 +2,7 @@
 name: align-docs
 description: "Use when user wants to align docs with the current project status or new discoveries"
 user-invocable: true
+allowed-tools: Glob, Read, Edit, Write, Bash
 ---
 # Align Docs
 

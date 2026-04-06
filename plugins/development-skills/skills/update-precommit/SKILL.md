@@ -2,6 +2,7 @@
 name: update-precommit
 description: "Use when user wants to update .pre-commit-config.yaml hooks to their latest versions from GitHub"
 user-invocable: true
+allowed-tools: Bash, Read, Edit, Glob
 ---
 
 # Update Pre-commit Hooks

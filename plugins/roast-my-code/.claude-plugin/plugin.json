@@ -2,5 +2,6 @@
   "name": "roast-my-code",
   "description": "Code review and AI-readiness audit with scoring across 12 dimensions",
   "version": "0.0.1",
-  "triggers": ["roast my code", "code roast", "ai readiness", "code audit"]
+  "triggers": ["roast my code", "code roast", "ai readiness", "code audit"],
+  "dependencies": ["development-skills"]
 }

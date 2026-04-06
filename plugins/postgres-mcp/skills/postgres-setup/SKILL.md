@@ -1,6 +1,6 @@
 ---
 name: postgres-setup
-description: "Add a PostgreSQL database connection to this project via MCP. Use when asked to 'connect to PostgreSQL', 'add a database connection', 'set up the Postgres MCP', 'configure database access for Claude', or 'I want Claude to query my database'. Run once per database — supports multiple connections with different names."
+description: "Add a PostgreSQL database connection to this project via MCP. Use when asked to 'connect to PostgreSQL', 'add a database connection', 'set up the Postgres MCP', 'configure database access for Claude', or 'I want Claude to query my database'."
 compatibility: Claude Code
 metadata:
   author: salvob41

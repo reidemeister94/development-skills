@@ -1,6 +1,8 @@
 ---
 name: chronicles
 description: "Use when starting a new development task to capture context, or when finalizing a task to document discoveries and decisions."
+user-invocable: true
+allowed-tools: Glob, Read, Write, Edit
 ---
 
 # Chronicles

@@ -2,6 +2,7 @@
 name: commit
 description: "Use when the user asks to commit changes, create a commit, or run /commit. Use when staged changes need a conventional commits message."
 user-invocable: true
+allowed-tools: Bash, Read, Grep
 ---
 
 # Commit Skill

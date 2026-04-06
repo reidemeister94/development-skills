@@ -6,6 +6,7 @@ metadata:
   version: 1.1.0
   category: meta
 user-invocable: true
+allowed-tools: Glob, Read, Write, Edit
 ---
 
 # Skill Writing Guide

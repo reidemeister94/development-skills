@@ -8,6 +8,8 @@ effort: max
 
 # Roast My Code — Brutally Honest Code Critique + AI-Readiness Audit
 
+> **Requires:** The `development-skills` plugin must be installed (provides the staff-reviewer agent).
+
 **Announce:** "Using the roast-my-code skill. Preparing to roast your code without mercy."
 
 ## Target Resolution

@@ -4,8 +4,6 @@ description: |
   Generate project documentation from code, DDLs, and scripts. Use when asked to "document this project",
   "create documentation from these DDLs", "explain the codebase structure", "generate an ER diagram",
   "document this ETL pipeline", "create a context file for LLMs", or "explain how this system works".
-  Handles DDL analysis, ETL scripts, API endpoints, entity relationships, and workflow decomposition.
-  Never invents information — asks clarifying questions when uncertain, especially for legacy systems (AS400, SAP).
 metadata:
   author: salvob41
   version: 1.0.1

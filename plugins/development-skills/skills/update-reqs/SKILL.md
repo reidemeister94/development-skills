@@ -1,21 +1,23 @@
 ---
 name: update-reqs
-description: "Use when user wants to update requirements.in with latest PyPI versions while preserving version patterns"
+description: "Use when user wants to update requirements.in or requirements-dev.in with latest PyPI versions while preserving version patterns. Handles both update-reqs and update-reqs-dev use cases."
 user-invocable: true
 ---
 
 # Update Requirements
 
-Updates `requirements.in` with latest package versions from PyPI while preserving version specifier patterns.
+Updates a `requirements*.in` file with latest package versions from PyPI while preserving version specifier patterns.
+
+**Target file:** `$ARGUMENTS` if provided, otherwise `requirements.in`. Pass `requirements-dev.in` to update dev dependencies.
 
 ## How It Works
 
-For each package in `requirements.in`:
+For each package in the target file:
 
 1. **Parse the version pattern** to understand the "fixed part":
    - `fastapi==0.128.*` → fixed: `0.128`, wildcard at patch level
-   - `pydantic==2.12.*` → fixed: `2.12`, wildcard at patch level
    - `commitizen==4.*` → fixed: `4`, wildcard at minor level
+   - `pytest==8.*` → fixed: `8`, wildcard at minor level
 
 2. **Query PyPI** for the latest version
 
@@ -25,14 +27,15 @@ For each package in `requirements.in`:
 
 ## Execution Steps
 
-1. Read `requirements.in` from the current project
-2. For each line with a package version:
+1. Determine target file: use `$ARGUMENTS` if set, otherwise default to `requirements.in`
+2. Read the target file from the current project
+3. For each line with a package version:
    - Skip git dependencies (lines with `@` or `git+`)
    - Parse package name and version pattern
    - Fetch latest version from PyPI: `curl -s https://pypi.org/pypi/{package}/json | jq -r .info.version`
    - Calculate new version with same pattern depth
-3. Show diff of proposed changes
-4. Apply changes after user confirmation
+4. Show diff of proposed changes
+5. Apply changes after user confirmation
 
 ## Version Pattern Rules
 
@@ -52,13 +55,12 @@ For each package in `requirements.in`:
 ## Example Output
 
 ```
-Checking requirements.in for updates...
+Checking requirements-dev.in for updates...
 
 Package          Current    Latest     Status
-fastapi          0.128.*    0.130.2    UPDATE → 0.130.*
-pydantic         2.12.*     2.12.1     OK (already matches)
-uvicorn          0.40.*     0.41.0     UPDATE → 0.41.*
-pyinnovation     (git)      -          SKIP (git dependency)
+pytest           8.*        8.4.0      OK (already matches)
+ruff             0.*        0.9.2      OK (already matches)
+commitizen       4.*        4.5.0      OK (already matches)
 
 Apply updates? [y/N]
 ```
