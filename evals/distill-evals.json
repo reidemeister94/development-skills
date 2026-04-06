@@ -1,0 +1,787 @@
+{
+  "skill_name": "development-skills",
+  "description": "Distill skill regression evals. Tests noise removal, fact preservation, edge cases, and quality metrics across 20 diverse input files.",
+  "evals": [
+    {
+      "id": 28,
+      "name": "distill-routing-explicit",
+      "category": "distill-routing",
+      "tests_change": "Verifies /distill invocation routes to distill skill",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/01-hedging-heavy.md",
+      "expected_output": "Model invokes distill skill, reads the file, measures before, compresses, self-checks, writes, measures after, reports.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/01-hedging-heavy.md"],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Distill skill is invoked via Skill tool",
+          "pass_criteria": "Transcript contains Skill tool call with 'distill' in parameter"
+        },
+        {
+          "name": "before_measurement",
+          "type": "behavioral",
+          "check": "Model runs wc + gzip measurement BEFORE distilling",
+          "pass_criteria": "Bash tool call with wc and gzip appears before any Edit/Write to the target file"
+        },
+        {
+          "name": "after_measurement",
+          "type": "behavioral",
+          "check": "Model runs wc + gzip measurement AFTER distilling",
+          "pass_criteria": "Bash tool call with wc and gzip appears after Edit/Write to the target file"
+        },
+        {
+          "name": "report_generated",
+          "type": "behavioral",
+          "check": "Model outputs a distill report with before/after metrics",
+          "pass_criteria": "Output contains a table with Words and gzip rows showing Before, After, and Reduction columns"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "name": "distill-routing-implicit",
+      "category": "distill-routing",
+      "tests_change": "Verifies implicit distill trigger phrases route correctly",
+      "prompt": "Can you clean up and tighten this file? It's way too verbose. plugins/development-skills/evals/distill-fixtures/03-buzzwords-verbose.md",
+      "expected_output": "Model recognizes 'clean up', 'tighten', 'verbose' as distill triggers and invokes the distill skill.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/03-buzzwords-verbose.md"],
+      "assertions": [
+        {
+          "name": "distill_triggered",
+          "type": "behavioral",
+          "check": "Model invokes distill skill from implicit trigger words",
+          "pass_criteria": "Transcript contains Skill tool call with 'distill' — model recognized 'clean up', 'tighten', 'verbose' as distill triggers"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "name": "distill-hedging-removal",
+      "category": "distill-quality",
+      "tests_change": "Tests removal of all 10 hedging patterns from noise-patterns.md category 1",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/01-hedging-heavy.md",
+      "expected_output": "All hedging phrases removed. Environment variables and code block preserved. Facts about rate limiting preserved.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/01-hedging-heavy.md"],
+      "assertions": [
+        {
+          "name": "hedges_removed",
+          "type": "output",
+          "check": "No hedging phrases remain in the distilled output",
+          "pass_criteria": "Output file does NOT contain: 'important to note', 'worth mentioning', 'should be noted', 'bears mentioning', 'One could argue', 'goes without saying', 'Needless to say', 'As you may know', 'As mentioned earlier', 'Keep in mind'"
+        },
+        {
+          "name": "env_vars_preserved",
+          "type": "output",
+          "check": "All three environment variables preserved in code block",
+          "pass_criteria": "Output file contains RATE_LIMIT_AUTH=1000, RATE_LIMIT_ANON=100, RATE_LIMIT_WINDOW=3600"
+        },
+        {
+          "name": "facts_preserved",
+          "type": "output",
+          "check": "Core facts preserved: 1000/hr auth, 100/hr anon, 429 status, Retry-After header, per-user not per-IP",
+          "pass_criteria": "Output contains: 1000, 100, 429, Retry-After, per-user (or equivalent)"
+        },
+        {
+          "name": "word_reduction_30plus",
+          "type": "metric",
+          "check": "Word count reduced by at least 30%",
+          "pass_criteria": "Report shows word reduction >= 30%"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "name": "distill-transitions-conclusions",
+      "category": "distill-quality",
+      "tests_change": "Tests removal of empty transitions (cat 2) and empty conclusions (cat 3)",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/02-transitions-conclusions.md",
+      "expected_output": "All transition words and conclusion paragraph removed. Migration steps and dates preserved.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/02-transitions-conclusions.md"],
+      "assertions": [
+        {
+          "name": "transitions_removed",
+          "type": "output",
+          "check": "Empty transition words removed",
+          "pass_criteria": "Output does NOT contain standalone: 'Moreover,', 'Furthermore,', 'Additionally,', 'In addition,', 'That being said', 'With that in mind', 'Having said that', 'In terms of', 'When it comes to', 'With respect to', 'In the context of'"
+        },
+        {
+          "name": "conclusion_removed",
+          "type": "output",
+          "check": "The summary/conclusion paragraph is removed",
+          "pass_criteria": "Output does NOT contain: 'In summary', 'To recap', 'Overall', 'All in all', 'At the end of the day', 'The bottom line'"
+        },
+        {
+          "name": "migration_steps_preserved",
+          "type": "output",
+          "check": "All 5 migration steps preserved",
+          "pass_criteria": "Output contains: logical replication, pg_verify_checksums (or checksums), test suite, DNS, hot standby (or old primary)"
+        },
+        {
+          "name": "dates_preserved",
+          "type": "output",
+          "check": "Key dates preserved",
+          "pass_criteria": "Output contains: March 15 (or March 15-16) and March 10"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "name": "distill-buzzwords-verbose-constructions",
+      "category": "distill-quality",
+      "tests_change": "Tests buzzword replacement (cat 5) and verbose construction substitution (cat 6)",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/03-buzzwords-verbose.md",
+      "expected_output": "Buzzwords replaced with specifics. Verbose constructions shortened. Architecture facts preserved. Summary paragraph deleted.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/03-buzzwords-verbose.md"],
+      "assertions": [
+        {
+          "name": "buzzwords_removed",
+          "type": "output",
+          "check": "LLM buzzwords replaced or removed",
+          "pass_criteria": "Output does NOT contain: 'rapidly evolving landscape', 'transformative', 'revolutionary', 'empowers', 'cutting-edge', 'state-of-the-art', 'holistic', 'paradigm shift', 'seamlessly', 'synergy'"
+        },
+        {
+          "name": "verbose_shortened",
+          "type": "output",
+          "check": "Verbose constructions replaced with short equivalents",
+          "pass_criteria": "Output does NOT contain: 'in order to', 'due to the fact that', 'the vast majority of', 'in the event that', 'at this point in time', 'in spite of the fact that', 'in close proximity to', 'on the basis of'"
+        },
+        {
+          "name": "architecture_facts_preserved",
+          "type": "output",
+          "check": "All architecture facts preserved",
+          "pass_criteria": "Output contains: Kong, 50,000 (or 50K or 50000), Istio, RabbitMQ, 2 million (or 2M), PostgreSQL, Kubernetes 1.28, ArgoCD"
+        },
+        {
+          "name": "summary_paragraph_removed",
+          "type": "output",
+          "check": "The empty 'Comprehensive Summary' section is removed",
+          "pass_criteria": "Output does NOT contain: 'Comprehensive Summary' or 'paradigm shift in how we deliver'"
+        },
+        {
+          "name": "word_reduction_40plus",
+          "type": "metric",
+          "check": "Word count reduced by at least 40%",
+          "pass_criteria": "Report shows word reduction >= 40%"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "name": "distill-noncommittal-to-direct",
+      "category": "distill-quality",
+      "tests_change": "Tests converting non-committal language (cat 8) to direct claims",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/04-noncommittal-hedging.md",
+      "expected_output": "Hedged claims converted to direct statements. Specific numbers preserved. Three proposed fixes preserved.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/04-noncommittal-hedging.md"],
+      "assertions": [
+        {
+          "name": "hedges_to_direct",
+          "type": "output",
+          "check": "Non-committal language replaced with direct claims",
+          "pass_criteria": "Output does NOT contain: 'can potentially', 'could possibly', 'might possibly', 'could potentially', 'may help explain'"
+        },
+        {
+          "name": "numbers_preserved",
+          "type": "output",
+          "check": "All specific measurements preserved",
+          "pass_criteria": "Output contains: 3 seconds (or 3s), 2.5 seconds (or 2.5s), 47 queries, 8 items, 800ms, 40%, 50ms, 5-minute (or 5 min), 1 second (or 1s or under 1 second)"
+        },
+        {
+          "name": "three_fixes_preserved",
+          "type": "output",
+          "check": "All three proposed fixes are in the output",
+          "pass_criteria": "Output mentions: parallel Stripe calls, batch query (or WHERE IN), response caching (or caching)"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "name": "distill-repetition-dedup",
+      "category": "distill-quality",
+      "tests_change": "Tests deduplication of repeated facts (cat 9)",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/05-repetition-redundancy.md",
+      "expected_output": "Each fact stated once. JWT 24-hour, bcrypt cost 12, rate limiting 5/15min each appear exactly once.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/05-repetition-redundancy.md"],
+      "assertions": [
+        {
+          "name": "jwt_mentioned_once",
+          "type": "output",
+          "check": "JWT token details stated once, not repeated",
+          "pass_criteria": "Output mentions 'JWT' or 'token' with '24' (hours) — and this combination appears at most twice (one for access, one for context)"
+        },
+        {
+          "name": "bcrypt_mentioned_once",
+          "type": "output",
+          "check": "bcrypt details stated once",
+          "pass_criteria": "Output mentions 'bcrypt' exactly once"
+        },
+        {
+          "name": "rate_limit_mentioned_once",
+          "type": "output",
+          "check": "Rate limiting details (5 attempts, 15 minutes) stated once",
+          "pass_criteria": "Output mentions '5' with 'attempt' (or 'tries' or 'failed') and '15' with 'minute' — this combination appears exactly once"
+        },
+        {
+          "name": "word_reduction_50plus",
+          "type": "metric",
+          "check": "Word count reduced by at least 50% (heavy redundancy)",
+          "pass_criteria": "Report shows word reduction >= 50%"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "name": "distill-structural-padding",
+      "category": "distill-quality",
+      "tests_change": "Tests removal of structural padding (cat 7) — intro, TOC, summary, excessive formatting",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/06-structural-padding.md",
+      "expected_output": "Intro, TOC, summary removed. All env var names and defaults preserved. Horizontal rules removed.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/06-structural-padding.md"],
+      "assertions": [
+        {
+          "name": "intro_removed",
+          "type": "output",
+          "check": "Introduction paragraph removed",
+          "pass_criteria": "Output does NOT contain: 'This document describes' or 'comprehensive guide'"
+        },
+        {
+          "name": "summary_removed",
+          "type": "output",
+          "check": "Summary section removed",
+          "pass_criteria": "Output does NOT contain: 'This document covered' or 'Refer to this guide'"
+        },
+        {
+          "name": "env_vars_preserved",
+          "type": "output",
+          "check": "All environment variable names preserved",
+          "pass_criteria": "Output contains: DB_HOST, DB_PORT, DB_POOL_MIN, DB_POOL_MAX, REDIS_URL, STRIPE_SECRET_KEY, SENDGRID_API_KEY, SENTRY_DSN, FF_NEW_CHECKOUT, FF_DARK_MODE"
+        },
+        {
+          "name": "defaults_preserved",
+          "type": "output",
+          "check": "Default values preserved",
+          "pass_criteria": "Output contains: 5432, 5, 20, redis://localhost:6379, false, true"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "name": "distill-filler-openers",
+      "category": "distill-quality",
+      "tests_change": "Tests removal of chatbot filler openers (cat 4)",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/07-filler-openers-chatbot.md",
+      "expected_output": "All filler openers deleted. Code blocks preserved byte-identical. Technical content preserved.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/07-filler-openers-chatbot.md"],
+      "assertions": [
+        {
+          "name": "fillers_removed",
+          "type": "output",
+          "check": "Chatbot filler openers removed",
+          "pass_criteria": "Output does NOT contain: 'Certainly!', 'Great question!', 'I'd be happy to help', 'Let me explain', 'Let me break this down', 'Absolutely!', 'That's a really good point', 'I hope this helps', 'Let me know if you have any'"
+        },
+        {
+          "name": "code_blocks_preserved",
+          "type": "output",
+          "check": "Both code blocks (npm install + CORS config) preserved",
+          "pass_criteria": "Output contains: 'npm install cors' and 'app.use(cors({' and 'origin:' and 'maxAge: 86400'"
+        },
+        {
+          "name": "cors_warning_preserved",
+          "type": "output",
+          "check": "Security warning about origin: '*' with credentials preserved",
+          "pass_criteria": "Output mentions: 'origin: '*'' (or wildcard origin) with 'credentials' — the security warning"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "name": "distill-verbosity-compensation",
+      "category": "distill-quality",
+      "tests_change": "Tests compression of academic verbosity compensation (cat 10)",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/08-verbosity-compensation.md",
+      "expected_output": "Direct answer upfront. SQL commands preserved. Background compressed significantly.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/08-verbosity-compensation.md"],
+      "assertions": [
+        {
+          "name": "direct_answer",
+          "type": "output",
+          "check": "The answer 'Read Committed' appears early in the document, not buried",
+          "pass_criteria": "Output mentions 'Read Committed' as the default within the first 3 sentences or first 50 words"
+        },
+        {
+          "name": "sql_commands_preserved",
+          "type": "output",
+          "check": "All SQL commands preserved",
+          "pass_criteria": "Output contains: 'SHOW default_transaction_isolation' and 'SET TRANSACTION ISOLATION LEVEL' and 'default_transaction_isolation = '"
+        },
+        {
+          "name": "four_levels_mentioned",
+          "type": "output",
+          "check": "All four isolation levels mentioned",
+          "pass_criteria": "Output mentions: Read Uncommitted, Read Committed, Repeatable Read, Serializable"
+        },
+        {
+          "name": "mvcc_fact_preserved",
+          "type": "output",
+          "check": "Key fact that Read Uncommitted = Read Committed in PostgreSQL preserved",
+          "pass_criteria": "Output mentions that PostgreSQL treats Read Uncommitted as Read Committed (or equivalent phrasing)"
+        },
+        {
+          "name": "word_reduction_40plus",
+          "type": "metric",
+          "check": "Word count reduced by at least 40%",
+          "pass_criteria": "Report shows word reduction >= 40%"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "name": "distill-already-dense",
+      "category": "distill-edge-case",
+      "tests_change": "Tests that already-dense text is not over-compressed",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/09-already-dense.md",
+      "expected_output": "Less than 10% word reduction. Marked as 'already dense'. All values preserved.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/09-already-dense.md"],
+      "assertions": [
+        {
+          "name": "minimal_reduction",
+          "type": "metric",
+          "check": "Word reduction under 10%",
+          "pass_criteria": "Report shows word reduction < 15% (allowing small margin)"
+        },
+        {
+          "name": "marked_dense",
+          "type": "behavioral",
+          "check": "Model marks or notes the file as already dense",
+          "pass_criteria": "Report or output mentions 'already dense' or 'minimal reduction' or equivalent"
+        },
+        {
+          "name": "critical_values_preserved",
+          "type": "output",
+          "check": "All critical values preserved",
+          "pass_criteria": "Output contains: 02:00 UTC, 30 days, S3, prod-backups-eu-west-1, WAL, 03:00 UTC, AES-256, arn:aws:kms:eu-west-1:123456:key/backup-key, 12 minutes, 15 minutes, 2026-02-15"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "name": "distill-mixed-all-patterns",
+      "category": "distill-quality",
+      "tests_change": "Tests handling of all 10 noise categories in one document",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/10-mixed-all-patterns.md",
+      "expected_output": "All noise categories removed. Timeline, action items, root cause chain preserved. Lessons learned section either removed or synthesized.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/10-mixed-all-patterns.md"],
+      "assertions": [
+        {
+          "name": "timeline_preserved",
+          "type": "output",
+          "check": "All 6 timeline entries preserved with times",
+          "pass_criteria": "Output contains: 14:02, 14:05, 14:12, 14:15, 14:18, 14:30"
+        },
+        {
+          "name": "action_items_preserved",
+          "type": "output",
+          "check": "All 4 action items with owners and dates preserved",
+          "pass_criteria": "Output contains: SRE team, Platform team, On-call team, March 7, March 10, March 14, March 15"
+        },
+        {
+          "name": "root_cause_chain_preserved",
+          "type": "output",
+          "check": "The causal chain (TLS expired → DNS record deleted → DNS migration) preserved",
+          "pass_criteria": "Output mentions: TLS certificate (or cert), DNS, February 28 (or migration), auto-renewal"
+        },
+        {
+          "name": "impact_numbers_preserved",
+          "type": "output",
+          "check": "Impact numbers preserved",
+          "pass_criteria": "Output contains: 16 minutes, 342, 4 users (or 4 contacted), 99.97%, 99.95%"
+        },
+        {
+          "name": "noise_removed",
+          "type": "output",
+          "check": "Noise from multiple categories removed",
+          "pass_criteria": "Output does NOT contain: 'important to note', 'Moreover', 'Additionally', 'it should be noted', 'Certainly', 'In conclusion', 'At the end of the day', 'The bottom line', 'comprehensive and holistic'"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "name": "distill-code-preservation",
+      "category": "distill-edge-case",
+      "tests_change": "Tests that code blocks are preserved byte-identical",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/11-code-heavy-preserve.md",
+      "expected_output": "YAML and Python code blocks preserved exactly. Surrounding prose compressed.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/11-code-heavy-preserve.md"],
+      "assertions": [
+        {
+          "name": "yaml_preserved",
+          "type": "output",
+          "check": "GitHub Actions YAML preserved",
+          "pass_criteria": "Output contains: 'actions/checkout@v4', 'postgres:16', 'POSTGRES_PASSWORD: test', 'pytest --cov=app', 'codecov/codecov-action@v4', 'kubectl set image'"
+        },
+        {
+          "name": "python_preserved",
+          "type": "output",
+          "check": "Python database URL preserved",
+          "pass_criteria": "Output contains: 'postgresql://postgres:test@localhost:5432/postgres'"
+        },
+        {
+          "name": "prose_compressed",
+          "type": "output",
+          "check": "Noise prose around code blocks compressed",
+          "pass_criteria": "Output does NOT contain: 'important to note', 'worth mentioning', 'Moreover', 'should be noted', 'In conclusion'"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "name": "distill-italian-language",
+      "category": "distill-edge-case",
+      "tests_change": "Tests that non-English text is distilled in the same language",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/12-italian-text.md",
+      "expected_output": "Output is in Italian. YAML config preserved. All 4 alerts preserved. Conclusion removed.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/12-italian-text.md"],
+      "assertions": [
+        {
+          "name": "output_in_italian",
+          "type": "output",
+          "check": "Output text is in Italian, not translated to English",
+          "pass_criteria": "Output contains Italian words like 'configurazione' or 'monitoraggio' or 'intervallo' — NOT English translations"
+        },
+        {
+          "name": "yaml_preserved",
+          "type": "output",
+          "check": "Prometheus YAML config preserved",
+          "pass_criteria": "Output contains: scrape_interval: 15s, 'app:8080', 'postgres-exporter:9187'"
+        },
+        {
+          "name": "alerts_preserved",
+          "type": "output",
+          "check": "All 4 alert rules preserved",
+          "pass_criteria": "Output contains: CPU > 80%, Memoria > 90% (or 90%), Error rate > 1%, Disk > 85%"
+        },
+        {
+          "name": "italian_noise_removed",
+          "type": "output",
+          "check": "Italian noise phrases removed",
+          "pass_criteria": "Output does NOT contain: 'È importante notare', 'vale la pena menzionare', 'Va sottolineato che', 'In conclusione', 'Per riassumere', 'Nel complesso'"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "name": "distill-numbers-urls-dates",
+      "category": "distill-edge-case",
+      "tests_change": "Tests preservation of numbers, URLs, dates, Jira IDs, dollar amounts",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/13-urls-dates-numbers.md",
+      "expected_output": "All quantitative data preserved exactly. Noise prose around them compressed.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/13-urls-dates-numbers.md"],
+      "assertions": [
+        {
+          "name": "urls_preserved",
+          "type": "output",
+          "check": "All URLs preserved",
+          "pass_criteria": "Output contains: wss://api.example.com/ws, https://docs.example.com/websocket, https://admin.example.com/sso/configure, security@example.com"
+        },
+        {
+          "name": "jira_ids_preserved",
+          "type": "output",
+          "check": "All Jira ticket IDs preserved",
+          "pass_criteria": "Output contains: PLAT-4521, PLAT-4498, SEC-892, BUG-7891, BUG-7903, BUG-7910, PLAT-4530, BUG-7915"
+        },
+        {
+          "name": "dates_preserved",
+          "type": "output",
+          "check": "All dates preserved",
+          "pass_criteria": "Output contains: March 1, 2026, January 15, 2026, February 22, 2026, March 8, 2026"
+        },
+        {
+          "name": "dollar_amounts_preserved",
+          "type": "output",
+          "check": "Dollar amounts preserved",
+          "pass_criteria": "Output contains: $12,400 (or 12400 or 12,400)"
+        },
+        {
+          "name": "performance_table_preserved",
+          "type": "output",
+          "check": "Performance improvement data preserved",
+          "pass_criteria": "Output contains: 340ms, 89ms, 1,200ms (or 1200ms), 450ms, 180ms, 42ms"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "name": "distill-nuance-preservation",
+      "category": "distill-edge-case",
+      "tests_change": "Tests that qualified claims, A/B test data, and genuine limitations are preserved",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/14-nuance-preservation.md",
+      "expected_output": "Minimal compression. A/B test data, TTL rationale, and limitation all preserved. Qualifications preserved because they carry information.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/14-nuance-preservation.md"],
+      "assertions": [
+        {
+          "name": "ab_test_data_preserved",
+          "type": "output",
+          "check": "A/B test results preserved",
+          "pass_criteria": "Output contains: 45,000 (or 45000 or 45K), 3.42%, 3.41%, 3.39%, p=0.87 (or p = 0.87)"
+        },
+        {
+          "name": "three_strategies_preserved",
+          "type": "output",
+          "check": "All three cache invalidation strategies preserved",
+          "pass_criteria": "Output mentions all three: TTL (or time-based), event-driven (or pub/sub), version-based (or ETag)"
+        },
+        {
+          "name": "limitation_preserved",
+          "type": "output",
+          "check": "The genuine limitation (30-second inconsistency window) preserved",
+          "pass_criteria": "Output contains: 30-second (or 30 second or 30s) and mentions the inconsistency during import"
+        },
+        {
+          "name": "bandwidth_stat_preserved",
+          "type": "output",
+          "check": "Bandwidth savings stat preserved",
+          "pass_criteria": "Output contains: 340GB (or 340 GB)"
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "name": "distill-meaning-preservation-security",
+      "category": "distill-edge-case",
+      "tests_change": "Tests that security findings are not softened or meaning-changed",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/15-adversarial-meaning-change.md",
+      "expected_output": "Minimal compression. Severity levels, CVSS scores, code examples, and deadlines preserved exactly. No meaning softening.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/15-adversarial-meaning-change.md"],
+      "assertions": [
+        {
+          "name": "severity_levels_preserved",
+          "type": "output",
+          "check": "All severity levels preserved",
+          "pass_criteria": "Output contains: CRITICAL, HIGH, MEDIUM, LOW"
+        },
+        {
+          "name": "cvss_scores_preserved",
+          "type": "output",
+          "check": "All CVSS scores preserved",
+          "pass_criteria": "Output contains: 9.8, 7.5, 5.3, 3.1"
+        },
+        {
+          "name": "vulnerable_code_preserved",
+          "type": "output",
+          "check": "SQL injection vulnerable code example preserved",
+          "pass_criteria": "Output contains: f\"SELECT * FROM products WHERE name LIKE '%{user_input}%'\" (or the f-string pattern)"
+        },
+        {
+          "name": "deadlines_preserved",
+          "type": "output",
+          "check": "All fix deadlines preserved",
+          "pass_criteria": "Output contains: 24 hours, 48 hours, 1 week, 2 weeks"
+        },
+        {
+          "name": "no_meaning_softening",
+          "type": "output",
+          "check": "Security language not softened",
+          "pass_criteria": "Output still describes SQL injection as allowing 'arbitrary SQL' or 'execute' or similar strong language — NOT 'potentially vulnerable' or 'may allow'"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "name": "distill-linkedin-corporate",
+      "category": "distill-quality",
+      "tests_change": "Tests distillation of corporate buzzword-heavy text",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/16-linkedin-corporate.md",
+      "expected_output": "Corporate fluff removed. Concrete metrics and roadmap dates preserved. Hashtags removed.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/16-linkedin-corporate.md"],
+      "assertions": [
+        {
+          "name": "buzzwords_removed",
+          "type": "output",
+          "check": "Corporate buzzwords removed",
+          "pass_criteria": "Output does NOT contain: 'transformative', 'delve', 'cutting-edge', 'paradigm shift', 'revolutionary', 'holistic', 'synergy', 'tapestry', 'seamlessly', 'empowers', 'innovative'"
+        },
+        {
+          "name": "metrics_preserved",
+          "type": "output",
+          "check": "Concrete metrics preserved",
+          "pass_criteria": "Output contains: 65%, 99.97%, 30%"
+        },
+        {
+          "name": "roadmap_dates_preserved",
+          "type": "output",
+          "check": "Roadmap target dates preserved",
+          "pass_criteria": "Output contains: April 15, May 1, June 30"
+        },
+        {
+          "name": "hashtags_removed",
+          "type": "output",
+          "check": "Decorative hashtags removed",
+          "pass_criteria": "Output does NOT contain: #Engineering, #Innovation, #TeamWork, #Growth"
+        },
+        {
+          "name": "word_reduction_40plus",
+          "type": "metric",
+          "check": "Word count reduced by at least 40%",
+          "pass_criteria": "Report shows word reduction >= 40%"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "name": "distill-tables-preserved",
+      "category": "distill-edge-case",
+      "tests_change": "Tests that data tables are preserved with exact numbers",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/17-table-heavy.md",
+      "expected_output": "Tables preserved with all data. Noise prose removed. Decision and cost preserved.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/17-table-heavy.md"],
+      "assertions": [
+        {
+          "name": "sla_numbers_preserved",
+          "type": "output",
+          "check": "All SLA percentages preserved",
+          "pass_criteria": "Output contains: 99.99%, 99.95%, 99.995%, 99.999999999% (or 11 nines)"
+        },
+        {
+          "name": "decision_preserved",
+          "type": "output",
+          "check": "The decision (AWS in eu-west-1) preserved",
+          "pass_criteria": "Output contains: AWS, eu-west-1, RDS, S3, eu-central-1"
+        },
+        {
+          "name": "cost_preserved",
+          "type": "output",
+          "check": "Monthly cost figure preserved",
+          "pass_criteria": "Output contains: $14,200 (or 14200 or 14,200)"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "name": "distill-adr-structure",
+      "category": "distill-quality",
+      "tests_change": "Tests that ADR format is respected and decision rationale preserved",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/18-adr-decision-record.md",
+      "expected_output": "ADR structure preserved. Decision reasons preserved. Noise removed. Comparison data preserved.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/18-adr-decision-record.md"],
+      "assertions": [
+        {
+          "name": "adr_structure_preserved",
+          "type": "output",
+          "check": "ADR sections preserved (Status, Context, Decision, Consequences)",
+          "pass_criteria": "Output contains headers or sections for: Status, Context, Decision, Consequences"
+        },
+        {
+          "name": "decision_reasons_preserved",
+          "type": "output",
+          "check": "All 4 decision reasons for RabbitMQ preserved",
+          "pass_criteria": "Output mentions: team expertise (or experience), volume within capacity (or 23 msg/s or 200 msg/s), routing/exchanges, no replay needed (or dead-letter)"
+        },
+        {
+          "name": "comparison_data_preserved",
+          "type": "output",
+          "check": "Key comparison numbers preserved",
+          "pass_criteria": "Output contains: 50,000 (or 50K), 200,000 (or 200K), 3,000 (or 3K), 2M (or 2 million), $0.40"
+        },
+        {
+          "name": "consequences_preserved",
+          "type": "output",
+          "check": "Both positive and negative consequences preserved",
+          "pass_criteria": "Output mentions: 3-week (or 3 weeks), 8 weeks, 100x, message replay (or S3 logging)"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "name": "distill-extreme-compression",
+      "category": "distill-quality",
+      "tests_change": "Tests maximum compression on extremely inflated text",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/19-extreme-inflation.md",
+      "expected_output": "Heavy compression (>50%). All code blocks and command table preserved. Intro/conclusion/chatbot phrases removed.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/19-extreme-inflation.md"],
+      "assertions": [
+        {
+          "name": "code_blocks_preserved",
+          "type": "output",
+          "check": "All 4 code blocks preserved (bash, Dockerfile, docker-compose, commands table)",
+          "pass_criteria": "Output contains: 'brew install --cask docker', 'FROM python:3.12-slim', 'version: '3.8'', 'docker build -t myapp .'"
+        },
+        {
+          "name": "extreme_noise_removed",
+          "type": "output",
+          "check": "All categories of noise removed from inflated text",
+          "pass_criteria": "Output does NOT contain: 'rapidly evolving landscape', 'truly transformative paradigm', 'revolutionizing', 'empowers developers', 'containerization journey', 'comprehensive guide', 'At the end of the day'"
+        },
+        {
+          "name": "word_reduction_50plus",
+          "type": "metric",
+          "check": "Word count reduced by at least 50%",
+          "pass_criteria": "Report shows word reduction >= 50%"
+        },
+        {
+          "name": "re_verify_triggered",
+          "type": "behavioral",
+          "check": "If reduction > 60%, model re-verifies no facts were lost (per skill spec)",
+          "pass_criteria": "If reduction exceeds 60%, model mentions re-verification or fact check"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "name": "distill-minimal-noise-dense",
+      "category": "distill-edge-case",
+      "tests_change": "Tests that well-written technical text with near-zero noise is barely touched",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/20-minimal-noise-technical.md",
+      "expected_output": "Very minimal reduction (<10%). YAML config preserved. All technical details preserved.",
+      "files": ["plugins/development-skills/evals/distill-fixtures/20-minimal-noise-technical.md"],
+      "assertions": [
+        {
+          "name": "minimal_reduction",
+          "type": "metric",
+          "check": "Word reduction under 15%",
+          "pass_criteria": "Report shows word reduction < 15%"
+        },
+        {
+          "name": "yaml_preserved",
+          "type": "output",
+          "check": "Kubernetes YAML preserved",
+          "pass_criteria": "Output contains: 'nodeSelector:', 'disk: ssd', 'topology.kubernetes.io/zone', 'eu-west-1a', 'priorityClassName: high-priority'"
+        },
+        {
+          "name": "priority_range_preserved",
+          "type": "output",
+          "check": "Priority class range preserved",
+          "pass_criteria": "Output contains: -2 billion (or -2,000,000,000) and 1 billion (or 1,000,000,000)"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "name": "distill-directory-batch",
+      "category": "distill-routing",
+      "tests_change": "Tests batch distillation of a directory",
+      "prompt": "/distill plugins/development-skills/evals/distill-fixtures/",
+      "expected_output": "Model processes all .md files in the directory, produces per-file metrics and a totals row.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "batch_processing",
+          "type": "behavioral",
+          "check": "Model processes multiple files from the directory",
+          "pass_criteria": "Model reads and processes more than one file from the distill-fixtures directory"
+        },
+        {
+          "name": "totals_row",
+          "type": "behavioral",
+          "check": "Report includes a totals/summary row",
+          "pass_criteria": "Output contains a Total or summary row with aggregate word counts"
+        },
+        {
+          "name": "manifest_skipped",
+          "type": "behavioral",
+          "check": "MANIFEST.md is processed as prose (it is a .md file with content)",
+          "pass_criteria": "MANIFEST.md appears in the file list (it's a valid .md file)"
+        }
+      ]
+    }
+  ]
+}

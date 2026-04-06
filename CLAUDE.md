@@ -17,7 +17,7 @@ plugins/                          # Claude Code plugins (each independently inst
   postgres-mcp/                   # PostgreSQL MCP server integration
 docs/                             # Documentation
   claude-code-reference/          # Official Claude Code reference docs
-.claude-plugin/plugin.json        # Plugin metadata + version (v0.0.19)
+.claude-plugin/plugin.json        # Plugin metadata + version (v0.0.20)
 .claude-plugin/marketplace.json   # Marketplace config (7 plugins)
 VERSION                           # Project version
 LICENSE                           # MIT

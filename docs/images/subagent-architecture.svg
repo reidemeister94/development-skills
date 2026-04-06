@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace">
+  <defs>
+    <marker id="arr" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0, 6 2.5, 0 5" fill="#484f58"/>
+    </marker>
+    <marker id="arr-b" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0, 6 2.5, 0 5" fill="#58a6ff"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="640" height="320" rx="8" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="320" y="28" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700">Subagent Architecture</text>
+  <text x="320" y="44" text-anchor="middle" fill="#484f58" font-size="10">Orchestrator delegates. Never implements directly.</text>
+
+  <!-- Orchestrator -->
+  <rect x="220" y="60" width="200" height="40" rx="4" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="320" y="76" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Thin Orchestrator</text>
+  <text x="320" y="92" text-anchor="middle" fill="#484f58" font-size="9">holds plan, delegates phases</text>
+
+  <!-- Lines down -->
+  <line x1="140" y1="100" x2="108" y2="130" stroke="#484f58" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <line x1="320" y1="100" x2="320" y2="130" stroke="#484f58" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <line x1="500" y1="100" x2="532" y2="130" stroke="#484f58" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <!-- Phase labels on lines -->
+  <text x="116" y="112" fill="#484f58" font-size="8">ph.6</text>
+  <text x="328" y="118" fill="#484f58" font-size="8">ph.4</text>
+  <text x="516" y="112" fill="#484f58" font-size="8">ph.5</text>
+
+  <!-- Staff Reviewer -->
+  <rect x="16" y="132" width="186" height="120" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="109" y="152" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Staff Reviewer</text>
+  <text x="109" y="166" text-anchor="middle" fill="#58a6ff" font-size="9">opus</text>
+  <line x1="32" y1="174" x2="186" y2="174" stroke="#21262d" stroke-width="1"/>
+  <text x="32" y="192" fill="#7d8590" font-size="9">Stage 1: spec compliance</text>
+  <text x="32" y="208" fill="#7d8590" font-size="9">Stage 2: code quality</text>
+  <text x="32" y="228" fill="#484f58" font-size="8">Reads plan from disk</text>
+  <text x="32" y="242" fill="#484f58" font-size="8">Returns APPROVED or ISSUES</text>
+
+  <!-- Implementer -->
+  <rect x="227" y="132" width="186" height="120" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="320" y="152" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Implementer</text>
+  <text x="320" y="166" text-anchor="middle" fill="#58a6ff" font-size="9">sonnet</text>
+  <line x1="243" y1="174" x2="397" y2="174" stroke="#21262d" stroke-width="1"/>
+  <text x="243" y="192" fill="#7d8590" font-size="9">TDD: RED → GREEN → REFACTOR</text>
+  <text x="243" y="208" fill="#7d8590" font-size="9">Anti-poisoning verification</text>
+  <text x="243" y="228" fill="#484f58" font-size="8">Writes impl log to disk</text>
+  <text x="243" y="242" fill="#484f58" font-size="8">Returns compact summary</text>
+
+  <!-- Test Verifier -->
+  <rect x="438" y="132" width="186" height="120" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="531" y="152" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Test Verifier</text>
+  <text x="531" y="166" text-anchor="middle" fill="#58a6ff" font-size="9">sonnet</text>
+  <line x1="454" y1="174" x2="608" y2="174" stroke="#21262d" stroke-width="1"/>
+  <text x="454" y="192" fill="#7d8590" font-size="9">Runs tests, build, lint</text>
+  <text x="454" y="208" fill="#7d8590" font-size="9">Structured pass/fail report</text>
+  <text x="454" y="228" fill="#484f58" font-size="8">Verbose output stays isolated</text>
+  <text x="454" y="242" fill="#484f58" font-size="8">Verification honesty enforced</text>
+
+  <!-- Shared disk -->
+  <line x1="109" y1="252" x2="109" y2="276" stroke="#58a6ff" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr-b)"/>
+  <line x1="320" y1="252" x2="320" y2="276" stroke="#58a6ff" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr-b)"/>
+  <line x1="531" y1="252" x2="531" y2="276" stroke="#58a6ff" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr-b)"/>
+
+  <text x="80" y="270" fill="#58a6ff" font-size="7">reads</text>
+  <text x="292" y="270" fill="#58a6ff" font-size="7">writes</text>
+  <text x="502" y="270" fill="#58a6ff" font-size="7">writes</text>
+
+  <rect x="60" y="280" width="520" height="26" rx="4" fill="none" stroke="#58a6ff" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="320" y="297" text-anchor="middle" fill="#7d8590" font-size="9">docs/plans/*.md — shared plan file on disk</text>
+</svg>

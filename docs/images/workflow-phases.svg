@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" font-family="'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace">
+  <defs>
+    <marker id="arrow" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0, 6 2.5, 0 5" fill="#484f58"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="340" rx="8" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="360" y="32" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700">7-Phase Gated Workflow</text>
+  <text x="360" y="50" text-anchor="middle" fill="#484f58" font-size="10">Each phase is a gate. No skipping. Evidence required.</text>
+
+  <!-- Phase 0 -->
+  <rect x="20" y="72" width="88" height="56" rx="4" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="64" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 0</text>
+  <text x="64" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Brainstorm</text>
+  <text x="64" y="122" text-anchor="middle" fill="#484f58" font-size="8">guard</text>
+
+  <line x1="108" y1="100" x2="122" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- Phase 1 -->
+  <rect x="124" y="72" width="78" height="56" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="163" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 1</text>
+  <text x="163" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Research</text>
+
+  <line x1="202" y1="100" x2="216" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- Phase 2 -->
+  <rect x="218" y="72" width="78" height="56" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="257" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 2</text>
+  <text x="257" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Plan</text>
+  <text x="257" y="122" text-anchor="middle" fill="#484f58" font-size="8">user approves</text>
+
+  <line x1="296" y1="100" x2="310" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- Phase 3 -->
+  <rect x="312" y="72" width="78" height="56" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="351" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 3</text>
+  <text x="351" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Chronicle</text>
+  <text x="351" y="122" text-anchor="middle" fill="#484f58" font-size="8">document WHY</text>
+
+  <line x1="390" y1="100" x2="404" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- Phase 4 -->
+  <rect x="406" y="72" width="88" height="56" rx="4" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="450" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 4</text>
+  <text x="450" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Implement</text>
+  <text x="450" y="122" text-anchor="middle" fill="#484f58" font-size="8">TDD cycles</text>
+
+  <line x1="494" y1="100" x2="508" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- Phase 5 -->
+  <rect x="510" y="72" width="78" height="56" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="549" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 5</text>
+  <text x="549" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Verify</text>
+  <text x="549" y="122" text-anchor="middle" fill="#484f58" font-size="8">evidence req.</text>
+
+  <line x1="588" y1="100" x2="602" y2="100" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- Phase 6 -->
+  <rect x="604" y="72" width="96" height="56" rx="4" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="652" y="92" text-anchor="middle" fill="#484f58" font-size="9">PHASE 6</text>
+  <text x="652" y="108" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Staff Review</text>
+  <text x="652" y="122" text-anchor="middle" fill="#484f58" font-size="8">spec + quality</text>
+
+  <!-- Arrow down to Phase 7 -->
+  <line x1="652" y1="128" x2="652" y2="148" stroke="#484f58" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- Phase 7 -->
+  <rect x="604" y="150" width="96" height="40" rx="4" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="652" y="166" text-anchor="middle" fill="#484f58" font-size="9">PHASE 7</text>
+  <text x="652" y="180" text-anchor="middle" fill="#e6edf3" font-size="11" font-weight="600">Finalize</text>
+
+  <!-- Gate legend -->
+  <text x="20" y="220" fill="#484f58" font-size="9">Gates:</text>
+  <g font-size="9" fill="#7d8590">
+    <text x="20" y="238">0  Scope &gt; 3 files or ambiguous → analyze</text>
+    <text x="20" y="254">1  "RESEARCH COMPLETE"</text>
+    <text x="20" y="270">2  User approves plan on disk</text>
+    <text x="20" y="286">3  "CHRONICLE INITIATED"</text>
+    <text x="360" y="238">4  "SOLUTION COMPLETE"</text>
+    <text x="360" y="254">5  Test evidence attached</text>
+    <text x="360" y="270">6  "APPROVED" (two-stage review)</text>
+    <text x="360" y="286">7  "WORKFLOW COMPLETE"</text>
+  </g>
+
+  <!-- Accent explanation -->
+  <rect x="20" y="308" width="10" height="10" rx="2" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="36" y="317" fill="#484f58" font-size="9">= key decision points</text>
+
+  <rect x="120" y="308" width="10" height="10" rx="2" fill="none" stroke="#30363d" stroke-width="1"/>
+  <text x="136" y="317" fill="#484f58" font-size="9">= execution phases</text>
+</svg>
