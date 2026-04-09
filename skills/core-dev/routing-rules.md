@@ -17,6 +17,7 @@
 - Is the developer anchored on a specific approach?
 - What is the simplest path to the desired outcome?
 - What happens if we do nothing?
+- For adoption/integration tasks: what in the current stack already covers each proposed feature? Is this gap-driven or feature-driven?
 
 **If issues found:** STOP. State what doesn't add up. Ask to clarify.
 
@@ -30,7 +31,6 @@
 2. **Reversibility:** Can this be fully undone in under 1 hour?
 3. **Approaches:** Is there only ONE obvious way?
 4. **Motivation:** Does the request state WHY?
-- For adoption/integration tasks: what in the current stack already covers each proposed feature? Is this gap-driven or feature-driven?
 
 ---
 
@@ -49,6 +49,16 @@
 - Analyzing/investigating/evaluating code changes, diffs, errors
 
 **Bug fix exception:** If primarily a bug fix (error/stack trace), invoke `development-skills:debugging` instead — UNLESS it involves architectural decisions or multiple fix approaches.
+
+**Adoption/integration exception:** If the task involves evaluating external projects, recommending features to adopt, or integrating patterns from other codebases — ALWAYS invoke brainstorming. The analysis agent MUST evaluate each candidate through this framework:
+
+1. **Overlap audit** — List every existing mechanism that covers the same need. If overlap > 50%, reject.
+2. **Value assessment** — What real problem does this solve? How often does it occur? What is the cost of NOT having it? If you can't name a concrete, recurring pain point, reject.
+3. **Fit analysis** — Does it integrate naturally into the existing architecture, or does it require compromises, new dependencies, or new patterns? If it forces the project to bend around it, reject or redesign.
+4. **Maintenance cost** — What is the ongoing cost of keeping this? Will it break when upstream changes? Does it add surface area that must be tested and documented? Value must clearly exceed maintenance burden.
+5. **Implementation form** — If it survives 1-4, HOW should it be integrated? Minimal change to an existing file beats a new skill. A new convention beats a new hook. Configuration beats code.
+
+Present the filtered shortlist with this analysis to the user BEFORE any implementation.
 
 **Test-focused exception:** If the request is primarily about test creation, test quality, test strategy, or test coverage analysis (e.g., "add tests for X", "what should I test", "improve test quality", "explore untested code", "generate boundary tests") — invoke `development-skills:create-test` instead. UNLESS the request is part of a larger feature implementation (standard workflow handles tests via TDD).
 
@@ -75,16 +85,6 @@
 | "Project X has it, we should too" | Feature-driven, not gap-driven. What in OUR stack already covers this? |
 | "User confirmed, so my analysis was correct" | User confirmed trust, not validation. Overlap audit still required. |
 | "I found 4 good features to add" | Did you check 4 times what already exists? More recommendations ≠ better analysis. |
-
-**Adoption/integration exception:** If the task involves evaluating external projects, recommending features to adopt, or integrating patterns from other codebases — ALWAYS invoke brainstorming. The analysis agent MUST evaluate each candidate through this framework:
-
-1. **Overlap audit** — List every existing mechanism that covers the same need. If overlap > 50%, reject.
-2. **Value assessment** — What real problem does this solve? How often does it occur? What is the cost of NOT having it? If you can't name a concrete, recurring pain point, reject.
-3. **Fit analysis** — Does it integrate naturally into the existing architecture, or does it require compromises, new dependencies, or new patterns? If it forces the project to bend around it, reject or redesign.
-4. **Maintenance cost** — What is the ongoing cost of keeping this? Will it break when upstream changes? Does it add surface area that must be tested and documented? Value must clearly exceed maintenance burden.
-5. **Implementation form** — If it survives 1-4, HOW should it be integrated? Minimal change to an existing file beats a new skill. A new convention beats a new hook. Configuration beats code.
-
-Present the filtered shortlist with this analysis to the user BEFORE any implementation.
 
 **Red flags:**
 - About to say "Development workflow activated" before finishing this guard

@@ -65,10 +65,10 @@
 - [ ] No function > 70 lines
 - [ ] Complexity minimized (no O(n²) when O(n) works)
 - [ ] WHY comments on ambiguous code
-- [ ] No restating comments (comments explain WHY, not WHAT the code does)
-- [ ] No excessive error handling (try/catch only at boundaries, not on safe internal calls)
 - [ ] Schema fields with non-trivial types annotated
 - [ ] No useless WHAT comments
+- [ ] No restating comments (comments explain WHY, not WHAT the code does)
+- [ ] No excessive error handling (try/catch only at boundaries, not on safe internal calls)
 - [ ] TDD discipline (RED→GREEN→REFACTOR)
 
 **Also check language skill's quality checklist.**
