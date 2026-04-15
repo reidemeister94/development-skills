@@ -210,7 +210,7 @@ Persists ALL research to disk so it survives your isolated context.
 1. `mkdir -p docs/plans/`
 2. Find next plan number (highest NNNN prefix + 1, or `0001`)
 3. Determine today's date (YYYY-MM-DD) and slug
-4. Write to: `docs/plans/NNNN__research.md`
+4. Write to: `docs/plans/NNNN__research__{slug}.md` (slug = kebab-case task/topic name)
 
 **Remember NNNN, date, and slug for the plan file in Step 6.**
 

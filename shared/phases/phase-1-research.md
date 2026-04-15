@@ -36,7 +36,7 @@ Review task requirements against existing research. Identify missing implementat
 3. Performs targeted searches and/or codebase exploration for gaps ONLY
 4. **Writes to disk:**
    - Research file exists → append under `## Phase 1 Addendum`
-   - No research file → create `docs/plans/NNNN__research.md` (plan's NNNN prefix)
+   - No research file → create `docs/plans/NNNN__research__{slug}.md` (plan's NNNN prefix, slug = kebab-case task/topic name)
 5. Returns brief summary (max 10 lines) + file path
 
 **Subagent prompt:** Read `shared/agents/research-agent.md` (Glob `**/research-agent.md`). Replace placeholders, spawn via Task tool.

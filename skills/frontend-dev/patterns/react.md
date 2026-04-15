@@ -53,6 +53,22 @@ function Button({ variant = "primary", ...props }: ButtonProps) {
 
 ---
 
+## Watch the state surface area
+
+When a component reads state that serves multiple unrelated purposes — e.g., filter values _and_ table configuration _and_ dialog state — each group of related reads likely belongs in its own sub-component. A component reading many pieces of state for one cohesive purpose (e.g., a form reading all its field values) is fine. The signal is unrelated concerns mixing, not the raw count.
+
+---
+
+## Keep the return statement clean
+
+The `return` should be easy to scan. Minimize logic inlined in JSX:
+
+- **Inline callbacks**: only single short expressions (e.g. `onClick={() => setOpen(true)}`). Anything longer belongs in a named function or hook.
+- **Conditional rendering**: `{condition && <X />}` or a simple ternary is fine. Nested ternaries or multi-branch logic should be extracted to a variable or sub-component.
+- **Computed values**: extract to a `const` above the return if the expression involves template literals with logic, chained `??`/`?` operators, or formatting.
+
+---
+
 ## Hooks Patterns
 
 ### Custom Hooks
@@ -111,6 +127,22 @@ function Component({ showDetails }: { showDetails: boolean }) {
   }
 }
 ```
+
+---
+
+## Avoid unnecessary `useEffect`
+
+Before writing an Effect, ask: _"Is this running because the component was displayed, or because a specific event happened?"_ If an event caused it, the logic belongs in an event handler — not an Effect.
+
+| Instead of...                                               | Do this                                                                   |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Effect that derives state from props/state                  | Compute it during render (`const x = fn(a, b)`) or `useMemo` if expensive |
+| Effect that resets state when a prop changes                | Use a `key` prop to remount the component                                 |
+| Effect that syncs state to a parent via `onChange`          | Call `onChange` in the same event handler that updates local state        |
+| Effect that fires an API call after a state change          | Call the API directly in the event handler that caused the state change   |
+| Chain of Effects where one sets state that triggers another | Compute all state updates in a single event handler                       |
+
+Legitimate uses: subscriptions to external systems (WebSocket, browser API, third-party library), data fetching on mount/param change (with cleanup), synchronizing with non-React DOM (e.g. a map or chart widget).
 
 ---
 
@@ -236,7 +268,7 @@ describe("useCounter", () => {
 | Inline styles | CSS Modules, Tailwind, or CSS-in-JS |
 | Giant components (> 70 lines) | Split into smaller, focused components |
 | Barrel exports for everything | Direct imports, barrel only for public API |
-| `useEffect` for derived state | `useMemo` or compute inline |
+| `useEffect` for derived state or event responses | See "Avoid unnecessary useEffect" section above |
 | Premature `useMemo`/`useCallback` | Profile first, optimize when measured |
 | Prop drilling through 3+ levels | Context or composition pattern |
 
