@@ -66,7 +66,7 @@ By type: DD=N, AU=N, UA=N, UU=N, DU=N, UD=N, AA=N
 
 This handles projects using numbered doc files:
 
-- Plans: `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__slug.md` + `docs/plans/NNNN__research.md`
+- Plans: `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__slug.md` + `docs/plans/NNNN__research__{slug}.md`
 - Chronicles: `docs/chronicles/NNNN__YYYY-MM-DD__slug.md`
 
 Both branches may have independently renumbered these files, causing conflicts.
@@ -136,11 +136,12 @@ After renumbering, internal cross-references will be stale.
 
 ### 3a: Fix research references in plan files
 
-Each plan should reference its **own** number's research file (e.g., plan 0015 → `0015__research.md`). Handle all reference formats:
+Each plan should reference its **own** number's research file (e.g., plan 0015 → `0015__research__cache-layer.md`). Handle all reference formats:
 
-- `NNNN__research.md`
-- `NNNN**research.md` (bold markdown)
-- `NNNN\_\_research.md` (escaped underscores)
+- `NNNN__research__{slug}.md`
+- `NNNN__research.md` (legacy — rename to include slug)
+- `NNNN**research**slug.md` (bold markdown)
+- `NNNN\_\_research\_\_{slug}.md` (escaped underscores)
 
 ### 3b: Fix chronicle self-references
 

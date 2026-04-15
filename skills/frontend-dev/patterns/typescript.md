@@ -12,7 +12,7 @@ Enforce these during Staff Engineer Review (Phase 6) — **applies to every fron
 - No `any` types — use proper types, `unknown`, or generics
 - Type inference leveraged where obvious — annotate when not inferrable
 - Proper type guards for runtime type narrowing
-- Zod or similar for external data validation (not type assertions)
+- Validate data at trust boundaries — not just "somewhere," but at every point where untyped data enters the app
 - Imports organized: external → internal aliases → relative
 - `as const` over enums for literal unions
 - No `@ts-ignore` — fix the type error
@@ -219,6 +219,19 @@ if (result.success) {
   console.error(result.error.issues);
 }
 ```
+
+---
+
+## Trust Boundary Validation
+
+External data enters the app untyped at these specific points — validate at each one:
+
+- **API responses** — in fetch wrappers, before the data reaches components
+- **`JSON.parse()` results** — localStorage reads, message payloads, serialized state
+- **URL / query parameters** — route params, search params, hash fragments
+- **Persist rehydration** — state management persist layers (Zustand persist, Redux persist, etc.)
+
+The validation tool (Zod, Valibot, ArkType, io-ts) is a project choice. The discipline of validating at these four boundaries is not.
 
 ---
 

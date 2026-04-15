@@ -1881,6 +1881,356 @@
           "pass_criteria": "Tests include at least one error scenario where the provider returns an error status and the client raises an appropriate exception"
         }
       ]
+    },
+    {
+      "id": 51,
+      "name": "best-practices-fitness-domain-detection",
+      "category": "best-practices",
+      "tests_change": "best-practices skill universalization",
+      "prompt": "/best-practices best exercises for building chest muscles with bodyweight and dumbbells",
+      "expected_output": "Skill invoked. Domain detected as exercise science / fitness. Phase 0 identifies biomechanical constraints (pectoralis major fiber orientation, horizontal adduction, shoulder flexion), reality constraints (progressive overload principle, mechanical tension as hypertrophy driver). Search queries adapted to fitness domain (PubMed, NSCA, Schoenfeld EMG studies). Output includes evidence-level markers on recommendations.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes the best-practices skill",
+          "pass_criteria": "Transcript contains Skill tool call with 'best-practices' in skill parameter"
+        },
+        {
+          "name": "fitness_domain_detected",
+          "type": "behavioral",
+          "check": "Model detects the domain as exercise science, fitness, or biomechanics \u2014 not software engineering",
+          "pass_criteria": "Transcript mentions exercise science, fitness, biomechanics, or kinesiology as the domain. Does NOT default to tech vocabulary."
+        },
+        {
+          "name": "reality_constraints_identified",
+          "type": "behavioral",
+          "check": "Model identifies biomechanical or physiological constraints relevant to chest exercises",
+          "pass_criteria": "Transcript mentions at least one of: progressive overload, mechanical tension, muscle fiber orientation, horizontal adduction, range of motion, or similar biomechanical/physiological concepts"
+        },
+        {
+          "name": "evidence_based_sources_targeted",
+          "type": "behavioral",
+          "check": "Search queries or source discussion targets scientific/evidence-based fitness sources, not generic fitness blogs",
+          "pass_criteria": "Transcript mentions PubMed, NSCA, ACSM, JSCR, Schoenfeld, EMG studies, or systematic review \u2014 at least one scientific source type"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "name": "best-practices-nutrition-context-sensitivity",
+      "category": "best-practices",
+      "tests_change": "best-practices skill universalization",
+      "prompt": "/best-practices what's the best diet?",
+      "expected_output": "Skill invoked. Model recognizes 'best diet' is radically context-dependent \u2014 depends on goals (weight loss, muscle gain, longevity, performance), health conditions (diabetes, allergies, intolerances), preferences, budget, lifestyle. Must either ask the user for clarifying context OR produce conditional recommendations grouped by goal/situation. Must NOT give a single 'best diet' answer.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes the best-practices skill",
+          "pass_criteria": "Transcript contains Skill tool call with 'best-practices' in skill parameter"
+        },
+        {
+          "name": "context_variables_identified",
+          "type": "behavioral",
+          "check": "Model identifies that the answer depends on goals, health, constraints, or preferences",
+          "pass_criteria": "Transcript mentions at least 2 of: goals, health conditions, constraints, preferences, budget, lifestyle, experience level, age, activity level as variables that affect the answer"
+        },
+        {
+          "name": "asks_or_conditions",
+          "type": "behavioral",
+          "check": "Model either asks the user for clarifying context OR explicitly structures recommendations conditionally",
+          "pass_criteria": "Transcript either asks clarifying questions about goals/constraints OR produces conditional output ('if your goal is X, then... if Y, then...'). Does NOT give a single unconditional 'best diet' answer."
+        },
+        {
+          "name": "no_single_diet_dogma",
+          "type": "behavioral",
+          "check": "Model does NOT endorse a single diet as universally 'best' without conditions",
+          "pass_criteria": "Transcript does NOT present one specific diet (keto, Mediterranean, vegan, etc.) as the unconditional best. Instead presents trade-offs, conditions, or asks for context."
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "name": "best-practices-reality-constraint-violation",
+      "category": "best-practices",
+      "tests_change": "best-practices skill universalization",
+      "prompt": "/best-practices how to lose 10kg in one week safely",
+      "expected_output": "Skill invoked. Model immediately identifies thermodynamic reality constraint: 10kg of fat loss requires ~77,000 kcal deficit, which is ~11,000 kcal/day \u2014 physically impossible and medically dangerous. Must challenge the premise directly. May offer realistic timelines (0.5-1kg/week for safe loss) or ask what the actual goal/deadline is.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes the best-practices skill",
+          "pass_criteria": "Transcript contains Skill tool call with 'best-practices' in skill parameter"
+        },
+        {
+          "name": "thermodynamic_constraint_flagged",
+          "type": "behavioral",
+          "check": "Model identifies the caloric/thermodynamic impossibility of losing 10kg of fat in 1 week",
+          "pass_criteria": "Transcript mentions caloric deficit, energy balance, thermodynamics, or the physical impossibility of this rate of fat loss. May mention that most rapid weight loss is water, not fat."
+        },
+        {
+          "name": "premise_challenged",
+          "type": "behavioral",
+          "check": "Model challenges the premise rather than just trying to answer it",
+          "pass_criteria": "Model explicitly states this is unrealistic, dangerous, or impossible at the stated rate. Does NOT provide a plan to lose 10kg in one week."
+        },
+        {
+          "name": "realistic_alternative_offered",
+          "type": "behavioral",
+          "check": "Model offers evidence-based realistic alternatives",
+          "pass_criteria": "Transcript mentions realistic rate (0.5-1kg per week, or similar evidence-based range) or asks what the actual constraint/deadline is"
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "name": "best-practices-finance-evidence-hierarchy",
+      "category": "best-practices",
+      "tests_change": "best-practices skill universalization",
+      "prompt": "/best-practices optimal strategy to invest 50,000 euros for long-term wealth building (20+ year horizon), I'm 30 years old with stable income and no debt",
+      "expected_output": "Skill invoked. Domain: personal finance. Evidence profile: academic finance literature, central bank research, foundational works (Bogle, Malkiel). Reality constraints: compound interest, diversification as only free lunch, market efficiency, fees as controllable variable. Context: long horizon, young, stable income \u2192 high risk capacity. Should cite evidence levels and reference foundational works.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes the best-practices skill",
+          "pass_criteria": "Transcript contains Skill tool call with 'best-practices' in skill parameter"
+        },
+        {
+          "name": "finance_domain_detected",
+          "type": "behavioral",
+          "check": "Model detects finance/investment as the domain",
+          "pass_criteria": "Transcript identifies domain as personal finance, investment, or portfolio management"
+        },
+        {
+          "name": "reality_constraints_mentioned",
+          "type": "behavioral",
+          "check": "Model identifies economic reality constraints relevant to investing",
+          "pass_criteria": "Transcript mentions at least 2 of: compound interest, diversification, market efficiency, fees/costs, risk-return tradeoff, time in market"
+        },
+        {
+          "name": "evidence_based_not_guru",
+          "type": "behavioral",
+          "check": "Recommendations reference academic/institutional evidence, not trading gurus or get-rich-quick approaches",
+          "pass_criteria": "Transcript references at least one of: Bogle, Malkiel, Vanguard research, index funds, academic finance literature, Fama-French. Does NOT recommend day trading, stock picking, or crypto speculation."
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "name": "best-practices-design-sparse-evidence",
+      "category": "best-practices",
+      "tests_change": "best-practices skill universalization",
+      "prompt": "/best-practices how to furnish a 25 square meter studio apartment to maximize functionality and comfort",
+      "expected_output": "Skill invoked. Domain: interior design + ergonomics + spatial planning. Evidence profile: this domain has less formal peer-reviewed evidence; relies more on spatial constraints, ergonomic standards, documented case studies. Reality constraints: hard spatial geometry (25sqm), ergonomic reach zones, traffic flow minimums (~60cm), furniture dimensions. Should NOT simply say 'no sources met quality bar' \u2014 should reason from first principles (spatial constraints, ergonomics, multi-functional furniture).",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes the best-practices skill",
+          "pass_criteria": "Transcript contains Skill tool call with 'best-practices' in skill parameter"
+        },
+        {
+          "name": "design_domain_detected",
+          "type": "behavioral",
+          "check": "Model detects interior design, spatial planning, or architecture as the domain",
+          "pass_criteria": "Transcript identifies domain as interior design, spatial planning, architecture, or ergonomics"
+        },
+        {
+          "name": "spatial_constraints_used",
+          "type": "behavioral",
+          "check": "Model reasons from spatial/physical constraints rather than just opinion",
+          "pass_criteria": "Transcript mentions at least 2 of: spatial constraints, traffic flow, ergonomic zones, multi-functional furniture, dimensions, or 25sqm limitations"
+        },
+        {
+          "name": "not_empty_due_to_quality_gates",
+          "type": "behavioral",
+          "check": "Model does NOT produce empty sections just because formal peer-reviewed evidence is sparse for interior design",
+          "pass_criteria": "Model provides substantive recommendations using design principles, spatial reasoning, and/or ergonomic standards. Does not bail out with 'no sources met quality bar' for core recommendations."
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "name": "best-practices-tech-regression",
+      "category": "best-practices",
+      "tests_change": "best-practices skill universalization",
+      "prompt": "/best-practices API rate limiting strategies for a high-traffic REST API",
+      "expected_output": "Skill invoked. Domain: software engineering. Should still work exactly as before universalization \u2014 detect tech domain, search engineering blogs, official docs, GitHub projects. Should mention token bucket, sliding window, fixed window algorithms. Should cite production experience from tech companies.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes the best-practices skill",
+          "pass_criteria": "Transcript contains Skill tool call with 'best-practices' in skill parameter"
+        },
+        {
+          "name": "tech_domain_detected",
+          "type": "behavioral",
+          "check": "Model detects software engineering / API design as the domain",
+          "pass_criteria": "Transcript identifies domain as software engineering, API design, distributed systems, or web engineering"
+        },
+        {
+          "name": "tech_sources_targeted",
+          "type": "behavioral",
+          "check": "Search strategy targets tech-appropriate sources",
+          "pass_criteria": "Transcript mentions or targets at least one of: engineering blogs, official documentation, GitHub, RFC, cloud provider docs, or specific tech companies"
+        },
+        {
+          "name": "concrete_algorithms_discussed",
+          "type": "behavioral",
+          "check": "Output includes specific rate limiting algorithms, not just vague advice",
+          "pass_criteria": "Transcript mentions at least 2 of: token bucket, sliding window, fixed window, leaky bucket, or specific rate limiting libraries/services"
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "name": "best-practices-anti-bs-supplement-hype",
+      "category": "best-practices",
+      "tests_change": "best-practices skill universalization",
+      "prompt": "/best-practices best supplements to gain 10kg of muscle in 2 months naturally",
+      "expected_output": "Skill invoked. Model identifies multiple reality constraint violations: (1) 10kg of muscle in 2 months is physiologically near-impossible for natural trainees (research shows ~0.25-0.5kg/month for trained individuals), (2) supplements have minimal effect compared to training and nutrition fundamentals. Must challenge the premise. Must NOT recommend a supplement stack as if it will achieve this goal.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes the best-practices skill",
+          "pass_criteria": "Transcript contains Skill tool call with 'best-practices' in skill parameter"
+        },
+        {
+          "name": "physiological_constraint_flagged",
+          "type": "behavioral",
+          "check": "Model identifies that 10kg of muscle in 2 months is physiologically unrealistic for natural trainees",
+          "pass_criteria": "Transcript mentions muscle gain rate limits, physiological constraints on hypertrophy rate, or that this timeframe is unrealistic. May cite typical rates (0.25-1kg/month)."
+        },
+        {
+          "name": "supplements_deprioritized",
+          "type": "behavioral",
+          "check": "Model emphasizes training and nutrition over supplements as primary drivers",
+          "pass_criteria": "Transcript explicitly states that training and nutrition are more important than supplements, or that supplements have marginal effect compared to fundamentals"
+        },
+        {
+          "name": "no_supplement_stack_recommendation",
+          "type": "behavioral",
+          "check": "Model does NOT provide a supplement stack as if it will achieve 10kg in 2 months",
+          "pass_criteria": "Model does not present a list of supplements as a solution to the stated goal. May discuss evidence for individual supplements (creatine, protein) with realistic effect sizes."
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "name": "best-practices-multi-domain-topic",
+      "category": "best-practices",
+      "tests_change": "best-practices skill universalization",
+      "prompt": "/best-practices best practices for remote work productivity and ergonomic home office setup",
+      "expected_output": "Skill invoked. Model recognizes this spans multiple domains: productivity/psychology (deep work, focus, routines), ergonomics (desk height, monitor distance, chair setup), and organizational behavior (communication patterns, async work). Should not force-classify into a single domain but identify relevant evidence from each contributing discipline.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes the best-practices skill",
+          "pass_criteria": "Transcript contains Skill tool call with 'best-practices' in skill parameter"
+        },
+        {
+          "name": "multi_domain_recognized",
+          "type": "behavioral",
+          "check": "Model identifies that the topic spans multiple disciplines",
+          "pass_criteria": "Transcript mentions at least 2 distinct domains or disciplines (e.g., ergonomics + productivity, psychology + workplace design, cognitive science + physical setup)"
+        },
+        {
+          "name": "ergonomic_constraints_included",
+          "type": "behavioral",
+          "check": "Model includes physical/ergonomic evidence, not just productivity tips",
+          "pass_criteria": "Transcript mentions at least one of: ergonomic standards, desk height, monitor distance, chair posture, musculoskeletal health, or eye strain prevention"
+        },
+        {
+          "name": "cognitive_evidence_included",
+          "type": "behavioral",
+          "check": "Model includes cognitive/psychological evidence for productivity",
+          "pass_criteria": "Transcript mentions at least one of: deep work, focus/attention research, Pomodoro, time-blocking, communication patterns, context switching cost, or similar productivity research"
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "name": "best-practices-evidence-honesty-contested",
+      "category": "best-practices",
+      "tests_change": "best-practices skill universalization",
+      "prompt": "/best-practices is intermittent fasting effective for health and longevity?",
+      "expected_output": "Skill invoked. Domain: nutrition science + metabolic health. This is a topic where evidence is MIXED \u2014 some studies show benefits (insulin sensitivity, autophagy markers), others show no advantage over continuous caloric restriction. Model must present BOTH sides with evidence quality, not endorse or dismiss. Must use evidence markers to distinguish strong from emerging/contested findings. Must note that adherence and individual response matter.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes the best-practices skill",
+          "pass_criteria": "Transcript contains Skill tool call with 'best-practices' in skill parameter"
+        },
+        {
+          "name": "contested_nature_acknowledged",
+          "type": "behavioral",
+          "check": "Model acknowledges that evidence on IF is mixed or contested, not settled",
+          "pass_criteria": "Transcript explicitly states evidence is mixed, contested, nuanced, or 'not settled' regarding IF benefits beyond caloric restriction. Does NOT present IF as definitively superior or definitively useless."
+        },
+        {
+          "name": "both_sides_presented",
+          "type": "behavioral",
+          "check": "Model presents evidence both for and against IF benefits",
+          "pass_criteria": "Transcript mentions at least one potential benefit (insulin sensitivity, autophagy, adherence) AND at least one limitation or counterpoint (no advantage over standard CR, adherence issues, individual variation)"
+        },
+        {
+          "name": "evidence_quality_distinguished",
+          "type": "behavioral",
+          "check": "Model distinguishes between strong and weak evidence, or uses evidence markers",
+          "pass_criteria": "Transcript uses evidence level markers ([strong], [moderate], [contested], etc.) or explicitly states which findings are well-supported vs. preliminary vs. contested"
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "name": "best-practices-cooking-domain",
+      "category": "best-practices",
+      "tests_change": "best-practices skill universalization",
+      "prompt": "/best-practices what's the best way to cook a perfect steak at home?",
+      "expected_output": "Skill invoked. Domain: cooking / food science. Evidence profile: this domain has empirical testing methodology (ATK, Kenji) + food science (Maillard reaction, protein denaturation). Reality constraints: Maillard reaction requires high surface temperature (~140\u00b0C+), protein denaturation is temperature-dependent, carryover cooking adds ~3-5\u00b0C. Should cite evidence from systematic testing (reverse sear, sous vide comparisons) rather than opinion.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skill_invoked",
+          "type": "behavioral",
+          "check": "Model invokes the best-practices skill",
+          "pass_criteria": "Transcript contains Skill tool call with 'best-practices' in skill parameter"
+        },
+        {
+          "name": "food_science_domain_detected",
+          "type": "behavioral",
+          "check": "Model detects cooking, food science, or culinary arts as the domain",
+          "pass_criteria": "Transcript identifies domain as cooking, food science, culinary science, or similar"
+        },
+        {
+          "name": "science_based_reasoning",
+          "type": "behavioral",
+          "check": "Model references food science mechanisms, not just tradition",
+          "pass_criteria": "Transcript mentions at least one of: Maillard reaction, protein denaturation, carryover cooking, internal temperature, heat transfer, or crust formation as scientific concepts"
+        },
+        {
+          "name": "evidence_based_sources_targeted",
+          "type": "behavioral",
+          "check": "Model targets testing-methodology sources rather than random recipe blogs",
+          "pass_criteria": "Transcript mentions or targets at least one of: Serious Eats, Kenji Lopez-Alt, ATK/Cook's Illustrated, Harold McGee, Modernist Cuisine, food science journal, or systematic testing methodology"
+        }
+      ]
     }
   ]
 }

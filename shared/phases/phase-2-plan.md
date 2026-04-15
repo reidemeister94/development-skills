@@ -11,7 +11,7 @@
 Status: In Progress
 Current Phase: 2 (Plan)
 Phases remaining: 3, 4, 5, 6, 7
-Research: [docs/plans/NNNN__research.md or NOT AVAILABLE]
+Research: [docs/plans/NNNN__research__{slug}.md or NOT AVAILABLE]
 Chronicle: [TBD — decided in Phase 3]
 Verification: [commands from language skill]
 ```

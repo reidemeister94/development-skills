@@ -4,7 +4,7 @@
 Status: In Progress
 Current Phase: 2 (Plan — approach approved in brainstorming, pending implementation plan approval)
 Phases remaining: 3, 4, 5, 6, 7
-Research: docs/plans/NNNN__research.md
+Research: docs/plans/NNNN__research__{slug}.md
 Chronicle: TBD — decided in Phase 3
 Verification: TBD
 
