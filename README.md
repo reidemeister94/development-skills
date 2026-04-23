@@ -1,6 +1,6 @@
 # development-skills
 
-A Claude Code plugin that turns your AI agent into a disciplined software engineer.
+A plugin for Claude Code and Codex CLI that turns your AI agent into a disciplined software engineer.
 
 <a href="https://github.com/reidemeister94/development-skills/releases"><img src="https://img.shields.io/github/v/release/reidemeister94/development-skills?style=flat-square&color=blue" alt="Release"/></a>
 <a href="LICENSE"><img src="https://img.shields.io/github/license/reidemeister94/development-skills?style=flat-square" alt="License"/></a>
@@ -10,12 +10,31 @@ A Claude Code plugin that turns your AI agent into a disciplined software engine
 
 ## Installation
 
+### Claude Code
+
 ```bash
 /plugin marketplace add reidemeister94/development-skills
 /plugin install development-skills@development-skills
 ```
 
 Activates automatically on any coding task. No configuration needed.
+
+### Codex CLI
+
+```bash
+git clone https://github.com/reidemeister94/development-skills.git ~/.codex/development-skills
+mkdir -p ~/.agents/skills
+ln -s ~/.codex/development-skills/skills ~/.agents/skills/development-skills
+```
+
+Add to `~/.codex/config.toml`:
+
+```toml
+[features]
+multi_agent = true
+```
+
+Required for subagent-dispatching skills. See [`.codex/INSTALL.md`](.codex/INSTALL.md) for full details, and [`AGENTS.md`](AGENTS.md) for the portable per-agent instructions both platforms read.
 
 ---
 
@@ -53,7 +72,7 @@ Full details on templates and lifecycle in the **[in-depth guide](docs/GUIDE.md)
 
 ---
 
-## 25 Skills
+## 26 Skills
 
 **Workflow** — `core-dev` (auto-activates), `brainstorming`, `debugging`, `chronicles`, `using-development-skills`
 

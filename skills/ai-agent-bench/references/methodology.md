@@ -114,15 +114,35 @@ in the manual-review section of the report.
 
 ---
 
-## 10. N ≥ 3 trials per agent for publishable conclusions
+## 10. Two orthogonal axes — agent sessions vs measurement repetitions
 
-A single trial samples N noisy runs. To compare agents meaningfully, run N=3+ trials per agent
-and look at the spread. Agent A might win one trial and lose two — the winner is the one that
-consistently wins.
+Two distinct sources of noise; distinct knobs.
 
-The harness lands one trial per invocation. The multi-trial loop is a manual shell loop:
+### Axis 1 — measurement repetitions (inside a single trial)
+
+`measure_cmd` is invoked N times for baseline and N times for post within one trial.
+Per-process bimodality on macOS (section 1) means each invocation is a fresh sample; internal
+`--runs 15` inside a single process does NOT replace external repetitions. Default **3**. Set
+to **1** only if the measurement is deterministic (bit-reproducible output across invocations).
+
+Configured via the TOML field `measure_repetitions` or CLI flag `--measure-reps`. Cheap —
+each invocation is 5-10 min of CPU and zero agent tokens. The primary metric (fast-cluster
+min) is computed over all samples across all reps and is robust by construction.
+
+### Axis 2 — agent sessions (across trials)
+
+Each trial runs the AI agent once. N>1 trials re-run the full agent session from scratch on
+the same prompt and start commit, measuring how consistently the agent produces a working
+solution. Default **1**. Only increase when you explicitly want an agent-consistency signal
+— typical use cases: research evals, prompt tuning, "should I trust this agent on similar
+tasks?". Expensive: each session is ~$10-30 and 30-120 min.
+
+The harness runs one agent session per invocation by design. For N sessions, re-invoke the
+skill or run the manual shell loop below:
 
 ```bash
+# Three sessions per agent (agent consistency check). Each invocation internally does
+# measure_repetitions passes of baseline + post — tune that in .ai-agent-bench.toml.
 for i in 1 2 3; do
   python run_trial.py --agent claude --run $i --config .ai-agent-bench.toml
 done
@@ -132,3 +152,15 @@ done
 python parse_transcript.py --aggregate eval-results/<task>/*/run-*/ \
     --output comparison.json --render-report comparison.md
 ```
+
+### Which axis when
+
+| Goal | Agent sessions | Measurement reps |
+|---|---|---|
+| Perf refactor of a function | **1** | **3** (or 5+ if bench is noisy) |
+| Deterministic correctness task (formatting, refactor-only) | **1** | **1** |
+| Compare agent consistency on a single task | **3+** | 3 (same within each session) |
+| Prompt-tuning research | **3+** | 1 (speed over noise) |
+
+Don't over-spend on axis 1 — it multiplies cost linearly in agent tokens. Over-spending on
+axis 2 is cheap and usually the right move for any perf task.

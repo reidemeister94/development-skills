@@ -278,6 +278,13 @@ def main() -> int:
     parser.add_argument(
         "--output-base", type=Path, help="override output base (default: <repo>/eval-results)"
     )
+    parser.add_argument(
+        "--measure-reps",
+        type=int,
+        default=None,
+        help="how many times to invoke measure_cmd for baseline AND post (each). "
+        "Overrides TOML `measure_repetitions`. Default (if neither set): 3.",
+    )
     parser.add_argument("--skip-baseline", action="store_true")
     parser.add_argument("--skip-post", action="store_true")
     parser.add_argument("--skip-gate", action="store_true")
@@ -307,6 +314,17 @@ def main() -> int:
     pre_hooks = cfg.get("pre_hooks") or []
     agent_test_commands = cfg.get("agent_test_commands") or []
 
+    # Measurement repetitions: CLI flag > TOML field > default 3. Clamp to ≥1.
+    measure_reps = (
+        args.measure_reps if args.measure_reps is not None else cfg.get("measure_repetitions", 3)
+    )
+    try:
+        measure_reps = int(measure_reps)
+    except (TypeError, ValueError):
+        die(f"invalid measure_repetitions value: {measure_reps!r} (must be integer ≥1)")
+    if measure_reps < 1:
+        die(f"measure_repetitions must be ≥1, got {measure_reps}")
+
     # Resolve start_commit to a concrete SHA so the branch name and diff base are stable.
     rc, sha, err = run_capture(["git", "rev-parse", start_commit], cwd=repo)
     if rc != 0:
@@ -334,6 +352,7 @@ def main() -> int:
     print(f"  Branch:      {branch_name}")
     print(f"  Run dir:     {run_dir}")
     print(f"  Measure:     {measure_cmd or '(none)'}")
+    print(f"  Measure reps:{measure_reps if measure_cmd else '(n/a)'}")
     print(f"  Gate:        {gate_cmd or '(none)'}")
     print("=" * 72)
 
@@ -455,17 +474,19 @@ def main() -> int:
         # --------------------------- Baseline ------------------------------
         if measure_cmd and not args.skip_baseline:
             update_status(run_dir, "baseline")
-            print("\n[4/7] Baseline measurement...")
+            print(f"\n[4/7] Baseline measurement ({measure_reps} rep(s))...")
             cmd = expand_placeholders(measure_cmd, repo=repo, worktree=worktree, run_dir=run_dir)
-            baseline_path = run_dir / "baseline.json"
-            stderr_path = run_dir / "baseline.stderr.log"
-            with baseline_path.open("w") as out, stderr_path.open("w") as err:
-                p = subprocess.run(cmd, shell=True, cwd=str(worktree), stdout=out, stderr=err)
-            if p.returncode != 0:
-                print(f"  ✗ baseline measure FAILED (exit {p.returncode}). See {stderr_path}")
-                print("  Continuing — baseline JSON will be treated as missing downstream.")
-            else:
-                print(f"  ✓ baseline written to {baseline_path}")
+            for i in range(1, measure_reps + 1):
+                baseline_path = run_dir / f"baseline_run{i}.json"
+                stderr_path = run_dir / f"baseline_run{i}.stderr.log"
+                with baseline_path.open("w") as out, stderr_path.open("w") as err:
+                    p = subprocess.run(cmd, shell=True, cwd=str(worktree), stdout=out, stderr=err)
+                if p.returncode != 0:
+                    print(
+                        f"  ✗ baseline rep {i}/{measure_reps} FAILED (exit {p.returncode}). See {stderr_path}"
+                    )
+                else:
+                    print(f"  ✓ baseline rep {i}/{measure_reps} → {baseline_path.name}")
         else:
             print("\n[4/7] Baseline skipped")
 
@@ -554,16 +575,19 @@ def main() -> int:
         # --------------------------- Post measurement ----------------------
         if measure_cmd and not args.skip_post:
             update_status(run_dir, "post")
-            print("\n[7a/7] Post measurement...")
+            print(f"\n[7a/7] Post measurement ({measure_reps} rep(s))...")
             cmd = expand_placeholders(measure_cmd, repo=repo, worktree=worktree, run_dir=run_dir)
-            post_path = run_dir / "post.json"
-            stderr_path = run_dir / "post.stderr.log"
-            with post_path.open("w") as out, stderr_path.open("w") as err:
-                p = subprocess.run(cmd, shell=True, cwd=str(worktree), stdout=out, stderr=err)
-            if p.returncode != 0:
-                print(f"  ✗ post measure FAILED (exit {p.returncode}). See {stderr_path}")
-            else:
-                print(f"  ✓ post written to {post_path}")
+            for i in range(1, measure_reps + 1):
+                post_path = run_dir / f"post_run{i}.json"
+                stderr_path = run_dir / f"post_run{i}.stderr.log"
+                with post_path.open("w") as out, stderr_path.open("w") as err:
+                    p = subprocess.run(cmd, shell=True, cwd=str(worktree), stdout=out, stderr=err)
+                if p.returncode != 0:
+                    print(
+                        f"  ✗ post rep {i}/{measure_reps} FAILED (exit {p.returncode}). See {stderr_path}"
+                    )
+                else:
+                    print(f"  ✓ post rep {i}/{measure_reps} → {post_path.name}")
         else:
             print("\n[7a/7] Post skipped")
 
