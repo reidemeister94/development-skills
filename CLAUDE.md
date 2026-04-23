@@ -7,10 +7,9 @@ Open-source Claude Code plugin. Structured development workflow with 7-phase qua
 ## Project Structure
 
 ```
-.claude-plugin/plugin.json    # Plugin metadata + version (v0.1.1)
-skills/                       # 19 skills (core-dev, brainstorming, language-specific, utilities)
+.claude-plugin/plugin.json    # Plugin metadata + version (v0.2.0)
+skills/                       # 25 skills (core-dev, brainstorming, language-specific, utilities, user-invocable)
 agents/                       # 3 subagents (implementer, staff-reviewer, test-verifier)
-commands/                     # 2 commands (produce-feedback, ingest-feedback)
 hooks/                        # Auto-format on Edit/Write (multi-language) + SessionStart context
 shared/                       # Workflow engine (phases, references, templates)
 VERSION                       # Project version

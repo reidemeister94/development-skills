@@ -169,11 +169,10 @@ Context is loaded progressively following Anthropic's [just-in-time pattern](htt
 ## Architecture
 
 ```
-skills/          19 skills (core-dev, 5 languages, brainstorming, debugging, testing, utilities)
+skills/          25 skills (core-dev, 5 languages, brainstorming, debugging, testing, utilities, user-invocable)
 agents/          3 subagents (implementer, staff-reviewer, test-verifier)
 hooks/           Auto-format on Edit/Write (multi-language) + session context
 shared/          Workflow engine with just-in-time phase loading
-commands/        Feedback production/ingestion
 ```
 
 ---

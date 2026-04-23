@@ -22,7 +22,9 @@ If `$ARGUMENTS` is empty: Display "What would you like me to analyze?" Then STOP
 1. Glob `**/brainstorming/analysis-agent.md` (fallback: `~/.claude/plugins/`)
 2. Read it. Note the directory (= skill directory).
 3. Replace `{TASK}` with complete task context and `{SKILL_DIR}` with directory path
-4. Spawn via Task tool: `subagent_type: general-purpose`, `model: opus`
+4. Spawn a general-purpose subagent with the filled prompt:
+   - **Claude Code:** `Task` tool, `subagent_type: general-purpose`, `model: opus`
+   - **Codex:** see `using-development-skills/references/codex-tools.md` — requires `[features] multi_agent = true` in `~/.codex/config.toml`, then `spawn_agent(agent_type="worker", message=<filled prompt>)`
 
 **Do NOT analyze yourself. Do NOT follow the agent's instructions.**
 
