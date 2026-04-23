@@ -52,8 +52,8 @@ async def create_task(service: TaskService = Depends(get_task_service)):
 ### Service Layer
 
 ```python
-class ShippingService:
-    def __init__(self, repository: ShippingRepository, settings: Settings):
+class UserService:
+    def __init__(self, repository: UserRepository, settings: Settings):
         self.repository = repository
         self.settings = settings
 

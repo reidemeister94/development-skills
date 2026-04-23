@@ -12,6 +12,7 @@ between trials.
 | `start_commit` | yes | string | SHA, branch, or ref. Resolved to a SHA by the harness. The agent works from this commit. |
 | `prompt_file` | yes | string | Path (relative to repo or absolute) to a markdown file containing the task prompt. `{{START_COMMIT}}` placeholder is expanded. |
 | `measure_cmd` | no | string | Shell command that prints benchmark JSON to stdout. Run in the worktree. Placeholders: `{repo}`, `{worktree}`, `{run_dir}`. Omit if the task has no perf dimension. |
+| `measure_repetitions` | no | int | How many times `measure_cmd` is invoked for the baseline phase AND the post phase (each). Default `3`. Set to `1` only if the measurement is deterministic (bit-reproducible output). Ignored when `measure_cmd` is absent. |
 | `gate_cmd` | no | string | Shell command whose exit code gates correctness. Preflight-validated on HEAD before the trial starts. Placeholders as above. |
 | `pre_hooks` | no | array[string] | Shell commands executed in the worktree after creation, before baseline. Use for copying gitignored fixtures or env files. |
 | `agent_test_commands` | no | array[string] | Fast commands the implementer agent may run during iteration (unit tests, cheap benches, lint). The harness appends them to `prompt_resolved.md` under "You MAY run" so the agent knows what is safe. Never put `measure_cmd` or `gate_cmd` here — those are orchestrator-owned. |
@@ -68,6 +69,7 @@ pre_hooks = [
 ]
 
 measure_cmd = "python scripts/bench.py --runs 15 --warmup 2"
+measure_repetitions = 3            # baseline + post each invoke measure_cmd 3x; primary metric = fast-cluster min across all reps
 
 gate_cmd = "pytest -q && pytest -m integration -q"
 
@@ -111,6 +113,6 @@ name = "api-docs-cleanup"
 start_commit = "HEAD"
 prompt_file = "prompts/docs-cleanup.md"
 
-# no measure_cmd — skipped automatically
+# no measure_cmd — skipped automatically; measure_repetitions is irrelevant
 gate_cmd = "markdownlint '**/*.md' && mkdocs build --strict"
 ```

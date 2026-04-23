@@ -2,15 +2,17 @@
 
 ## Project Overview
 
-Open-source Claude Code plugin. Structured development workflow with 7-phase quality gates, subagent orchestration, and multi-language support.
+Open-source plugin for Claude Code and Codex CLI. Structured development workflow with 7-phase quality gates, subagent orchestration, and multi-language support.
 
 ## Project Structure
 
 ```
-.claude-plugin/plugin.json    # Plugin metadata + version (v0.2.0)
-skills/                       # 25 skills (core-dev, brainstorming, language-specific, utilities, user-invocable)
+.claude-plugin/plugin.json    # Plugin metadata + version (v0.2.1)
+.codex/INSTALL.md             # Codex CLI installation instructions
+AGENTS.md                     # Portable per-agent instructions (Codex auto-discovers; Claude Code reads via @import)
+skills/                       # 26 skills (core-dev, brainstorming, language-specific, utilities, user-invocable)
 agents/                       # 3 subagents (implementer, staff-reviewer, test-verifier)
-hooks/                        # Auto-format on Edit/Write (multi-language) + SessionStart context
+hooks/                        # Auto-format on Edit/Write (multi-language) + SessionStart context (Claude Code only)
 shared/                       # Workflow engine (phases, references, templates)
 VERSION                       # Project version
 LICENSE                       # MIT

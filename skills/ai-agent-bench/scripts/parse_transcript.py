@@ -808,6 +808,108 @@ def _compute_variant_speedup(baseline: dict, post: dict) -> dict:
     }
 
 
+def _merge_stat_blocks(blocks: list[dict]) -> dict:
+    """Merge a list of per-rep `{min, median, mean, stddev, p95, ...}` blocks.
+
+    Aggregation rules — aligned with `references/methodology.md`:
+      - `min`     = min across reps (exact fast-cluster min — primary metric)
+      - `median`  = mean of per-rep medians (approx; raw samples would give the true median)
+      - `mean`    = mean of per-rep means
+      - `stddev`  = mean of per-rep stddevs (approx pooled)
+      - `p95`     = max of per-rep p95 (worst-case)
+      - other numeric fields: mean across reps
+      - non-numeric fields: value from first rep (pass-through)
+    """
+    if not blocks:
+        return {}
+    merged: dict = {}
+    keys: set[str] = set()
+    for b in blocks:
+        if isinstance(b, dict):
+            keys.update(b.keys())
+    for key in keys:
+        values = [b.get(key) for b in blocks if isinstance(b, dict) and key in b]
+        numeric = [v for v in values if isinstance(v, (int, float))]
+        if not numeric:
+            merged[key] = next((v for v in values if v is not None), None)
+            continue
+        if key == "min":
+            merged[key] = min(numeric)
+        elif key == "p95":
+            merged[key] = max(numeric)
+        else:
+            merged[key] = sum(numeric) / len(numeric)
+    return merged
+
+
+def _merge_variant(variant_blocks: list[dict]) -> dict:
+    """Merge per-rep variant payloads (e.g. `{wall_s: {...}, cpu_s: {...}, n_runs: N}`)."""
+    if not variant_blocks:
+        return {}
+    merged: dict = {}
+    keys: set[str] = set()
+    for v in variant_blocks:
+        if isinstance(v, dict):
+            keys.update(v.keys())
+    for key in keys:
+        values = [v.get(key) for v in variant_blocks if isinstance(v, dict) and key in v]
+        if all(isinstance(x, dict) for x in values):
+            merged[key] = _merge_stat_blocks(values)
+        elif key == "n_runs" and all(isinstance(x, (int, float)) for x in values):
+            merged[key] = sum(values)
+        elif all(isinstance(x, (int, float)) for x in values):
+            merged[key] = sum(values) / len(values)
+        else:
+            merged[key] = next((x for x in values if x is not None), None)
+    return merged
+
+
+def _merge_measure_runs(runs: list[dict]) -> dict:
+    """Merge N measure_cmd outputs (from baseline_run{i}.json or post_run{i}.json).
+
+    Handles both shapes documented in `references/task_config_schema.md`:
+      - multi-variant: `{"variants": {"name": {wall_s: {...}, cpu_s: {...}, n_runs: N}}}`
+      - flat: `{"wall_s": {...}, "cpu_s": {...}, "n_runs": N}`
+
+    The returned dict is structurally compatible with a single-run output so downstream
+    code (`_extract_variant_stats`, `_compute_variant_speedup`) needs no changes.
+    Also adds a `reps_count` field so the report can surface the repetition count.
+    """
+    valid = [r for r in runs if isinstance(r, dict) and "error" not in r]
+    if not valid:
+        # Every run errored — return the first error dict (or a synthetic one) so
+        # downstream's `"error" in payload` guards still fire.
+        return runs[0] if runs else {"error": "no measure runs"}
+
+    # Multi-variant shape if any run has `variants`.
+    any_variants = any(isinstance(r.get("variants"), dict) for r in valid)
+    if any_variants:
+        variant_names: list[str] = []
+        for r in valid:
+            for name in (r.get("variants") or {}).keys():
+                if name not in variant_names:
+                    variant_names.append(name)
+        merged_variants: dict = {}
+        for name in variant_names:
+            blocks = [
+                (r.get("variants") or {}).get(name)
+                for r in valid
+                if isinstance((r.get("variants") or {}).get(name), dict)
+            ]
+            merged_variants[name] = _merge_variant(blocks)
+        out: dict = {"variants": merged_variants, "reps_count": len(valid)}
+        # Preserve top-level non-variant metadata (first run wins) so extra fields survive.
+        for k, v in valid[0].items():
+            if k not in ("variants",) and k not in out:
+                out[k] = v
+        return out
+
+    # Flat shape — merge at top level.
+    merged = _merge_variant(valid)
+    merged["reps_count"] = len(valid)
+    return merged
+
+
 def aggregate_run_dir(agent: str, run_dir: Path, pricing: dict) -> dict:
     """Aggregate all artifacts in a run_trial.py output directory into a single metrics dict."""
     out: dict[str, Any] = {"agent": agent, "run_dir": str(run_dir)}
@@ -852,13 +954,26 @@ def aggregate_run_dir(agent: str, run_dir: Path, pricing: dict) -> dict:
             pass
 
     # Baseline / post measurement JSON (literal output of task's measure_cmd).
+    # New layout (run_trial.py with --measure-reps N): `baseline_run{i}.json` + `post_run{i}.json`.
+    # Legacy layout (single-run workspaces): `baseline.json` + `post.json`.
     for label in ("baseline", "post"):
-        p = run_dir / f"{label}.json"
-        if p.exists():
-            try:
-                out[label] = json.loads(p.read_text())
-            except json.JSONDecodeError as e:
-                out[label] = {"error": f"could not parse {label}.json: {e}"}
+        indexed = sorted(run_dir.glob(f"{label}_run*.json"), key=lambda p: p.name)
+        if indexed:
+            runs: list[dict] = []
+            for p in indexed:
+                try:
+                    runs.append(json.loads(p.read_text()))
+                except json.JSONDecodeError as e:
+                    runs.append({"error": f"could not parse {p.name}: {e}"})
+            out[label] = _merge_measure_runs(runs)
+            out[f"{label}_runs_count"] = len(runs)
+        else:
+            p = run_dir / f"{label}.json"
+            if p.exists():
+                try:
+                    out[label] = json.loads(p.read_text())
+                except json.JSONDecodeError as e:
+                    out[label] = {"error": f"could not parse {label}.json: {e}"}
 
     # Per-variant speedup derived metrics.
     baseline_variants = _variant_names(out.get("baseline"))

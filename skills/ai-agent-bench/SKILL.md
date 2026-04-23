@@ -275,20 +275,43 @@ Each step is a plain-text question: display numbered options, STOP, wait for the
    >   2. codex
    >   3. opencode (parser stub — session captured but metrics partial)
 
-4. **N trials per agent** (default 1) — ask. If the reply is <3, warn: "for statistical
-   significance, ≥3 trials per agent are recommended. Proceed with <N>? You can always rerun
-   the skill to add more trials."
+4. **Agent sessions per agent** (default `1`) — ask in plain text:
+   > How many agent sessions do you want to run? Each session is a full run of the task
+   > from scratch — the agent rewrites the code every time (typical cost: $10-30 + 30-120
+   > min per session).
+   >   1. `1` — single session *(Recommended for perf / refactor tasks)*
+   >   2. `2` — A/B comparison of the same AI on the same prompt
+   >   3. `3+` — agent consistency check (costly, research / tuning use case)
 
-5. **Run ID label** (default `1` if no existing trials, else next integer) — free text or
+   If the reply is >1, warn: "N agent sessions multiplies cost and time. It only measures
+   variance in the agent's output (consistency). To beat measurement noise, use
+   `measure_repetitions` (next question) instead — that axis is cheap."
+   Require confirmation before proceeding.
+
+5. **Measure repetitions** (default `3`) — ask in plain text. Skip this question if
+   `measure_cmd` is not configured:
+   > How many times should `measure_cmd` be invoked per session (baseline + post, each)?
+   > More repetitions = more stable measurement against noise / macOS bimodality.
+   >   1. `3` — robust default for non-deterministic perf benchmarks
+   >   2. `1` — deterministic tests (bit-reproducible output)
+   >   3. `N` (other) — typically 5-15 for very noisy benches
+
+   If reply is <3 AND measure_cmd is configured, confirm: "measure_repetitions=<N> is
+   only safe if the measurement is deterministic (output reproducible across
+   invocations). Confirm?"
+
+   Persist as `measure_repetitions` in TOML.
+
+6. **Run ID label** (default `1` if no existing trials, else next integer) — free text or
    accept default.
 
-6. **Pre-hooks** (optional) — ask:
+7. **Pre-hooks** (optional) — ask:
    > Does the target setup need any fixture/env files copied into the worktree? E.g.
    > `cp -r <repo>/tests/fixtures/. tests/fixtures/`.
    >   1. No.
    >   2. Yes — paste the commands.
 
-7. **Agent-allowed fast commands** (optional) — ask:
+8. **Agent-allowed fast commands** (optional) — ask:
    > Which fast commands is the implementer agent allowed to run inside its session
    > for self-correction? Unit tests, cheap benchmarks, lint, type-check — never the
    > full `measure_cmd` or `gate_cmd` (those are orchestrator-owned).
@@ -317,9 +340,14 @@ prompt_file = "<relative path to prompt.md>"
 
 pre_hooks = [<shell commands>]
 measure_cmd = "<shell command>"
+measure_repetitions = 3            # how many times to invoke measure_cmd for baseline + post
 gate_cmd = "<shell command>"
 agent_test_commands = [<fast commands the agent may run during iteration>]
 ```
+
+Note: `measure_repetitions` defaults to 3 when omitted. Set to 1 for deterministic
+measurements (e.g. bit-reproducible output). Agent sessions are NOT a TOML field —
+one invocation of the skill = one session. Re-invoke the skill to add more sessions.
 
 Ask the user: "Add `.ai-agent-bench.toml`, `eval-results/`, `.worktree-eval-*/`, and `AI_AGENT_BENCH_ANOMALIES.md` to `.gitignore`? (Recommended)"
 If yes, append the block:
@@ -408,8 +436,11 @@ reminder. See `references/aggregation.md` for the exact text template.
 
 Offer the user:
 
-- **More trials for statistical significance**: "Re-run the skill — config is persisted, I'll
-  only ask for `run N / agent`."
+- **Add more agent sessions (consistency check)**: "Re-run the skill — config is persisted, I'll
+  only ask for `run N / agent`. Each invocation adds one session per selected agent."
+- **Reduce measurement noise**: increase `measure_repetitions` in `.ai-agent-bench.toml` and
+  re-run the skill. This is cheap (no extra agent session) and is the right knob for perf
+  stability.
 - **Change the prompt and rerun on the same commit**: edit `prompts/<task>.md` and re-invoke.
 - **Adopt an agent's work**: `git checkout eval-<agent>-run<id>-<ts>`; cherry-pick / rebase /
   merge the bits you like.
