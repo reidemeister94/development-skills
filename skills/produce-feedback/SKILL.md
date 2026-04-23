@@ -1,3 +1,9 @@
+---
+name: produce-feedback
+description: Use when user wants to produce a factual chronicle of development-skills plugin interactions in the current conversation for later ingestion, or runs /produce-feedback. Pure record, no judgment.
+disable-model-invocation: true
+---
+
 Produce a factual chronicle of development-skills plugin interactions in this conversation. Pure record, no judgment.
 
 Write to `docs/reports/development-skills-feedback-YYYY-MM-DD.md`. Self-contained.

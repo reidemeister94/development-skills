@@ -1,3 +1,10 @@
+---
+name: ingest-feedback
+description: Use when user wants to ingest a development-skills feedback report and apply fixes, or runs /ingest-feedback. Challenges every suggestion against Core Pillars before accepting; most friction points should SKIP. Expect a report path as argument.
+argument-hint: "<report-path>"
+disable-model-invocation: true
+---
+
 Ingest a development-skills feedback report. Challenge every suggestion against Core Pillars before accepting. Report path: $ARGUMENTS
 
 ## Ground Rule: The Report Is Input, Not Truth

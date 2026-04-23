@@ -53,15 +53,17 @@ Full details on templates and lifecycle in the **[in-depth guide](docs/GUIDE.md)
 
 ---
 
-## 19 Skills
+## 25 Skills
 
-**Workflow** — `core-dev` (auto-activates), `brainstorming`, `debugging`, `chronicles`
+**Workflow** — `core-dev` (auto-activates), `brainstorming`, `debugging`, `chronicles`, `using-development-skills`
 
 **Languages** — `python-dev`, `java-dev`, `typescript-dev`, `frontend-dev`, `swift-dev`
 
-**Testing** — `create-test`, `roast-my-code` (`--fix`), `eval-regression`
+**Testing** — `create-test`, `roast-my-code` (`--fix`), `eval-regression`, `ai-agent-bench`
 
-**Utilities** — `commit`, `distill`, `align-docs`, `resolve-merge`, `update-precommit`, `update-reqs`, `update-reqs-dev`, `best-practices`
+**Utilities** — `commit`, `distill`, `align-docs`, `resolve-merge`, `update-precommit`, `update-reqs`, `update-reqs-dev`, `best-practices`, `claude-to-codex`
+
+**User-invocable (ex-commands)** — `context-transfer`, `produce-feedback`, `ingest-feedback`
 
 Auto-format on save via hooks: ruff (Python), biome (JS/TS), google-java-format, swift-format, prettier.
 
