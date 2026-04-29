@@ -79,7 +79,7 @@ variants.
 
 ```bash
 # Real trial
-python scripts/run_trial.py --repo /path/to/repo --config .ai-agent-bench.toml \
+python scripts/run_trial.py --repo /path/to/repo --config .agent-bench.toml \
     --agent <new> --run 1
 
 # Parse existing transcript

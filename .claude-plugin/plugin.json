@@ -1,5 +1,5 @@
 {
   "name": "development-skills",
   "description": "Use when any coding, development, analysis, debugging, or code-related task is detected. Triggers on: writing code, fixing bugs, adding features, refactoring, architecture decisions, requirements analysis, code review, diff analysis, error investigation, debugging failures, and evaluating approaches. Covers Python, Java, TypeScript, Swift, and frontend projects (React, Next.js, Vue, Svelte, Angular, Raycast, Vite).",
-  "version": "0.2.1"
+  "version": "0.3.0"
 }

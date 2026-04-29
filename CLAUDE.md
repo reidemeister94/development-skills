@@ -7,7 +7,7 @@ Open-source plugin for Claude Code and Codex CLI. Structured development workflo
 ## Project Structure
 
 ```
-.claude-plugin/plugin.json    # Plugin metadata + version (v0.2.1)
+.claude-plugin/plugin.json    # Plugin metadata + version (v0.3.0)
 .codex/INSTALL.md             # Codex CLI installation instructions
 AGENTS.md                     # Portable per-agent instructions (Codex auto-discovers; Claude Code reads via @import)
 skills/                       # 26 skills (core-dev, brainstorming, language-specific, utilities, user-invocable)

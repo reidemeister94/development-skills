@@ -31,7 +31,7 @@ Restart Codex.
 
 ## Available Skills
 
-**Auto-invoking:** `using-development-skills`, `core-dev`, `python-dev`, `java-dev`, `typescript-dev`, `swift-dev`, `frontend-dev`, `debugging`, `create-test`, `commit`, `brainstorming`, `best-practices`, `distill`, `roast-my-code`, `resolve-merge`, `align-docs`, `update-precommit`, `update-reqs`, `update-reqs-dev`, `eval-regression`, `chronicles`, `ai-agent-bench`, `claude-to-codex`.
+**Auto-invoking:** `using-development-skills`, `core-dev`, `python-dev`, `java-dev`, `typescript-dev`, `swift-dev`, `frontend-dev`, `debugging`, `create-test`, `commit`, `brainstorming`, `best-practices`, `distill`, `roast-my-code`, `resolve-merge`, `align-docs`, `update-precommit`, `update-reqs`, `update-reqs-dev`, `eval-regression`, `chronicles`, `ai-agent-bench`.
 
 **User-invocable only** (`disable-model-invocation: true` — call via `skill` tool or its name): `context-transfer`, `ingest-feedback`, `produce-feedback`.
 
