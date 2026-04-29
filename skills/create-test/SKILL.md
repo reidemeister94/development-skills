@@ -98,6 +98,7 @@ Refer to `references/testing-strategies.md` strategy matrix to select strategies
 
 If the target involves **refactoring**, also read `references/refactoring-workflow.md`.
 If the target involves **regression detection infrastructure**, also read `references/regression-detection.md`.
+If the user asks for **TDD / red-green-refactor / test-first**, read `references/tdd-workflow.md` for the vertical-slice loop and "no horizontal slicing" anti-pattern.
 
 | Code characteristic | Primary strategy | Secondary | Reference |
 |-------------------|-----------------|-----------|-----------|

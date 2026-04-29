@@ -1,3 +1,18 @@
+## 0.3.0 (2026-04-29)
+
+### Feat
+
+- **brainstorming**: refactored to in-thread conversational design. Walk the design tree with the user one branch at a time (Step 2 Q&A via `AskUserQuestion` on Claude Code, numbered list + STOP on Codex), then optionally delegate web research to a subagent, then write a plan and gate before handing off. Renames `analysis-agent.md` → `research-agent.md` (research-only role; Q&A stays in main thread). Adds `references/design-it-twice.md` for parallel-design technique. New `<HARD-GATE>` and "This Is Too Simple To Need A Design" anti-pattern at the top, plus PASS_THROUGH triage for genuinely trivial tasks.
+- **using-development-skills**: strengthens enforcement with `<EXTREMELY-IMPORTANT>` "1% chance" rule, Instruction Priority section, 5-step Skill Flow, expanded Red Flags table (15 rows), Skill Types and User Instructions sections.
+- **hooks/session-start**: mirrors `obra/superpowers` approach — injects the full `using-development-skills/SKILL.md` body as `additionalContext` so skill-routing rules and anti-rationalization devices load from token 0 (no auto-discovery dependency).
+- **ai-agent-bench**: major simplification — replaces Phase A/Phase B verification design with a single `outer_check` (live e2e correctness + wall time) recorded once before and once after the agent session. Drops `gate_cmd`/`measure_cmd` split, sufficiency check, prompt hygiene gate, and most TOML knobs. Adds `monitor.py` sidecar for 3-min heartbeat; consolidates references into `agents.md` (how to add an agent) + `anomalies.md` (anomaly log format and triggers).
+- **create-test**: adds `references/tdd-workflow.md` for vertical-slice red-green-refactor loop and "no horizontal slicing" anti-pattern.
+- **roast-my-code**: adds `references/architectural-depth.md` (module / interface / depth / seam / adapter glossary, deletion test, friction signals).
+
+### Fix
+
+- **claude-to-codex**: generic "appropriate test suites" wording replaces project-specific test suite names in the agent context template.
+
 ## 0.2.1 (2026-04-23)
 
 ### Feat

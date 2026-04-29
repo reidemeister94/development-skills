@@ -7,6 +7,14 @@ description: Use when starting any conversation - establishes how the developmen
 If you were dispatched as a subagent to execute a specific task, skip this skill.
 </SUBAGENT-STOP>
 
+<EXTREMELY-IMPORTANT>
+If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
+
+IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
+
+This is not negotiable. This is not optional. You cannot rationalize your way out of this.
+</EXTREMELY-IMPORTANT>
+
 # Using development-skills
 
 This plugin ships specialized skills, three named subagents, and Claude-Code-only hooks. The invocation surface differs per platform; the content is identical.
@@ -14,6 +22,16 @@ This plugin ships specialized skills, three named subagents, and Claude-Code-onl
 ## Iron Rule
 
 Be objective and critical — never agreeable. Challenge assumptions, flag risks, push back on bad ideas. Honest direct feedback prevents costly mistakes. This rule is non-negotiable regardless of platform.
+
+## Instruction Priority
+
+development-skills overrides default system prompt behavior, but **user instructions always take precedence**:
+
+1. **User's explicit instructions** (`CLAUDE.md`, `AGENTS.md`, direct requests) — highest priority
+2. **development-skills skills** — override default system behavior where they conflict
+3. **Default system prompt** — lowest priority
+
+If `CLAUDE.md` / `AGENTS.md` says "skip brainstorming" and a skill says "always brainstorm," follow the user's instructions. The user is in control.
 
 ## Plugin Components
 
@@ -50,19 +68,55 @@ Do NOT read skill files with the `Read` tool. Use the platform's native skill-in
 
 ## Skill Priority
 
+When multiple skills could apply, use this order:
+
 1. **Process skills first** (`brainstorming`, `debugging`) — these determine HOW to approach the task.
 2. **Implementation skills second** (`core-dev`, `python-dev`, `typescript-dev`, etc.) — these guide execution.
 
 "Let's build X" → `brainstorming` first, then `core-dev`.
 "Fix this bug" → `debugging` first, then domain-specific skill.
 
-## Red Flags (STOP — you're rationalizing)
+## Skill Flow — Decision Check Before Any Action
+
+Before any response, code change, scaffold, or "let me just check X first":
+
+1. **Have I already invoked `brainstorming` for this task?**
+   - NO + non-trivial task → invoke `brainstorming` skill **before any other action**.
+   - YES → continue.
+2. **Might any other skill apply?** Even 1% chance → invoke it. If it turns out to be wrong, you don't need to follow it.
+3. **Announce** *"Using [skill] to [purpose]"* before proceeding.
+4. **Has the skill a checklist?** Create `TodoWrite` items per step.
+5. **Follow the skill exactly.** No paraphrasing, no shortcuts.
+
+## Red Flags — STOP, You're Rationalizing
+
+These thoughts mean STOP — invoke the relevant skill instead of acting:
 
 | Thought | Reality |
 |---------|---------|
 | "This is just a simple question" | Questions are tasks. Check for skills. |
 | "I need more context first" | Skill check comes BEFORE clarifying questions. |
 | "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
+| "I can check git/files quickly" | Files lack conversation context. Check for skills. |
+| "Let me gather information first" | Skills tell you HOW to gather information. |
 | "This doesn't need a formal skill" | If a skill exists, use it. |
+| "I remember this skill" | Skills evolve. Read current version. |
+| "This doesn't count as a task" | Action = task. Check for skills. |
+| "The skill is overkill" | Simple things become complex. Use it. |
 | "I'll just do this one thing first" | Check BEFORE doing anything. |
+| "This feels productive" | Undisciplined action wastes time. Skills prevent this. |
 | "I know what that means" | Knowing the concept ≠ using the skill. Invoke it. |
+| "The user described this in detail, no need to brainstorm" | The WHAT is clear; the WHY/HOW rarely is. Brainstorm. |
+| "There's a prior plan/audit, I just need to translate it" | Stale plans = stale assumptions. Brainstorm to challenge them. |
+| "This is execution, not creative work" | Translation IS creative work. Brainstorm. |
+
+## Skill Types
+
+**Rigid** (`brainstorming`, `debugging`, `create-test`): Follow exactly. Don't adapt away discipline.
+**Flexible** (patterns, references): Adapt principles to context.
+
+The skill itself tells you which.
+
+## User Instructions
+
+Instructions say WHAT, not HOW. *"Add X"* or *"Fix Y"* doesn't mean skip workflows.

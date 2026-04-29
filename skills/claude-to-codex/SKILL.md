@@ -70,7 +70,7 @@ Overwrite with exactly one line (no trailing prose):
 0. **Don't pander to the user, always be critical when necessary**
 1. **Maximize simplicity, minimize complexity.** Weigh complexity cost against improvement magnitude.
 2. **All signal, zero noise.** Everything must earn its place. If it doesn't add value, remove it.
-3. **Zero regression policy.** Verify with all three test suites (unit, VP E2E, API E2E) after every change.
+3. **Zero regression policy in refactoring tasks** Verify with all appropriate test suites after every change.
 4. **Document every discovery.** Write insights immediately (chronicles, plans, rules).
 5. **Comments explain why, not what.** Comment non-obvious business logic, flows, and workarounds only.
 6. **Refactoring objective:** clear, descriptive, efficient, performant, reliable, robust, maintainable.

@@ -200,53 +200,53 @@
     },
     {
       "id": 7,
-      "name": "turn-boundary-pandas-replacement",
+      "name": "turn-boundary-approach-selection-pandas-replacement",
       "category": "turn-boundary",
-      "tests_change": "#5 brainstorming SKILL.md cut to ~600 words",
+      "tests_change": "Brainstorming v9.1.0 refactor: in-thread Q&A; turn boundary now enforced by AskUserQuestion (Claude Code) or numbered list + STOP (Codex) at Step 6 (approach selection) and Step 8 (hard gate).",
       "prompt": "I want to replace all pandas/numpy usage in the service layer with pure Python operations. The data pipeline currently goes dict -> DataFrame -> dict -> Pydantic model which is wasteful for the small data volumes (tens to hundreds of rows). pandas is a 30MB dependency we don't need. The affected files are production_service.py and production_scheduler_service.py. We already have golden snapshot tests (122 tests, 49 snapshots) that prove behavioral equivalence. What's the best approach?",
-      "expected_output": "Brainstorming triggers (multi-file, architectural decision, multiple approaches possible — in-place vs new helpers module vs third-party alternative). After analysis subagent returns, orchestrator displays summary then STOPS before presenting approach selection. Approach selection appears in the NEXT turn, not the same one.",
+      "expected_output": "Brainstorming triggers (multi-file, architectural decision, multiple approaches possible — in-place vs new helpers module vs third-party alternative). Step 6 presents approaches and STOPS for user selection (AskUserQuestion on Claude Code, numbered list + STOP on Codex). After approach selected, Step 7 writes the plan, Step 8 displays the design summary and STOPS again at the hard gate.",
       "files": [],
       "assertions": [
         {
-          "name": "analysis_subagent_spawned",
+          "name": "approach_selection_blocks_turn",
           "type": "behavioral",
-          "check": "Brainstorming spawns a Task agent for analysis, does not analyze inline",
-          "pass_criteria": "Task tool call present in transcript with analysis-agent prompt"
+          "check": "After approaches are sketched, the model stops and waits for explicit user selection (AskUserQuestion on Claude Code, numbered list + STOP marker on Codex) — does NOT proceed to plan writing in the same turn",
+          "pass_criteria": "Either an AskUserQuestion tool call with the approaches as options, or a numbered list followed by 'STOP. Wait.' (or equivalent), is the last action in the turn that lists the approaches"
         },
         {
-          "name": "summary_displayed",
+          "name": "hard_gate_blocks_turn_after_plan",
           "type": "behavioral",
-          "check": "Brainstorming summary is displayed after subagent returns",
-          "pass_criteria": "Output contains plan path, research path, and summary section"
-        },
-        {
-          "name": "turn_boundary_respected",
-          "type": "behavioral",
-          "check": "Model STOPS after displaying summary, does NOT present approach options in same turn",
-          "pass_criteria": "The response containing the summary does NOT also contain numbered approach options (1. Approach A, 2. Approach B...)"
+          "check": "After the plan file is written, Step 8 hard gate displays the design summary and stops for explicit approval (AskUserQuestion or numbered list + STOP). Model does NOT invoke core-dev in the same turn the plan is written",
+          "pass_criteria": "Between the Write of the plan file and any Skill call to core-dev, an AskUserQuestion or numbered-list+STOP appears requesting approval"
         }
       ]
     },
     {
       "id": 8,
-      "name": "no-askuserquestion-multi-plant-support",
+      "name": "no-askuserquestion-in-subagents-or-post-brainstorming",
       "category": "askuserquestion-avoidance",
-      "tests_change": "#2 AskUserQuestion removal from analysis-agent, #3 AskUserQuestion removal from phase-2, #4 AskUserQuestion removal from allowed-tools",
+      "tests_change": "Brainstorming v9.1.0 refactor (in-thread Q&A): AskUserQuestion permitted only in brainstorming main thread on Claude Code. Bug Claude Code (issues #12890, #34592) prevents subagent usage; Codex has no equivalent.",
       "prompt": "We need to add multi-plant and multi-order support to the order extraction API. Currently a task is 1 plant + 1 order. The new design needs: task -> task_plant (junction table) -> task_order (per-plant-order with internal_order_number). The task creation endpoint must atomically create all three records. Post-processing must run per-plant with separate reference data lookups. Confirmed output must be per-task_order with separate S3 keys. The PlantID enum already exists as IntEnum with from_arxivar_id() classmethod.",
-      "expected_output": "Throughout the entire workflow (brainstorming, planning, implementation), the model NEVER uses AskUserQuestion. All user interactions use conversational text + STOP pattern.",
+      "expected_output": "AskUserQuestion may appear inside brainstorming main thread (Step 2 Q&A, Step 7 approach selection, Step 9 hard gate) on Claude Code. AskUserQuestion MUST NOT appear inside any Task subagent (research-agent, implementer, reviewer) and MUST NOT appear after brainstorming completes (during core-dev workflow phases). On Codex, conversational text + STOP pattern is used everywhere.",
       "files": [],
       "assertions": [
         {
-          "name": "no_askuserquestion_tool_call",
+          "name": "no_askuserquestion_in_subagents",
           "type": "behavioral",
-          "check": "AskUserQuestion tool is never called in the entire transcript",
-          "pass_criteria": "Zero occurrences of AskUserQuestion tool calls in the full transcript"
+          "check": "AskUserQuestion is never called inside a Task subagent (research-agent, implementer, reviewer)",
+          "pass_criteria": "Zero AskUserQuestion calls appear inside Task tool spawn contexts"
         },
         {
-          "name": "conversational_gates_used",
+          "name": "no_askuserquestion_after_brainstorming_completion",
           "type": "behavioral",
-          "check": "When the model needs user input, it uses text + STOP pattern",
-          "pass_criteria": "User interactions are presented as numbered options or questions in plain text, followed by turn end"
+          "check": "After brainstorming hard gate is approved and core-dev is invoked, no further AskUserQuestion calls appear in the main thread",
+          "pass_criteria": "Once a plan file with 'Status: In Progress' is written and the user has approved the hard gate, the rest of the transcript contains zero AskUserQuestion calls"
+        },
+        {
+          "name": "conversational_gates_used_post_brainstorming",
+          "type": "behavioral",
+          "check": "When the model needs user input post-brainstorming (core-dev workflow phases), it uses text + STOP pattern",
+          "pass_criteria": "Post-brainstorming user interactions are presented as numbered options or plain text questions followed by turn end"
         }
       ]
     },
@@ -2229,6 +2229,245 @@
           "type": "behavioral",
           "check": "Model targets testing-methodology sources rather than random recipe blogs",
           "pass_criteria": "Transcript mentions or targets at least one of: Serious Eats, Kenji Lopez-Alt, ATK/Cook's Illustrated, Harold McGee, Modernist Cuisine, food science journal, or systematic testing methodology"
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "name": "brainstorming-internal-q-and-a-pattern",
+      "category": "brainstorming-internal",
+      "tests_change": "Brainstorming v9.1.0: in-thread Q&A replaces subagent batch round.",
+      "prompt": "I want to add a notification system to our SaaS product. Users should get notified about important events.",
+      "expected_output": "Brainstorming invoked. Step 2 Q&A appears: on Claude Code via AskUserQuestion (UI nativa), on Codex via numbered list + STOP. Questions group logically (max 4 per call). WHY/scope questions appear before HOW/tech questions. Recommended answer offered when the agent is confident.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "brainstorming_invoked",
+          "type": "behavioral",
+          "check": "Model invokes brainstorming via Skill tool or core-dev → brainstorming routing",
+          "pass_criteria": "Transcript contains Skill tool call with 'brainstorming' in skill parameter"
+        },
+        {
+          "name": "qa_pattern_detected",
+          "type": "behavioral",
+          "check": "Step 2 Q&A is performed in main thread (not delegated to subagent). On Claude Code: AskUserQuestion tool call. On Codex: numbered list with STOP marker.",
+          "pass_criteria": "Transcript contains at least one of: AskUserQuestion tool call in main thread, OR numbered list with explicit 'STOP' / 'Wait for response' / turn end marker"
+        },
+        {
+          "name": "questions_one_topic_at_a_time",
+          "type": "behavioral",
+          "check": "Questions in a single batch are logically related; dependent questions are split across batches",
+          "pass_criteria": "If multiple AskUserQuestion calls appear, each call contains questions on the same logical topic; dependent questions (where Q2 depends on Q1's answer) are in separate calls"
+        },
+        {
+          "name": "why_before_how",
+          "type": "behavioral",
+          "check": "WHY / scope / priority questions appear before HOW / technical detail questions",
+          "pass_criteria": "First Q&A batch targets motivation, scope, or priority — not implementation details"
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "name": "brainstorming-internal-research-subagent-spawn",
+      "category": "brainstorming-internal",
+      "tests_change": "Brainstorming v9.1.0: optional research subagent (research-agent.md) for external sources only.",
+      "prompt": "Design a rate limiter for our API gateway following 2025 industry best practices. We're handling 100k req/min and need to compare token bucket vs sliding window vs leaky bucket approaches with real-world adoption data.",
+      "expected_output": "After Q&A completes, brainstorming spawns research-agent.md via Task tool to gather external best-practices. Research file written to docs/plans/NNNN__research__slug.md. Main thread reads research file before plan write.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "research_subagent_spawned",
+          "type": "behavioral",
+          "check": "Task tool spawns research-agent.md (or equivalent on Codex via spawn_agent worker) for external research",
+          "pass_criteria": "Transcript contains Task tool call referencing research-agent.md OR spawn_agent worker call with research-agent prompt"
+        },
+        {
+          "name": "no_askuserquestion_in_research_subagent",
+          "type": "behavioral",
+          "check": "Research subagent does not call AskUserQuestion (bug Claude Code in subagent + Codex no equivalent)",
+          "pass_criteria": "No AskUserQuestion call appears inside the Task spawn context"
+        },
+        {
+          "name": "research_file_written",
+          "type": "behavioral",
+          "check": "Research subagent writes docs/plans/NNNN__research__<slug>.md with sources, anti-patterns, selected approach",
+          "pass_criteria": "Transcript contains Write tool call to docs/plans/<NNNN>__research__<slug>.md"
+        },
+        {
+          "name": "main_reads_research_file",
+          "type": "behavioral",
+          "check": "After subagent returns, main thread reads the research file before writing the plan",
+          "pass_criteria": "Transcript contains Read tool call on docs/plans/<NNNN>__research__<slug>.md AFTER the research subagent completes"
+        }
+      ]
+    },
+    {
+      "id": 63,
+      "name": "brainstorming-internal-hard-gate-blocks-routing",
+      "category": "brainstorming-internal",
+      "tests_change": "Brainstorming v9.1.0: hard gate Step 9 blocks core-dev invocation until explicit user approval of design.",
+      "prompt": "Refactor our config loading: split env-loading from validation, swap Pydantic to dataclasses, add a fallback chain for missing values. Single Python project, ~12 modules touched.",
+      "expected_output": "Brainstorming completes plan write. Hard gate Step 9 displays the design summary and STOPS. Without explicit user approval ('approvato' / 'OK' / 'procedi'), core-dev MUST NOT be invoked. Anti-rationalization line ('this is too simple to need approval — STOP') is enforced.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "plan_file_written_with_in_progress",
+          "type": "behavioral",
+          "check": "Plan file written to docs/plans/NNNN__YYYY-MM-DD__implementation_plan__slug.md with 'Status: In Progress'",
+          "pass_criteria": "Transcript contains Write tool call to docs/plans/<NNNN>__<date>__implementation_plan__<slug>.md and content includes 'Status: In Progress'"
+        },
+        {
+          "name": "hard_gate_displayed",
+          "type": "behavioral",
+          "check": "Design summary + explicit approval request appears after plan write",
+          "pass_criteria": "Transcript shows a design summary block followed by a request for explicit user approval (e.g., 'Approva e procedi', 'Conferma per continuare')"
+        },
+        {
+          "name": "no_core_dev_before_approval",
+          "type": "behavioral",
+          "check": "core-dev is NOT invoked between plan write and explicit user approval",
+          "pass_criteria": "No Skill tool call with 'core-dev' parameter appears between the Write of the plan file and a clear user-approval signal in the transcript"
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "name": "brainstorming-internal-design-tree-walk",
+      "category": "brainstorming-internal",
+      "tests_change": "Brainstorming v9.1.0: walk parent decisions (WHY/scope) before children (HOW/tech detail).",
+      "prompt": "Use Redis Streams with consumer groups for our event bus, partition by tenant_id, retention 7 days, replay from offset on consumer crash, dead-letter queue for poison messages. Implement it.",
+      "expected_output": "Despite the user dictating HOW in detail, brainstorming first asks WHY/scope questions: why event bus now, what events flow through it, what consumers exist, what is the cost of message loss. HOW questions only appear after WHY/scope is locked.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "brainstorming_invoked_despite_detailed_how",
+          "type": "behavioral",
+          "check": "Model does NOT skip brainstorming because the user described HOW in detail (anti-rationalization)",
+          "pass_criteria": "Transcript contains Skill tool call with 'brainstorming' in skill parameter"
+        },
+        {
+          "name": "first_question_targets_why_or_scope",
+          "type": "behavioral",
+          "check": "The first Q&A batch targets WHY (business motivation), scope (what events/consumers), or priority — not Redis-specific tech detail",
+          "pass_criteria": "First AskUserQuestion call (or first numbered list) addresses motivation, scope, consumer inventory, or trade-off priorities — NOT Redis Streams config / partition strategy"
+        },
+        {
+          "name": "how_questions_only_after_why_locked",
+          "type": "behavioral",
+          "check": "Questions about Redis Streams config, partition strategy, retention values appear only AFTER WHY/scope answers are received",
+          "pass_criteria": "Tech-specific questions (if any) appear in batches that follow WHY/scope batches"
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "name": "brainstorming-internal-pass-through-preserved",
+      "category": "brainstorming-internal",
+      "tests_change": "Brainstorming v9.1.0: triage PASS_THROUGH path preserved for trivial tasks; no Q&A overhead.",
+      "prompt": "Rename the variable `tmp_data` to `parsed_payload` in src/handlers/order_handler.py.",
+      "expected_output": "Triage classifies the task as PASS_THROUGH. No Q&A is performed. No plan or research file is written. Brainstorming hands off to core-dev (or returns control) immediately.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "triage_pass_through_or_no_brainstorming",
+          "type": "behavioral",
+          "check": "Either brainstorming is not invoked at all (core-dev guard handles directly) OR brainstorming triages as PASS_THROUGH and exits without Q&A",
+          "pass_criteria": "Transcript shows either no brainstorming Skill call, OR brainstorming announces PASS_THROUGH/triage trivial decision and ends the brainstorming flow without Q&A"
+        },
+        {
+          "name": "no_qa_loop_for_trivial_task",
+          "type": "behavioral",
+          "check": "No AskUserQuestion call and no numbered-list-with-STOP appears in the brainstorming context",
+          "pass_criteria": "Zero AskUserQuestion calls and zero 'STOP. Wait.' patterns appear before the rename is performed"
+        },
+        {
+          "name": "no_plan_or_research_file_written",
+          "type": "behavioral",
+          "check": "No file is written to docs/plans/ for this trivial task",
+          "pass_criteria": "Transcript contains no Write tool calls to docs/plans/<NNNN>__... paths"
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "name": "runtime-design-tree-walk-under-how-pressure",
+      "category": "brainstorming-internal-runtime",
+      "tests_change": "Brainstorming v9.1.0 runtime: when user dictates HOW in detail, the model must (a) classify Full triage, (b) run Step 1 codebase scan BEFORE Q&A, (c) make the FIRST Q&A batch target WHY/scope (not Redis-specific HOW). Differs from id 64 by simulating workflow execution end-to-end, not just SKILL.md text presence.",
+      "prompt": "Use Redis Streams with consumer groups for our event bus, partition by tenant_id, retention 7 days, replay from offset on consumer crash, dead-letter queue for poison messages. Implement it.",
+      "expected_output": "Step 0 triage = Full (architectural, multi-area). Step 1 codebase scan executed before any technical question. Step 2 first Q&A batch targets WHY (why event bus now, what events flow), scope (which consumers, blast radius), or trade-off priority — NOT Redis Streams config / partition strategy / retention values. On Claude Code: AskUserQuestion call with WHY/scope options. On Codex: numbered list + 'STOP. Wait.' marker.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "triage_full_classification",
+          "type": "behavioral",
+          "check": "Step 0 triage classifies the task as 'Full' (not PASS_THROUGH, not Focused), citing architectural / multi-area / business-driven factors",
+          "pass_criteria": "Transcript explicitly announces or documents triage = Full and references the architectural / multi-area / ambiguous-WHY nature. PASS_THROUGH or Focused classification = FAIL."
+        },
+        {
+          "name": "codebase_scan_before_qa",
+          "type": "behavioral",
+          "check": "Step 1 codebase scan (Glob/Grep/Read of entry points or related modules) is performed BEFORE the first Q&A batch",
+          "pass_criteria": "Transcript shows at least one Glob, Grep, or Read tool call with a chronological position before the first AskUserQuestion / numbered-list-question. Scanning AFTER asking questions = FAIL."
+        },
+        {
+          "name": "first_qa_targets_why_or_scope_not_redis",
+          "type": "behavioral",
+          "check": "The FIRST Q&A batch contains questions about WHY (business motivation), scope (which events/consumers, blast radius), or trade-off priority — NOT Redis Streams config, partition strategy, retention values, or DLQ format",
+          "pass_criteria": "First AskUserQuestion call (or first numbered-list question batch) contains 0 questions about Redis-specific config and >=1 question about motivation, consumer inventory, blast radius, message-loss cost, or scope boundary"
+        },
+        {
+          "name": "anti_rationalization_resists_how_dictation",
+          "type": "behavioral",
+          "check": "Model does NOT skip brainstorming or jump to implementation just because user dictated HOW. The transcript explicitly enters the brainstorming flow.",
+          "pass_criteria": "Transcript shows brainstorming Skill invocation (or, in v9.0.41, orchestrator + analysis-agent spawn). Direct 'Implement it' execution without brainstorming gate = FAIL."
+        },
+        {
+          "name": "qa_mechanism_matches_platform",
+          "type": "behavioral",
+          "check": "On Claude Code, AskUserQuestion is the planned tool for Step 2 Q&A (v9.1.0) or numbered-list+STOP at Step 3b (v9.0.41 orchestrator). The Q&A is in main thread, not delegated to the analysis-agent in v9.1.0.",
+          "pass_criteria": "iter-17 transcript: declares AskUserQuestion(...) tool call in main thread (not inside Task spawn). iter-16 transcript: declares Task spawn of analysis-agent with NEEDS_CLARIFICATION return path, OR orchestrator displays numbered list + STOP at Step 3b."
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "name": "runtime-hard-gate-blocks-core-dev-after-plan-write",
+      "category": "brainstorming-internal-runtime",
+      "tests_change": "Brainstorming v9.1.0 runtime: after Step 7 plan write, Step 8 hard gate MUST fire (design summary + AskUserQuestion / numbered-list+STOP for approval) BEFORE Step 9 invokes core-dev. Differs from id 63 by simulating workflow end-to-end and verifying ordering of tool calls in the transcript, not just SKILL.md text.",
+      "prompt": "Refactor our auth middleware to support both JWT and session-based auth, with backwards compat for existing tokens. The change touches ~8 modules including the FastAPI dependency injector and the test fixtures. Single Python codebase.",
+      "expected_output": "Brainstorming activated. Plan file written to docs/plans/{NNNN}__YYYY-MM-DD__implementation_plan__{slug}.md with Status: In Progress. Step 8 hard gate displays a 5-10 line design summary (WHAT, WHY, approach, risks). Then on Claude Code: AskUserQuestion 'Approve and proceed' / 'Modify'. On Codex: numbered list + 'STOP. Wait.' core-dev is NOT invoked in the same turn as the plan write.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "brainstorming_invoked_for_multi_module_refactor",
+          "type": "behavioral",
+          "check": "Multi-module architectural refactor (~8 files, auth migration, backwards compat) triggers brainstorming, not direct lightweight implementation",
+          "pass_criteria": "Transcript shows brainstorming Skill invocation. LIGHTWEIGHT_MODE or direct python-dev routing = FAIL."
+        },
+        {
+          "name": "plan_file_written_with_in_progress",
+          "type": "behavioral",
+          "check": "Plan file declared at docs/plans/{NNNN}__YYYY-MM-DD__implementation_plan__{slug}.md with Status: In Progress and a sensible slug for auth-refactor",
+          "pass_criteria": "Transcript declares Write call to docs/plans/<NNNN>__<YYYY-MM-DD>__implementation_plan__<slug>.md AND content includes 'Status: In Progress'. Path conventions like 'auth-middleware-refactor' or 'jwt-session-auth-migration' acceptable."
+        },
+        {
+          "name": "design_summary_displayed_after_plan",
+          "type": "behavioral",
+          "check": "After plan write, a concise design summary (5-10 lines covering WHAT, WHY, selected approach, key risks) is displayed in chat",
+          "pass_criteria": "Transcript shows a design summary block AFTER the plan Write tool call, with 4 distinct elements: WHAT (the change), WHY (motivation), approach (chosen technique), risks (1-3 named)"
+        },
+        {
+          "name": "approval_gate_after_summary",
+          "type": "behavioral",
+          "check": "After design summary, an explicit approval gate appears: AskUserQuestion 'Approve and proceed' / 'Modify' (Claude Code) OR numbered list + 'STOP. Wait.' (Codex)",
+          "pass_criteria": "Transcript shows AskUserQuestion call with options including 'Approve and proceed' (or equivalent) OR numbered list with 1=Approve, 2=Modify followed by STOP marker, AFTER the design summary and BEFORE any core-dev invocation"
+        },
+        {
+          "name": "no_core_dev_invocation_in_plan_turn",
+          "type": "behavioral",
+          "check": "core-dev Skill is NOT invoked in the same turn as the plan write. The transcript ends at the gate (or after gate, if approval signal is simulated).",
+          "pass_criteria": "Between the Write of the plan file and the end of the simulated turn, NO Skill tool call to 'core-dev' appears. iter-16 will likely FAIL this because v9.0.41 routes to core-dev immediately after Edit (Step 4b)."
         }
       ]
     }

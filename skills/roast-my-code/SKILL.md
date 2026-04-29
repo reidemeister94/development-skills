@@ -28,6 +28,7 @@ Before roasting, understand the terrain:
 2. **Map the codebase**: Glob for source files in the target scope. Get a count of files by extension. Identify the main directories.
 3. **Read key files**: Read entry points, main modules, and any architecture docs. For single-file targets, also read the files that import/use the target.
 4. **Check for AI-agent context files**: Look for `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, `README.md`, `.cursorrules`, `.github/copilot-instructions.md`, `ARCHITECTURE.md`, or similar files that help AI agents understand the codebase.
+5. **Architectural lens (when relevant)**: if the roast targets architecture, depth, testability, or refactor opportunities, read `references/architectural-depth.md` for the glossary (module / interface / depth / seam / adapter / locality), the deletion test, and friction signals. Use this vocabulary in the roast — don't drift into "component" / "service" / "boundary".
 
 ## Step 2 — Staff Review (Code Quality Roast)
 

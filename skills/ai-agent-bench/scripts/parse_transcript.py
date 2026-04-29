@@ -20,8 +20,8 @@ Modes:
            --output comparison.json --render-report comparison.md
 
 The core is task-agnostic: it does not know about "plants", "VP logs", or any project-specific
-convention. It aggregates whatever JSON structure the task's measure_cmd produces and computes
-deltas variant-by-variant when both baseline and post use the `{"variants": {...}}` convention.
+convention. The simplified harness records one `outer_check` before and one after the agent
+session, then computes the wall-time delta between those two checks.
 """
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shlex
 import sys
 from collections import Counter
 from pathlib import Path
@@ -64,10 +65,9 @@ def _ext_of(path: str | None) -> str:
 def _detect_harness_duplications(tool_calls: list[dict], basenames: set[str]) -> list[dict]:
     """Find agent tool calls whose shell command contains a harness basename.
 
-    These are protocol violations: the harness owns `gate_cmd` and `measure_cmd`
-    execution (baseline / post / gate phases). If the agent runs them from inside
-    its own session, the trial's wall time inflates and the comparison axis across
-    agents becomes noisy.
+    These are protocol violations: the harness owns `outer_check` execution. If the
+    agent runs it from inside its own session, wall time inflates and the comparison
+    axis across agents becomes noisy.
 
     `tool_calls` shape:
       - Claude: `{"name": str, "input": {...}, "id": str}` — Bash command lives in
@@ -92,6 +92,41 @@ def _detect_harness_duplications(tool_calls: list[dict], basenames: set[str]) ->
                 matches.append({"tool_call_index": idx, "matched": bn, "command": cmd})
                 break
     return matches
+
+
+def _extract_command_basenames(cmd: str | None) -> set[str]:
+    """Extract executable/script basenames from the simple shell command in `outer_check`."""
+    if not cmd:
+        return set()
+    interpreters = {"python", "python3", "bash", "sh", "uv", "poetry", "pipenv", "node"}
+    basenames: set[str] = set()
+    for part in re.split(r"\s*(?:&&|\|\||;|\|)\s*", cmd):
+        try:
+            tokens = shlex.split(part)
+        except ValueError:
+            tokens = part.split()
+        primary_idx = None
+        for i, token in enumerate(tokens):
+            if token.startswith("-"):
+                continue
+            if "=" in token and not token.startswith(("./", "/")):
+                continue
+            primary_idx = i
+            break
+        if primary_idx is None:
+            continue
+        primary = Path(tokens[primary_idx]).name
+        if primary in interpreters:
+            for token in tokens[primary_idx + 1 :]:
+                if token.startswith("-"):
+                    continue
+                if "=" in token and not token.startswith(("./", "/")):
+                    continue
+                basenames.add(Path(token).name)
+                break
+        else:
+            basenames.add(primary)
+    return {b for b in basenames if b}
 
 
 # ---------------------------------------------------------------------------
@@ -914,19 +949,18 @@ def aggregate_run_dir(agent: str, run_dir: Path, pricing: dict) -> dict:
     """Aggregate all artifacts in a run_trial.py output directory into a single metrics dict."""
     out: dict[str, Any] = {"agent": agent, "run_dir": str(run_dir)}
 
-    # Harness command basenames — used by the parser to detect duplication events
-    # (agent re-running gate_cmd / measure_cmd inside its own session).
-    harness_basenames: set[str] = set()
-    hc_path = run_dir / "harness_commands.json"
-    if hc_path.exists():
+    # Trial config — written by the simplified run_trial.py
+    cfg_path = run_dir / "config.json"
+    cfg: dict = {}
+    if cfg_path.exists():
         try:
-            hc = json.loads(hc_path.read_text())
-            harness_basenames = set(hc.get("gate_basenames") or []) | set(
-                hc.get("measure_basenames") or []
-            )
-            out["harness_commands"] = hc
+            cfg = json.loads(cfg_path.read_text())
+            out["config"] = cfg
         except (json.JSONDecodeError, OSError):
             pass
+    harness_basenames = _extract_command_basenames(cfg.get("outer_check"))
+    if harness_basenames:
+        out["harness_commands"] = {"outer_check_basenames": sorted(harness_basenames)}
 
     # Session transcript
     session_path = run_dir / "session.jsonl"
@@ -945,72 +979,47 @@ def aggregate_run_dir(agent: str, run_dir: Path, pricing: dict) -> dict:
             session.get("model"), session["tokens"], pricing
         )
 
-    # External session wall time (captured by run_trial.py from /usr/bin/time or a wrapper)
-    sw = run_dir / "session_wall_seconds.txt"
-    if sw.exists():
+    # External agent wall time (captured by run_trial.py)
+    aw = run_dir / "agent_wall_seconds.txt"
+    if aw.exists():
         try:
-            out["session_wall_seconds_external"] = int(sw.read_text().strip() or 0)
+            out["agent_wall_seconds"] = int(aw.read_text().strip() or 0)
         except ValueError:
             pass
 
-    # Baseline / post measurement JSON (literal output of task's measure_cmd).
-    # New layout (run_trial.py with --measure-reps N): `baseline_run{i}.json` + `post_run{i}.json`.
-    # Legacy layout (single-run workspaces): `baseline.json` + `post.json`.
-    for label in ("baseline", "post"):
-        indexed = sorted(run_dir.glob(f"{label}_run*.json"), key=lambda p: p.name)
-        if indexed:
-            runs: list[dict] = []
-            for p in indexed:
-                try:
-                    runs.append(json.loads(p.read_text()))
-                except json.JSONDecodeError as e:
-                    runs.append({"error": f"could not parse {p.name}: {e}"})
-            out[label] = _merge_measure_runs(runs)
-            out[f"{label}_runs_count"] = len(runs)
-        else:
-            p = run_dir / f"{label}.json"
-            if p.exists():
-                try:
-                    out[label] = json.loads(p.read_text())
-                except json.JSONDecodeError as e:
-                    out[label] = {"error": f"could not parse {label}.json: {e}"}
-
-    # Per-variant speedup derived metrics.
-    baseline_variants = _variant_names(out.get("baseline"))
-    post_variants = _variant_names(out.get("post"))
-    common = [v for v in baseline_variants if v in post_variants]
-    if common:
-        out["speedup"] = {}
-        for v in common:
-            b = _extract_variant_stats(out.get("baseline"), v)
-            p = _extract_variant_stats(out.get("post"), v)
-            if b is None or p is None:
-                continue
+    # outer_check pre + post (each is {exit_code, wall_s, log})
+    for label, fname in (("outer_pre", "outer_pre.json"), ("outer_post", "outer_post.json")):
+        p = run_dir / fname
+        if p.exists():
             try:
-                out["speedup"][v] = _compute_variant_speedup(b, p)
-            except (KeyError, TypeError, ZeroDivisionError) as e:
-                out["speedup"][v] = {"error": str(e)}
+                out[label] = json.loads(p.read_text())
+            except json.JSONDecodeError as e:
+                out[label] = {"error": f"could not parse {fname}: {e}"}
 
-    # Gate result
-    rc = run_dir / "gate_exit_code.txt"
-    if rc.exists():
+    # Speedup: simple wall_s delta from outer_check before vs after.
+    pre = out.get("outer_pre") or {}
+    post = out.get("outer_post") or {}
+    if isinstance(pre, dict) and isinstance(post, dict) and "wall_s" in pre and "wall_s" in post:
+        b, a = pre["wall_s"], post["wall_s"]
         try:
-            code = int(rc.read_text().strip())
-            out["gate"] = {
-                "exit_code": code,
-                "passed": code == 0,
-                "log_path": str(run_dir / "gate.log"),
+            delta = a - b
+            pct = -100.0 * delta / b if b else None
+            out["speedup"] = {
+                "baseline_wall_s": b,
+                "post_wall_s": a,
+                "delta_s": round(delta, 4),
+                "pct_reduction": round(pct, 3) if pct is not None else None,
             }
-        except ValueError:
-            out["gate"] = {"error": "invalid exit code"}
+        except (TypeError, ZeroDivisionError) as e:
+            out["speedup"] = {"error": str(e)}
 
-    # Gate preflight (the gate executed on HEAD before the trial started)
-    preflight = run_dir / "gate_preflight_exit_code.txt"
-    if preflight.exists():
-        try:
-            out["gate_preflight"] = {"exit_code": int(preflight.read_text().strip())}
-        except ValueError:
-            pass
+    # Gate result — derived from outer_post exit code.
+    if isinstance(post, dict) and "exit_code" in post:
+        out["gate"] = {
+            "exit_code": post["exit_code"],
+            "passed": post["exit_code"] == 0,
+            "log_path": str(run_dir / "outer_post.log"),
+        }
 
     # Diff stats
     ds = run_dir / "diff_stat.txt"
@@ -1069,8 +1078,12 @@ def build_comparison(run_metrics: list[dict]) -> dict:
             "tokens_total": (sess.get("tokens") or {}).get("total"),
             "thinking_approx_tokens": (sess.get("thinking") or {}).get("approx_tokens"),
             "num_turns": sess.get("num_turns"),
-            "session_wall_s": m.get("session_wall_seconds_external"),
+            "agent_wall_s": m.get("agent_wall_seconds"),
             "duration_ms_self": sess.get("duration_ms_self_reported"),
+            "outer_pre_exit": (m.get("outer_pre") or {}).get("exit_code"),
+            "outer_post_exit": (m.get("outer_post") or {}).get("exit_code"),
+            "outer_pre_wall_s": (m.get("outer_pre") or {}).get("wall_s"),
+            "outer_post_wall_s": (m.get("outer_post") or {}).get("wall_s"),
             "tool_calls_total": (sess.get("tool_calls") or {}).get("total"),
             "n_subagents": (sess.get("trajectory") or {}).get("n_subagents"),
             "skills_used": sess.get("skills_used") or {},
@@ -1089,14 +1102,23 @@ def build_comparison(run_metrics: list[dict]) -> dict:
             or [],
             "gate_passed": (m.get("gate") or {}).get("passed"),
             "diff_files_changed": (m.get("diff") or {}).get("files_changed"),
-            "speedup_summary": _summarize_speedup(m.get("speedup") or {}),
+            "outer_check_speedup": _summarize_speedup(m.get("speedup") or {}),
         }
         trials.append(trial)
     return {"trials": trials, "n_trials": len(trials)}
 
 
 def _summarize_speedup(speedup: dict) -> dict:
-    """Collapse per-variant speedup into a single top-line for cross-trial comparison."""
+    """Normalize simplified flat speedup metrics for cross-trial comparison."""
+    if {"baseline_wall_s", "post_wall_s", "delta_s", "pct_reduction"} <= set(speedup):
+        return {
+            "baseline_wall_s": speedup.get("baseline_wall_s"),
+            "post_wall_s": speedup.get("post_wall_s"),
+            "delta_s": speedup.get("delta_s"),
+            "pct_reduction": speedup.get("pct_reduction"),
+        }
+
+    # Backward-compatible support for older run dirs that used per-variant measure_cmd output.
     out = {}
     for variant, s in speedup.items():
         if not isinstance(s, dict) or "error" in s:
@@ -1114,25 +1136,67 @@ def _summarize_speedup(speedup: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 
-def render_template(template_path: Path, metrics: dict) -> str:
-    """Substitute `{{dotted.key.path}}` placeholders with lookups from `metrics`."""
-    text = template_path.read_text()
+def render_trial_report(metrics: dict) -> str:
+    """Render a per-trial markdown report from the metrics dict (inline, no template file)."""
+    cfg = metrics.get("config") or {}
+    session = metrics.get("session") or {}
+    pre = metrics.get("outer_pre") or {}
+    post = metrics.get("outer_post") or {}
+    speedup = metrics.get("speedup") or {}
+    diff = metrics.get("diff") or {}
+    gate = metrics.get("gate") or {}
 
-    def lookup(dotted: str) -> str:
-        parts = dotted.split(".")
-        cur: Any = metrics
-        for p in parts:
-            if isinstance(cur, dict) and p in cur:
-                cur = cur[p]
-            else:
-                return f"<MISSING:{dotted}>"
-        if isinstance(cur, float):
-            return f"{cur:.4f}"
-        if isinstance(cur, (list, dict)):
-            return json.dumps(cur, indent=2, default=str)
-        return str(cur)
+    def _fmt(v, dflt="-"):
+        if v is None:
+            return dflt
+        if isinstance(v, float):
+            return f"{v:.4f}"
+        if isinstance(v, (list, dict)):
+            return f"`{json.dumps(v, default=str)}`"
+        return str(v)
 
-    return re.sub(r"\{\{([^}]+)\}\}", lambda m: lookup(m.group(1).strip()), text)
+    cost = session.get("cost_usd") or session.get("cost_usd_estimated")
+    cost_str = f"${cost:.4f}" if isinstance(cost, (int, float)) else "-"
+    tokens = session.get("tokens") or {}
+    branch_hint = metrics.get("branch_name") or (
+        f"eval-{cfg['agent']}-run{cfg['run']}-..." if cfg.get("agent") and cfg.get("run") else "-"
+    )
+
+    lines = [
+        "# Trial report",
+        "",
+        f"- **Task:** {cfg.get('task') or '-'}",
+        f"- **Agent:** {metrics.get('agent') or '-'} ({_fmt(session.get('model'))})",
+        f"- **Run dir:** `{metrics.get('run_dir')}`",
+        f"- **Branch preserved:** `{branch_hint}`",
+        f"- **Start commit:** `{cfg.get('start_sha') or '-'}`",
+        "",
+        "## outer_check (correctness + wall time)",
+        "",
+        "| | exit | wall (s) |",
+        "|---|---|---|",
+        f"| pre  | {_fmt(pre.get('exit_code'))} | {_fmt(pre.get('wall_s'))} |",
+        f"| post | {_fmt(post.get('exit_code'))} | {_fmt(post.get('wall_s'))} |",
+        "",
+        f"- **Gate passed:** {gate.get('passed') if 'passed' in gate else '-'}",
+        f"- **Speedup:** Δ {_fmt(speedup.get('delta_s'))} s  ({_fmt(speedup.get('pct_reduction'))}%)",
+        "",
+        "## Cost & velocity",
+        "",
+        f"- **Cost:** {cost_str}",
+        f"- **Tokens (total):** {_fmt(tokens.get('total'))}",
+        f"- **Turns:** {_fmt(session.get('num_turns'))}",
+        f"- **Agent wall (s):** {_fmt(metrics.get('agent_wall_seconds'))}",
+        f"- **Tool calls:** {_fmt((session.get('tool_calls') or {}).get('total'))}",
+        "",
+        "## Diff",
+        "",
+        f"- **Files changed:** {_fmt(diff.get('files_changed'))}",
+        f"- **Insertions / deletions:** +{_fmt(diff.get('insertions'), '0')} / -{_fmt(diff.get('deletions'), '0')}",
+        "",
+        "> Manual review required for code quality, prompt adherence, and any non-quantifiable behaviour.",
+    ]
+    return "\n".join(lines) + "\n"
 
 
 def render_comparison(comparison: dict) -> str:
@@ -1144,48 +1208,30 @@ def render_comparison(comparison: dict) -> str:
     lines = ["# Cross-agent comparison\n"]
     lines.append(f"**Trials:** {len(trials)}\n")
     lines.append("## Summary\n")
-    header = "| Agent | Model | Gate | Cost USD | Tokens | Thinking | Turns | Wall s | Tools | Sub-agents | Skills | Edits | Files changed | Branch |"
-    sep = "|" + "|".join(["---"] * 14) + "|"
+    header = "| Agent | Model | Gate | Cost USD | Tokens | Turns | Agent wall s | outer pre s | outer post s | Δ s | Speedup | Tools | Edits | Files changed | Branch |"
+    sep = "|" + "|".join(["---"] * 15) + "|"
     lines.append(header)
     lines.append(sep)
     for t in trials:
         gate = "✓" if t.get("gate_passed") else ("✗" if t.get("gate_passed") is False else "?")
         cost = f"${t['cost_usd']:.2f}" if isinstance(t.get("cost_usd"), (int, float)) else "-"
         tokens = f"{t['tokens_total']:,}" if isinstance(t.get("tokens_total"), int) else "-"
-        think = (
-            f"{t['thinking_approx_tokens']:,}"
-            if isinstance(t.get("thinking_approx_tokens"), int)
-            else "-"
-        )
         turns = t.get("num_turns") or "-"
-        wall = t.get("session_wall_s") or "-"
+        agent_wall = t.get("agent_wall_s") or "-"
+        outer_pre = t.get("outer_pre_wall_s") or "-"
+        outer_post = t.get("outer_post_wall_s") or "-"
+        speedup = t.get("outer_check_speedup") or {}
+        delta = speedup.get("delta_s")
+        delta_s = f"{delta:.3f}" if isinstance(delta, (int, float)) else "-"
+        pct = speedup.get("pct_reduction")
+        pct_s = f"{pct:.1f}%" if isinstance(pct, (int, float)) else "-"
         tools = t.get("tool_calls_total") or "-"
-        subs = t.get("n_subagents") or 0
-        skills = len(t.get("skills_used") or {})
         edits = t.get("n_edits") or 0
         changed = t.get("diff_files_changed") or 0
         branch = t.get("branch_name") or "-"
         lines.append(
-            f"| {t.get('agent')} | {t.get('model') or '-'} | {gate} | {cost} | {tokens} | {think} | {turns} | {wall} | {tools} | {subs} | {skills} | {edits} | {changed} | `{branch}` |"
+            f"| {t.get('agent')} | {t.get('model') or '-'} | {gate} | {cost} | {tokens} | {turns} | {agent_wall} | {outer_pre} | {outer_post} | {delta_s} | {pct_s} | {tools} | {edits} | {changed} | `{branch}` |"
         )
-
-    # Speedup table, variant-by-variant
-    all_variants: set[str] = set()
-    for t in trials:
-        all_variants.update((t.get("speedup_summary") or {}).keys())
-    if all_variants:
-        lines.append("\n## Speedup (per variant, % reduction vs baseline)\n")
-        lines.append(
-            "| Agent | " + " | ".join(f"{v} wall_min" for v in sorted(all_variants)) + " |"
-        )
-        lines.append("|" + "|".join(["---"] * (len(all_variants) + 1)) + "|")
-        for t in trials:
-            ss = t.get("speedup_summary") or {}
-            cells = []
-            for v in sorted(all_variants):
-                val = (ss.get(v) or {}).get("wall_min_pct")
-                cells.append(f"{val:.1f}%" if isinstance(val, (int, float)) else "-")
-            lines.append(f"| {t.get('agent')} | " + " | ".join(cells) + " |")
 
     # Agent discipline — harness-protocol violations detected in session.jsonl
     any_dup = any((t.get("harness_duplications_count") or 0) > 0 for t in trials)
@@ -1193,7 +1239,7 @@ def render_comparison(comparison: dict) -> str:
         lines.append("\n## Agent discipline — harness duplications\n")
         lines.append(
             "Tool-call invocations where the agent ran a command whose basename matches "
-            "the harness-owned `gate_cmd` / `measure_cmd`. Non-zero counts indicate "
+            "the harness-owned `outer_check`. Non-zero counts indicate "
             "protocol violations that inflate wall time and contaminate measurement.\n"
         )
         lines.append("| Agent | Duplications | Matched basenames |")
@@ -1257,12 +1303,6 @@ def main() -> int:
     parser.add_argument("--output", type=Path, help="write metrics JSON here (default: stdout)")
     parser.add_argument(
         "--render-report", type=Path, help="render a markdown report from a template to this path"
-    )
-    parser.add_argument(
-        "--template",
-        type=Path,
-        default=Path(__file__).parent.parent / "references" / "report_template.md",
-        help="path to the markdown template (used with --run-dir)",
     )
     parser.add_argument(
         "--pricing",
@@ -1330,13 +1370,8 @@ def main() -> int:
         print(payload)
 
     if args.render_report:
-        template = args.template
-        if not template.exists():
-            print(f"WARN: template not found at {template}", file=sys.stderr)
-        else:
-            rendered = render_template(template, metrics)
-            args.render_report.write_text(rendered)
-            print(f"wrote {args.render_report}", file=sys.stderr)
+        args.render_report.write_text(render_trial_report(metrics))
+        print(f"wrote {args.render_report}", file=sys.stderr)
 
     return 0
 
