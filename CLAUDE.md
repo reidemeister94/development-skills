@@ -2,18 +2,18 @@
 
 ## Project Overview
 
-Open-source plugin for Claude Code and Codex CLI. Structured development workflow with 7-phase quality gates, subagent orchestration, and multi-language support.
+Open-source plugin for Claude Code and Codex CLI. Structured 4-phase development workflow (PASS_THROUGH triage for trivial single-file changes), subagent orchestration via a single `staff-reviewer` agent, and multi-language support.
 
 ## Project Structure
 
 ```
-.claude-plugin/plugin.json    # Plugin metadata + version (v0.3.0)
+.claude-plugin/plugin.json    # Plugin metadata + version (v0.4.0)
 .codex/INSTALL.md             # Codex CLI installation instructions
 AGENTS.md                     # Portable per-agent instructions (Codex auto-discovers; Claude Code reads via @import)
 skills/                       # 26 skills (core-dev, brainstorming, language-specific, utilities, user-invocable)
-agents/                       # 3 subagents (implementer, staff-reviewer, test-verifier)
+agents/                       # 1 subagent (staff-reviewer) — implementation/verification run in the main thread per phase-3-implement-verify.md
 hooks/                        # Auto-format on Edit/Write (multi-language) + SessionStart context (Claude Code only)
-shared/                       # Workflow engine (phases, references, templates)
+shared/                       # Workflow engine — iron-rules.md (canonical), workflow.md (4-phase sequence), phases/, lint-enforcement.md, package-manager.md
 VERSION                       # Project version
 LICENSE                       # MIT
 ```
@@ -35,4 +35,4 @@ These principles govern HOW the model behaves when using the plugin. They are no
 5. **Data-validated decisions.** During brainstorming and planning, the model must validate approaches against online sources, best practices, and codebase evidence -- not rely on gut instinct or training-data patterns alone. When ambiguity remains, ask the developer directly: unresolved assumptions are bugs in the plan.
 6. **Persist knowledge to disk.** Context windows are ephemeral -- clear and compact will erase critical discoveries. Continuously offload useful, relevant information to structured markdown files (plans, chronicles, MEMORY.md) as you work. If losing a piece of information would cost time to rediscover, write it down immediately. The disk is your durable memory; the context window is not.
 
-When modifying the plugin, ensure ALL changes align with these principles.
+The canonical workflow rules live in `shared/iron-rules.md` (8 Core Pillars + 3 process rules). When modifying the plugin, ensure ALL changes align with these principles.

@@ -112,18 +112,20 @@ interface ImportMetaEnv {
 
 ## Build & Development
 
+Run package.json scripts via the project's detected package manager — see [../../../shared/package-manager.md](../../../shared/package-manager.md). The placeholder `<PM> run <script>` resolves to `npm run <script>` / `pnpm <script>` / `yarn <script>` / `bun run <script>`.
+
 ```bash
 # Development with HMR
-npm run dev          # vite
+<PM> run dev          # vite
 
 # Type checking (Vite does NOT type-check)
-npm run typecheck    # tsc --noEmit
+<PM> run typecheck    # tsc --noEmit
 
 # Production build
-npm run build        # vite build
+<PM> run build        # vite build
 
 # Preview production build locally
-npm run preview      # vite preview
+<PM> run preview      # vite preview
 ```
 
 **Important:** Vite does NOT run TypeScript type checking during `vite build`. Always run `tsc --noEmit` (or framework equivalent) separately.

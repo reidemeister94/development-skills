@@ -389,6 +389,9 @@ export default defineConfig({
   ],
 
   // Start dev server before tests (optional)
+  // NOTE: substitute the detected package manager — npm/pnpm/yarn/bun.
+  // See plugins/development-skills/shared/package-manager.md for translation.
+  // e.g. pnpm → 'pnpm dev', yarn → 'yarn dev', bun → 'bun run dev'.
   webServer: process.env.CI ? undefined : {
     command: 'npm run dev',
     port: 3000,

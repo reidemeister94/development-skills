@@ -4,10 +4,10 @@ When the system auto-compresses prior messages, this defines what MUST be preser
 
 ## MUST PRESERVE (loss = workflow failure)
 
-1. **Current phase number and name** — E.g., "Currently in Phase 5 (Verify)"
+1. **Current phase number and name** — e.g., "Currently in Phase 3 (Implement + Verify)"
 2. **Plan file path** — `docs/plans/NNNN__*.md` — this is the **single recovery point**. Reading this file recovers everything.
-3. **Language skill in use** — Which language skill is active
-4. **User's original task description** — The WHY behind the work
+3. **Language skill in use** — which language skill is active.
+4. **User's original task description** — the WHY behind the work.
 
 Everything else is on disk.
 
@@ -17,6 +17,7 @@ Everything else is on disk.
 |---|---|
 | Research findings | Plan file → `Research:` field → research file |
 | User clarification Q&A | Plan file → `## Clarifications` |
+| HOW-level locks | Plan file → `## Plan` → `### HOW-level locks` |
 | Plan details | Plan file body |
 | Implementation reasoning | Plan file → `## Implementation Log` |
 | Task progress + affected files | Plan file → `## Task Checklist` |
@@ -27,7 +28,7 @@ Everything else is on disk.
 
 ## RECOVERY PROTOCOL
 
-1. **Read the plan file** — WORKFLOW STATE has current phase, remaining phases, all file paths
-2. **Read the language skill's configuration** — Verification commands, implementation rules
-3. **Re-read workflow.md** if the workflow rules themselves were dropped
-4. Read the current phase file from `phases/` for detailed instructions
+1. **Read the plan file** — WORKFLOW STATE has current phase, remaining phases, all file paths.
+2. **Read the language skill's configuration** — verification commands, implementation rules.
+3. **Re-read `shared/workflow.md`** if the workflow rules themselves were dropped.
+4. Read the current phase file from `phases/` for detailed instructions.

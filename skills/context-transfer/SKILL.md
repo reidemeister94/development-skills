@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Context Transfer
 
-Produce a handoff document that a fresh agent session can pick up from without re-investigating. Template below. Fill every section; if a section is empty, write "None" rather than deleting it.
+Produce a handoff document in a .md file that a fresh agent session can pick up from without re-investigating. Template below. Fill every section; if a section is empty, write "None" rather than deleting it.
 
 ### Summary
 [What was accomplished in this session]

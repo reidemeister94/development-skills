@@ -1,85 +1,84 @@
 # Codex Tool Mapping — development-skills
 
-development-skills SKILL.md bodies use Claude Code tool names. On Codex, use the equivalents below.
+development-skills SKILL.md bodies use Claude Code tool names as canonical references. On Codex, use the equivalents below.
 
 ## Tool Name Mapping
 
-| Skill references | Codex equivalent |
+| Claude Code | Codex equivalent |
 |------------------|------------------|
-| `Task` tool (dispatch subagent) | `spawn_agent` (see [Named agent dispatch](#named-agent-dispatch)) |
+| `Task` tool (dispatch subagent) | `spawn_agent` |
 | Multiple `Task` calls (parallel) | Multiple `spawn_agent` calls |
 | `Task` returns result | `wait` |
 | `Task` completes automatically | `close_agent` to free slot |
-| `Agent` tool (alternative name) | Same as `Task` — use `spawn_agent` |
-| `TodoWrite` (task tracking) | `update_plan` |
-| `TaskCreate` / `TaskUpdate` / `TaskList` | `update_plan` (Codex consolidates task management in a single tool) |
-| `Skill` tool (invoke a skill) | Skills load natively on description match — just follow their instructions |
-| `Read`, `Write`, `Edit`, `Glob`, `Grep` | Use Codex native file tools (`read_file`, `write_file`, etc.) |
-| `Bash` | Use Codex native shell tool |
-| `EnterPlanMode` | Not supported — Codex has no explicit plan mode; produce a textual plan and ask the user to confirm before executing |
-| `AskUserQuestion` | Ask in plain prose (Codex has no dedicated elicitation tool) |
+| `TaskCreate` / `TaskUpdate` / `TaskList` | `update_plan` (Codex consolidates task management) |
+| `Skill` tool | Skills load natively on description match — follow body instructions |
+| `Read`, `Write`, `Edit`, `Glob`, `Grep` | Codex native file tools (`read_file`, `write_file`, etc.) |
+| `Bash` | Codex native shell tool |
+| `AskUserQuestion` | Numbered list with explicit STOP marker (see below) |
 
 ## Required Codex Config
 
-Subagent dispatch requires enabling multi-agent mode. Add to `~/.codex/config.toml`:
+Subagent dispatch needs multi-agent mode. Add to `~/.codex/config.toml`:
 
 ```toml
 [features]
 multi_agent = true
 ```
 
-This unlocks `spawn_agent`, `send_input`, `resume_agent`, `wait_agent`, `close_agent`. Without this flag, skills that require subagents (e.g. `core-dev`, `brainstorming`, `roast-my-code`) will not work end-to-end on Codex.
+Required for the `staff-reviewer` agent and any research subagent spawn (brainstorming web research, Phase 1 gap-fill).
 
-## Named Agent Dispatch
+## AskUserQuestion Fallback
 
-Claude Code skills reference named subagent types:
+When a skill needs structured user input, use a numbered list with an explicit STOP marker:
 
-- `development-skills:implementer` (executes task lists, writes code, runs tests)
-- `development-skills:staff-reviewer` (two-stage code review: spec compliance → code quality)
-- `development-skills:test-verifier` (runs tests/build/lint, reports pass/fail)
+```
+1. [option A] (Recommended)
+2. [option B]
+3. Other (describe)
 
-Codex does NOT have a named subagent registry. `spawn_agent` creates generic workers. When a skill says "dispatch `development-skills:X` subagent":
+Reply with the number or free text. STOP. Wait.
+```
 
-1. Read the agent's prompt file: `plugins/development-skills/agents/<X>.md`
-2. Copy the full body (everything after the YAML frontmatter)
-3. Wrap it using the XML template below
-4. Spawn a `worker` agent with the wrapped content as `message`
+End your turn. Wait for the user's reply.
 
-### Wrapping Template
+## Named-Agent Dispatch
+
+development-skills ships one named subagent: `staff-reviewer`. Codex has no named subagent registry; `spawn_agent` creates generic workers. To dispatch:
+
+1. Read `agents/staff-reviewer.md`.
+2. Copy the body (everything after the YAML frontmatter).
+3. Wrap using the template below.
+4. Spawn a `worker` with the wrapped content as `message`.
+
+### Wrapping template
 
 ```
 Your task is to perform the following. Follow the instructions below exactly.
 
 <agent-instructions>
-[paste the body of agents/<X>.md here, with placeholders like {TASK}, {BASE_SHA}, {WHAT_WAS_IMPLEMENTED} already filled in]
+[paste body of agents/staff-reviewer.md, with placeholders like {TASK}, {GIT_DIFF}, {PLAN_FILE_PATH} already filled in]
 </agent-instructions>
 
 Execute this now. Output ONLY the structured response following the format specified in the instructions above.
 ```
 
-### Dispatch Equivalents
+### Dispatch equivalents
 
-| Skill instruction (Claude Code) | Codex equivalent |
-|---------------------------------|------------------|
-| `Task(subagent_type="development-skills:implementer", prompt=...)` | Read `agents/implementer.md`, wrap, `spawn_agent(agent_type="worker", message=<wrapped>)` |
+| Claude Code | Codex |
+|---|---|
 | `Task(subagent_type="development-skills:staff-reviewer", prompt=...)` | Read `agents/staff-reviewer.md`, wrap, `spawn_agent(agent_type="worker", message=<wrapped>)` |
-| `Task(subagent_type="development-skills:test-verifier", prompt=...)` | Read `agents/test-verifier.md`, wrap, `spawn_agent(agent_type="worker", message=<wrapped>)` |
-| `Task(subagent_type="general-purpose", prompt=...)` | `spawn_agent(agent_type="worker", message=<prompt>)` — no file lookup needed |
+| `Task(subagent_type="general-purpose", prompt=...)` | `spawn_agent(agent_type="worker", message=<prompt>)` |
 | `Task(subagent_type="Explore", prompt=...)` | `spawn_agent(agent_type="explorer", message=<prompt>)` |
 
-### Framing Guidelines
+### Framing
 
-- Use **task-delegation framing** ("Your task is...") rather than persona framing ("You are..."). Codex treats the `message` parameter as user-level input, not a system prompt.
-- Wrap instructions in `<agent-instructions>` XML tags — the model gives tagged blocks authoritative weight.
-- End with an explicit execution directive so the worker executes rather than summarizes.
-
-## When This Workaround Can Be Removed
-
-When Codex's `RawPluginManifest` schema gains an `agents` field, this plugin can ship a symlink pattern that exposes named subagents to Codex natively. Until then, the read-wrap-spawn procedure is the portable equivalent.
+- Task-delegation framing ("Your task is...") rather than persona framing ("You are..."). Codex treats `message` as user-level input.
+- Wrap instructions in `<agent-instructions>` XML — the model treats tagged blocks as authoritative.
+- End with an explicit execution directive.
 
 ## Hooks
 
-development-skills ships two hooks (SessionStart context-inject, PostToolUse auto-format). Neither runs on Codex.
+development-skills ships two Claude Code hooks. Neither runs on Codex.
 
-- **SessionStart equivalent:** `using-development-skills` skill (this skill) serves as the bootstrap context on Codex. Its description triggers on every conversation start.
-- **PostToolUse auto-format equivalent:** run formatters manually after edits. See the project root `.codex/INSTALL.md` for per-language commands (`ruff format`, `biome format`, `google-java-format`, `swift-format`).
+- **SessionStart context-inject:** the `using-development-skills` skill itself bootstraps via description-match on every conversation start.
+- **PostToolUse auto-format:** run formatters manually after edits. See project-root `.codex/INSTALL.md` for per-language commands.

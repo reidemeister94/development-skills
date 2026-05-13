@@ -2,7 +2,7 @@
 name: debugging
 description: "Use when fixing bugs, investigating errors, debugging failures, or diagnosing unexpected behavior."
 user-invocable: true
-allowed-tools: Glob, Grep, Read, Bash, Task, Skill, EnterPlanMode, Edit, Write
+allowed-tools: Glob, Grep, Read, Bash, Task, Skill, Edit, Write, AskUserQuestion
 ---
 
 # Systematic Debugging
@@ -72,7 +72,7 @@ Random fixes waste time and create new bugs. Systematic debugging fixes correctl
 
 ## Integration with Development Workflow
 
-Enhances Phase 1 (Research) for debugging tasks. After root cause found, continue to Phase 2 (Plan) and remaining phases normally.
+Enhances Phase 1 (Research + Plan) for debugging tasks. After root cause found, continue with the locked plan into Phase 2 (Chronicle) and remaining phases normally.
 
 Standalone (`/debugging`): announce root cause and proposed fix, ask if user wants to proceed with dev workflow.
 

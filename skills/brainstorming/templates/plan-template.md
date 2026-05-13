@@ -2,11 +2,13 @@
 
 ## WORKFLOW STATE
 Status: In Progress
-Current Phase: 2 (Plan — approach approved in brainstorming, pending implementation plan approval)
-Phases remaining: 3, 4, 5, 6, 7
+Current Phase: 1 (Research + Plan — approach approved in brainstorming, pending plan approval)
+Phases remaining: 2, 3, 4
 Research: docs/plans/NNNN__research__{slug}.md
-Chronicle: TBD — decided in Phase 3
+Chronicle: TBD — decided in Phase 2
 Verification: TBD
+
+**Sections:** WORKFLOW STATE | Brainstorming Summary | Clarifications | Plan | Task Checklist | Implementation Log | Verification Results | Review Log
 
 ## Brainstorming Summary
 
@@ -32,11 +34,25 @@ Verification: TBD
 - [Risk 1]
 - [Risk 2]
 
-## Detailed Analysis
+## Plan
 
-[Full analysis: research findings, alternatives considered, evaluation details, sources cited]
+- **Assumptions** — [about codebase, requirements, environment]
+- **Risks** — [what could go wrong, edge cases, side effects]
+- **Unknowns** — [anything unclear — state explicitly, don't guess]
+- **Verification strategy** — [how to prove it works]
+- **Files to modify** — [specific files and planned changes]
+
+### HOW-level locks (Phase 1 will fill these in)
+
+| Dimension | Answer |
+|---|---|
+| Edge cases | [decision or N/A: reason] |
+| Data shapes | [decision or N/A: reason] |
+| Error semantics | [decision or N/A: reason] |
+| Contract boundaries | [decision or N/A: reason] |
+| Test scope | [decision or N/A: reason] |
+| Rollback | [decision or N/A: reason] |
 
 ## Implementation Steps
 
-[High-level numbered steps for the recommended approach]
-[Include specific files to modify where known]
+[High-level numbered steps for the recommended approach. Include specific files to modify where known.]

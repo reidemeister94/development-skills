@@ -2,6 +2,8 @@
 
 **DEFAULT: invoke brainstorming.** You must PROVE the task doesn't need it.
 
+Triage to PASS_THROUGH (skip all workflow) is handled upstream by `using-development-skills`. By the time this guard runs, PASS_THROUGH has already been ruled out. The decision here is whether brainstorming is required.
+
 ---
 
 ## Step 0: Request Sense Check + First-Principles Challenge
@@ -44,13 +46,13 @@
 - Q2 = NO (hard to reverse)
 - Q3 = NO (multiple valid approaches)
 - Q4 = NO and WHY matters for choosing the approach
-- Decision question ("should we...", "what approach...", "how should we handle...")
+- Decision question (*"should we..."*, *"what approach..."*, *"how should we handle..."*)
 - Technology selection, design pattern choice, migration strategy
 - Analyzing/investigating/evaluating code changes, diffs, errors
 
 **Bug fix exception:** If primarily a bug fix (error/stack trace), invoke `development-skills:debugging` instead — UNLESS it involves architectural decisions or multiple fix approaches.
 
-**Adoption/integration exception:** If the task involves evaluating external projects, recommending features to adopt, or integrating patterns from other codebases — ALWAYS invoke brainstorming. The analysis agent MUST evaluate each candidate through this framework:
+**Adoption/integration exception:** If the task involves evaluating external projects, recommending features to adopt, or integrating patterns from other codebases — ALWAYS invoke brainstorming. The analysis MUST evaluate each candidate through this framework:
 
 1. **Overlap audit** — List every existing mechanism that covers the same need. If overlap > 50%, reject.
 2. **Value assessment** — What real problem does this solve? How often does it occur? What is the cost of NOT having it? If you can't name a concrete, recurring pain point, reject.
@@ -60,15 +62,17 @@
 
 Present the filtered shortlist with this analysis to the user BEFORE any implementation.
 
-**Test-focused exception:** If the request is primarily about test creation, test quality, test strategy, or test coverage analysis (e.g., "add tests for X", "what should I test", "improve test quality", "explore untested code", "generate boundary tests") — invoke `development-skills:create-test` instead. UNLESS the request is part of a larger feature implementation (standard workflow handles tests via TDD).
+**Test-focused exception:** If the request is primarily about test creation, test quality, test strategy, or test coverage analysis (e.g., *"add tests for X"*, *"what should I test"*, *"improve test quality"*, *"explore untested code"*, *"generate boundary tests"*) — invoke `development-skills:create-test` instead. UNLESS the request is part of a larger feature implementation (standard workflow handles tests via TDD).
 
-**User bypass:** "skip brainstorming", "just code it", "I already know the approach" — respect it. "I want it done fast" is NOT a bypass.
+**User bypass:** *"skip brainstorming"*, *"just code it"*, *"I already know the approach"* — respect it. *"I want it done fast"* is NOT a bypass.
 
 **Proceed without brainstorming ONLY if ALL:**
 - Small scope (1-3 files)
 - Fully reversible in under 1 hour
 - ONE obvious approach
 - WHY doesn't affect the choice
+
+(Skipping brainstorming still runs the 4-phase workflow — the model just doesn't walk the design tree because the design space is one option.)
 
 ---
 
@@ -87,9 +91,9 @@ Present the filtered shortlist with this analysis to the user BEFORE any impleme
 | "I found 4 good features to add" | Did you check 4 times what already exists? More recommendations ≠ better analysis. |
 
 **Red flags:**
-- About to say "Development workflow activated" before finishing this guard
-- Classifying a multi-module change as "direct instruction"
-- Feeling "confident" without considering alternatives
+- About to say *"Development workflow activated"* before finishing this guard
+- Classifying a multi-module change as *"direct instruction"*
+- Feeling *"confident"* without considering alternatives
 - Reading code before completing this guard
 - Building a recommendation list without checking what already exists for each item
 - Implementing multiple features in one pass without user validation of each

@@ -2,7 +2,7 @@
 name: roast-my-code
 description: "Use when user wants a brutally honest code roast, quality critique, or AI-readiness audit. Use when user says roast, roast my code, critique my code, tear apart my code, review quality, or AI-readiness check. Supports --fix flag to auto-fix CRITICAL and HIGH issues via core-dev workflow."
 user-invocable: true
-allowed-tools: Glob, Grep, Read, Bash, Agent
+allowed-tools: Glob, Grep, Read, Bash, Agent, AskUserQuestion
 effort: max
 ---
 
@@ -62,7 +62,7 @@ Score each dimension 0-3:
 | **Context files** | Does `CLAUDE.md`, `AGENTS.md`, or equivalent exist? Does it explain project structure, conventions, build commands, and gotchas? | |
 | **README quality** | Does README explain what the project does, how to set it up, and how to run it? Or is it a placeholder? | |
 | **Architecture docs** | Is there a high-level architecture description? Can an agent understand the system without reading every file? | |
-| **Build reproducibility** | Can an agent run `make`, `npm install && npm test`, or equivalent and get a working build? Are deps pinned? | |
+| **Build reproducibility** | Can an agent run `make`, the project's package-manager install + test commands (npm/pnpm/yarn/bun, etc.), or equivalent and get a working build? Are deps pinned? | |
 | **Test suite** | Are there tests? Can an agent run them? Do they pass? Is failure output clear enough for an agent to diagnose? | |
 | **Code organization** | Is the project structure conventional for its language/framework? Can an agent predict where things live? | |
 | **Naming conventions** | Are files, functions, and variables named consistently and descriptively? Can an agent grep for concepts? | |

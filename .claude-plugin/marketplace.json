@@ -7,8 +7,8 @@
   "plugins": [
     {
       "name": "development-skills",
-      "description": "Structured development workflow with 7-phase quality gates, subagent orchestration, and multi-language support",
-      "version": "0.3.0",
+      "description": "Structured 4-phase development workflow with PASS_THROUGH triage, staff-reviewer subagent, and multi-language support",
+      "version": "0.4.0",
       "source": "./"
     }
   ]

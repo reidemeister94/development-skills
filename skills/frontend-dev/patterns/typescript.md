@@ -6,7 +6,7 @@ Shared TypeScript patterns loaded for ALL frontend projects regardless of framew
 
 ## Review Standards
 
-Enforce these during Staff Engineer Review (Phase 6) — **applies to every frontend framework**:
+Enforce these during Staff Engineer Review (Phase 4) — **applies to every frontend framework**:
 
 - TypeScript strict mode enabled (`strict: true` in tsconfig.json)
 - No `any` types — use proper types, `unknown`, or generics
