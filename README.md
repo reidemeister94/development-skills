@@ -42,15 +42,15 @@ Required for subagent-dispatching skills. See [`.codex/INSTALL.md`](.codex/INSTA
 
 ## What It Does
 
-AI agents are fast but undisciplined — [67% of developers](https://addyo.substack.com/p/the-80-problem-in-agentic-coding) spend *more* time debugging AI-generated code than writing it. This plugin enforces a mandatory gated workflow: research before planning, plan before coding, test before shipping, review before merging. Every time.
+AI agents are fast but undisciplined — [67% of developers](https://addyo.substack.com/p/the-80-problem-in-agentic-coding) spend *more* time debugging AI-generated code than writing it. This plugin enforces a mandatory gated 4-phase workflow: research and plan before coding, test inline as you go, review before merging. Every time.
 
-<img src="docs/images/workflow-phases.svg" alt="7-Phase Development Workflow" width="640"/>
+<img src="docs/images/workflow-phases.svg" alt="4-Phase Development Workflow" width="640"/>
 
-Three subagents handle specialized work: an **Implementer** (TDD cycles), a **Test Verifier** (structured pass/fail), and a **Staff Reviewer** (two-stage code review). The orchestrator delegates but never implements directly.
+Implementation and verification run in the main thread with TDD discipline and a 5-step verification gate as standing instructions. A single named subagent — **Staff Reviewer** — provides fresh-eyes two-stage code review (spec compliance → code quality) before any change ships.
 
 <img src="docs/images/subagent-architecture.svg" alt="Subagent Architecture" width="640"/>
 
-Small tasks (3 files or fewer, single obvious approach) get a fast track — same quality checks, no ceremony.
+Trivial single-file mechanical changes get a `PASS_THROUGH` fast-track triage and bypass the workflow entirely; everything else runs the full 4 phases.
 
 ---
 

@@ -23,7 +23,7 @@ You will receive:
 - **Detected framework** (optional): Frontend framework detected (Next.js, React, Vite, Raycast)
 - **Constraints:** Key constraints from the approved plan
 - **Git diff:** The exact code changes
-- **Plan file path:** Path to the plan file — **READ the `## Task Checklist` (artifact trail with affected files) and `## Verification Results` sections directly from this file.** These are ground truth written by the implementer and verifier. Do NOT rely on orchestrator-provided summaries for these — read the file.
+- **Plan file path:** Path to the plan file — **READ the `## Task Checklist` (artifact trail with affected files) and `## Verification Results` sections directly from this file.** These are ground truth written during implementation and verification. Do NOT rely on orchestrator-provided summaries for these — read the file.
 - **Patterns file path(s):** Path(s) to language/framework-specific patterns.md — **READ THEM ALL** before reviewing
 - **Verification summary:** Pass/fail from test/build/lint (also available in the plan file)
 
@@ -51,23 +51,23 @@ If spec issues exist, report them immediately as SPEC_ISSUES — do NOT proceed 
 
 ### Stage 2: CODE QUALITY — Is it built well?
 
-**PRIMARY mandate: SIMPLIFICATION.**
+**PRIMARY mandate: enforce the [Iron Rules](../shared/iron-rules.md) pillars against the diff.** Don't paraphrase them — apply them.
 
 1. **Read ALL patterns files** at the provided path(s). These are the team's standards — enforce them.
 
-2. **Review with these priorities (in order):**
-   1. **SIMPLIFY** — Can this be simpler? Functions > 70 lines decomposed? Remove unnecessary abstractions.
-   2. **REMOVE OVER-ENGINEERING** — Delete code solving hypothetical problems. No premature abstractions.
-   3. **LLM SLOP PATTERNS** — Comments that restate code? Try/catch on internal calls that can't fail? Functions that wrap a single call? New dependencies for operations stdlib handles? Flag each with evidence.
-   4. **TEST QUALITY** — Tests describe behavior ("should return 404 when user not found"), not implementation ("should call findById"). No mocking privates. Flag tests that mirror production structure 1:1 (test-after smell) or only cover happy paths.
-   5. **STRUCTURE** — Models/schemas organized by domain with CRUD variants? Composition over deep inheritance? Backward compatibility preserved?
-   6. **EFFICIENCY** — Time/space complexity minimized? No O(n²) when O(n) possible? No redundant iterations?
-   7. **CLARITY & WHY COMMENTS** — Ambiguous or non-obvious code has WHY comments? Pydantic fields with non-trivial types/defaults are annotated with their rationale? No useless WHAT comments on clean code? Unclear code without comments flagged for both commenting AND refactoring?
-   8. **DEAD CODE** — Commented-out code? Unused imports? Functions nothing calls? Unreachable branches?
-   9. **DEPENDENCY HYGIENE** — Outdated deps? Unnecessary deps for trivial functionality? Missing lockfiles? Version pins too loose?
-   10. **STANDARDS** — Follows all standards from the patterns.md file (if provided)?
+2. **Review with these priorities (each row maps to a Pillar):**
+   1. **Pillar 1 — Simplicity:** Can this be simpler? Functions > 70 lines decomposed? Existing mechanism covers >50% of this? Can we remove a file / abstraction / config / dependency? Code solving hypothetical problems? Premature abstractions?
+   2. **Pillar 2 — Signal, zero noise:** LLM slop patterns — comments restating code, try/catch on internal calls that can't fail, wrapper-for-nothing functions, new dependencies for what stdlib handles, dead branches, unused imports. Flag each with evidence.
+   3. **Pillar 3 — Zero regression:** Verification output present and fresh? Tests for new behavior? Regression coverage for refactored code?
+   4. **Pillar 5 — WHY comments:** Ambiguous/non-obvious code has a WHY comment? Pydantic fields with non-trivial types/defaults annotated? No useless WHAT comments on clean code? Unclear code flagged for both commenting AND refactoring?
+   5. **Pillar 6 — Refactoring objective:** Does any refactor in the diff measurably improve at least one of {clear, descriptive, efficient, performant, reliable, robust, maintainable}? If not, it's churn — flag it.
+   6. **Test quality:** Tests describe behavior ("should return 404 when user not found"), not implementation ("should call findById"). No mocking privates. Flag tests that mirror production structure 1:1 (test-after smell) or only cover happy paths.
+   7. **Structure:** Models/schemas organized by domain with CRUD variants? Composition over deep inheritance? Backward compatibility preserved?
+   8. **Efficiency:** Time/space complexity minimized? No O(n²) when O(n) possible? No redundant iterations?
+   9. **Dependency hygiene:** Outdated deps? Unnecessary deps for trivial functionality? Missing lockfiles? Version pins too loose?
+  10. **Standards:** Follows all standards from the patterns.md file (if provided)?
 
-3. **Be brutally honest.** No rubber-stamping. No praise padding.
+3. **Be brutally honest** (Pillar 0). No rubber-stamping. No praise padding.
 
 ### Reviewer Self-Check — Anti-Rationalization
 

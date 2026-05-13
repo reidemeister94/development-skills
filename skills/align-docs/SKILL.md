@@ -7,11 +7,11 @@ user-invocable: true
 
 Align all project documentation with actual disk state.
 
-## Core Pillars
+## Principles
 
-1. **Maximize simplicity.** Small improvement + ugly complexity = not worth it.
-2. **All signal, zero noise.** Deduplicate; link to single source of truth.
-3. **CLAUDE.md = cheat sheet.** Tables, code snippets, direct statements. Maximize density.
+- Maximize simplicity. Small improvement + ugly complexity = not worth it.
+- All signal, zero noise. Deduplicate; link to single source of truth.
+- Agent context files (`AGENTS.md` or `CLAUDE.md`) are cheat sheets. Tables, code snippets, direct statements. Maximize density.
 
 ## Execution Checklist
 
@@ -19,23 +19,23 @@ Align all project documentation with actual disk state.
 
 | Check | How |
 |-------|-----|
-| **Project structure** (CLAUDE.md) | `ls` root → compare with structure tree |
-| **Plugin versions** (CLAUDE.md, MEMORY.md) | Read each `plugins/*/.claude-plugin/plugin.json` |
+| **Project structure** (`AGENTS.md`/`CLAUDE.md`) | `ls` root → compare with structure tree |
+| **Plugin versions** (`AGENTS.md`/`CLAUDE.md`, `MEMORY.md`) | Read each `plugins/*/.claude-plugin/plugin.json` |
 | **Skills per plugin** (READMEs) | `ls plugins/*/skills/` → compare with skills table |
 | **Agents per plugin** (READMEs) | `ls plugins/*/agents/` → compare with agents table |
 | **Shared files** (READMEs) | `ls plugins/*/shared/` → verify architecture matches |
-| **Conventions & paths** (CLAUDE.md) | Verify every path exists |
+| **Conventions & paths** (`AGENTS.md`/`CLAUDE.md`) | Verify every path exists |
 | **Cross-references** | Check doc links point to existing files |
 
 ### Step 2: Fix misalignments
 
 | Document | Purpose | What to check |
 |----------|---------|---------------|
-| **CLAUDE.md** | Project-wide, loaded every conversation | Structure, versions, paths, conventions |
-| **MEMORY.md** | Cross-session memory | Versions, stable facts, iteration numbers |
+| **`AGENTS.md`** (or `CLAUDE.md` if primary) | Project-wide, loaded every conversation | Structure, versions, paths, conventions |
+| **`MEMORY.md`** | Cross-session memory | Versions, stable facts, iteration numbers |
 | **Plugin READMEs** | Plugin-specific docs | Skills, agents, architecture, quick start |
-| **docs/chronicles/** | Narrative records | Only if referencing incorrect content |
-| **Other docs/** | Domain docs | Only if stale |
+| **`docs/chronicles/`** | Narrative records | Only if referencing incorrect content |
+| **Other `docs/`** | Domain docs | Only if stale |
 
 ### Step 3: Remove noise
 

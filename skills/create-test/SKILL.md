@@ -3,7 +3,7 @@ name: create-test
 description: "Use when user wants to create tests, generate test coverage, audit test quality, find untested code, or improve weak assertions. Use when user says write tests, test coverage, missing tests, or untested code."
 argument-hint: "[file-or-directory-or-goal]"
 user-invocable: true
-allowed-tools: Glob, Grep, Read, Bash, Agent, Edit, Write
+allowed-tools: Glob, Grep, Read, Bash, Agent, Edit, Write, AskUserQuestion
 ---
 
 # Create Test — Intelligent Test Design
@@ -102,21 +102,21 @@ If the user asks for **TDD / red-green-refactor / test-first**, read `references
 
 | Code characteristic | Primary strategy | Secondary | Reference |
 |-------------------|-----------------|-----------|-----------|
-| Numeric thresholds | Boundary stress | Property-based | testing-strategies.md §1 |
-| Data transformation | Property-based (round-trip, invariant) | Boundary | testing-strategies.md §2 |
-| Parser / serializer | Fuzz + property-based | Boundary | testing-strategies.md §2 |
-| API endpoint (read) | Golden fixture regression | Boundary | testing-strategies.md §4 |
-| API endpoint (write) | CRUD lifecycle | Golden fixture | testing-strategies.md §5 |
-| State machine | State transition coverage | Boundary | testing-strategies.md §1 |
-| Algorithm / computation | Invariant (reference impl) | Property-based | testing-strategies.md §3 |
-| Pure function, few params | Boundary exhaustive | — | testing-strategies.md §1 |
+| Numeric thresholds | Boundary stress | Property-based | testing-strategies.md #1 |
+| Data transformation | Property-based (round-trip, invariant) | Boundary | testing-strategies.md #2 |
+| Parser / serializer | Fuzz + property-based | Boundary | testing-strategies.md #2 |
+| API endpoint (read) | Golden fixture regression | Boundary | testing-strategies.md #4 |
+| API endpoint (write) | CRUD lifecycle | Golden fixture | testing-strategies.md #5 |
+| State machine | State transition coverage | Boundary | testing-strategies.md #1 |
+| Algorithm / computation | Invariant (reference impl) | Property-based | testing-strategies.md #3 |
+| Pure function, few params | Boundary exhaustive | — | testing-strategies.md #1 |
 | DB queries / repositories | Real DB integration | Factory fixtures | integration-patterns.md |
 | Browser UI / user flows | Playwright E2E | Visual regression | e2e-browser-patterns.md |
 | Legacy code, pre-refactoring | Characterization (golden master) | Approval test | refactoring-workflow.md |
-| Concurrent / async operations | Concurrency stress | Property-based | testing-strategies.md §10 |
-| Microservice boundary | Contract test (Pact) | CRUD lifecycle | testing-strategies.md §11 |
+| Concurrent / async operations | Concurrency stress | Property-based | testing-strategies.md #10 |
+| Microservice boundary | Contract test (Pact) | CRUD lifecycle | testing-strategies.md #11 |
 | DB migrations | Up/down verification | Rollback test | integration-patterns.md |
-| Migration legacy to new | Live comparison | Characterization | testing-strategies.md §6 |
+| Migration legacy to new | Live comparison | Characterization | testing-strategies.md #6 |
 
 ### Step 4: Generate Tests
 
@@ -136,7 +136,7 @@ For golden fixture / e2e patterns, generate BOTH the capture script and the regr
 - DB integration → `references/integration-patterns.md`
 - Playwright E2E → `references/e2e-browser-patterns.md`
 - Characterization → `references/refactoring-workflow.md`
-- Concurrency → `references/testing-strategies.md` §10 + `references/language-templates.md`
+- Concurrency → `references/testing-strategies.md` #10 + `references/language-templates.md`
 - Contract → `references/language-templates.md` Pact scaffolds
 
 ### Step 5: Run and Verify

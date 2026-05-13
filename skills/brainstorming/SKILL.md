@@ -1,20 +1,22 @@
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+description: "Use when creating features, building components, adding functionality, modifying behavior, designing systems, choosing between approaches, or making architectural decisions."
 user-invocable: true
 allowed-tools: Glob, Grep, Read, Bash, Task, AskUserQuestion, Edit, Write, Skill
 ---
 
 # Brainstorming — Conversational Design
 
-**Announce:** "Using brainstorming. I'll walk the design tree with you, one branch at a time, before proposing approaches."
+**Announce:** *"Using brainstorming. I'll walk the design tree with you, one branch at a time, before proposing approaches."*
 
-You run **in-thread**. The user is reachable. Walk the design tree with the user, then optionally delegate web research to a subagent, then write a plan to disk and gate before handing off to `core-dev`.
+You run **in-thread**. The user is reachable. Walk the design tree with the user, optionally delegate web research to a subagent, write a plan to disk, gate before handing off to `core-dev`.
+
+Apply [Iron Rules](../../shared/iron-rules.md) throughout.
 
 <HARD-GATE>
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY non-trivial task regardless of perceived simplicity.
 
-Truly trivial tasks (single-line typo, format a file, rename a variable, fix a one-line import) may exit early via Step 0 `PASS_THROUGH`. Anything beyond that — including *"translate an existing audit/plan into code"* — goes through the full flow.
+Truly trivial tasks (PASS_THROUGH per `using-development-skills`) never reach brainstorming. Anything that does reach brainstorming — including *"translate an existing audit/plan into code"* — goes through the full flow.
 </HARD-GATE>
 
 ## Anti-Pattern: "This Is Too Simple To Need A Design"
@@ -33,13 +35,12 @@ If `$ARGUMENTS` is empty: ask *"What would you like me to brainstorm?"* and STOP
 
 ## STEP 0 — Triage
 
-Classify the task:
+PASS_THROUGH triage is handled upstream in `using-development-skills`. If you reached brainstorming, the task is **not** PASS_THROUGH. Classify further:
 
-- **PASS_THROUGH**: small, bounded, clear (rename a variable, format a file, fix a typo, single-file mechanical change). Announce *"Triage: pass-through — this task does not need brainstorming"* and invoke `development-skills:core-dev` directly.
-- **Focused**: a specific technical decision ("X vs Y", choice of library, design pattern, migration strategy). Skip Step 2 Q&A — go to Step 3 Approaches with focused research.
+- **Focused**: a specific technical decision (`X vs Y`, choice of library, design pattern, migration strategy). Skip Step 2 Q&A — go to Step 3 Approaches with focused research.
 - **Full**: ambiguous, business-driven, architectural, multi-area, high blast radius. Run the full flow below.
 
-If unsure: prefer Full over Focused, Focused over PASS_THROUGH.
+If unsure: prefer Full over Focused.
 
 ---
 
@@ -48,8 +49,6 @@ If unsure: prefer Full over Focused, Focused over PASS_THROUGH.
 Lightweight: Glob + Grep + Read of entry points, similar features, related modules. Build a `CODEBASE_FINDINGS` mental note.
 
 **Do this BEFORE asking any technical question.** Never ask the user something a 60-second look at the codebase would answer.
-
-Skip for PASS_THROUGH (already exited).
 
 ---
 
@@ -66,17 +65,9 @@ Skip for PASS_THROUGH (already exited).
 5. **No cap on questions.** Stop only when every branch is resolved or the user says *"enough"* / *"just propose"*.
 6. **Anti-pattern:** do not infer, guess, or rationalize *"the user said X so probably means Y"*. When in doubt, ask.
 
-**On Claude Code:** use the `AskUserQuestion` tool. Up to 4 logically-related questions per call (questions whose answers don't reframe each other). Dependent questions (where Q2 depends on Q1's answer) go in separate calls. Recommended answer = first option, label `"[option] (Recommended)"`.
+**On Claude Code:** use the `AskUserQuestion` tool. Up to 4 logically-related questions per call (questions whose answers don't reframe each other). Dependent questions go in separate calls. Recommended answer = first option, label `"[option] (Recommended)"`.
 
-**On Codex:** `AskUserQuestion` does not exist. Use a numbered list with an explicit STOP marker:
-
-```
-1. [option A] (Recommended)
-2. [option B]
-3. Other (describe)
-
-Reply with the number or free text. STOP. Wait.
-```
+**On Codex:** use a numbered list with an explicit STOP marker (`AskUserQuestion` is Claude-Code-only).
 
 End your turn. Wait for the user's reply. Do not proceed until you have an answer.
 
@@ -89,8 +80,6 @@ Based on locked WHAT/WHY/scope, sketch **2-3 candidate approaches**:
 - Each: 1-2 sentence description, complexity LOW/MEDIUM/HIGH, key trade-off.
 - Lead with the recommended one.
 
-**If the task is interface / API / module design**, read `references/design-it-twice.md` for the parallel-design technique. Optional but encouraged when the wrong shape is costly to reverse.
-
 ---
 
 ## STEP 4 — Optional Research
@@ -99,8 +88,8 @@ If approaches involve external best practices, official docs, or unfamiliar tech
 
 Pick `NNNN` = highest existing prefix in `docs/plans/` + 1 (or `0001`). Pick `SLUG` = kebab-case task topic. Remember both — they are reused in Step 7.
 
-- **Claude Code:** `Task` tool, `subagent_type: general-purpose`, `model: opus`. Read `research-agent.md`, fill `{TOPIC}`, `{APPROACHES_TO_RESEARCH}`, `{CODEBASE_FINDINGS}`, `{NNNN}`, `{SLUG}`, `{SKILL_DIR}`, pass as prompt.
-- **Codex:** see `using-development-skills/references/codex-tools.md` — requires `[features] multi_agent = true` in `~/.codex/config.toml`. Read `research-agent.md`, wrap the filled body in the standard agent template, `spawn_agent(agent_type="worker", message=...)`.
+- **Claude Code:** `Task` tool, `subagent_type: general-purpose`, `model: opus`. Read `shared/agents/research-agent.md`, fill `{TASK}` (the topic), `{RESEARCH_TARGETS}` (the approaches to evaluate), `{CODEBASE_FINDINGS}`, `{EXISTING_RESEARCH_FILE}` (usually `"none"` at this stage), `{NNNN}`, `{SLUG}`. Pass as prompt.
+- **Codex:** `spawn_agent(agent_type="worker", message=<filled research-agent.md body>)`. Requires `[features] multi_agent = true` in `~/.codex/config.toml`.
 
 The subagent writes `docs/plans/{NNNN}__research__{SLUG}.md` and returns `RESEARCH_PATH::<path>` + a 5-line digest.
 
@@ -110,11 +99,11 @@ After the subagent returns, **Read** the research file. Pull the selected approa
 
 ---
 
-## STEP 5 — Critical Evaluation
+## STEP 5 — Critical Evaluation (Always Performed)
 
-Read `critical-analysis.md`. Score complexity (0-10). Apply LIGHT (6-7) or FULL (8-10) framework. Below 6: skip critical evaluation, proceed with the recommended approach.
+Read `critical-analysis.md`. Run the Simplicity Audit ([Iron Rules](../../shared/iron-rules.md) Pillar 1) for every approach. Score complexity (0-10). Apply MINIMAL (0-5) / LIGHT (6-7) / FULL (8-10) framework. **No SKIP** — even score-0 work gets a 2-line risk-and-mitigation statement.
 
-Produce a verdict: **PROCEED / PROCEED WITH CHANGES / RECONSIDER / STOP**. If `RECONSIDER` or `STOP`, surface the reason to the user and re-enter Step 2 Q&A or end the brainstorming flow.
+Produce a verdict: **PROCEED / PROCEED WITH CHANGES / RECONSIDER / STOP**. An approach that fails the Simplicity Audit is `RECONSIDER` regardless of other strengths. If `RECONSIDER` or `STOP`, surface the reason to the user and re-enter Step 2 Q&A or end the brainstorming flow.
 
 ---
 
@@ -123,7 +112,7 @@ Produce a verdict: **PROCEED / PROCEED WITH CHANGES / RECONSIDER / STOP**. If `R
 Present the candidate approaches to the user.
 
 - **On Claude Code:** `AskUserQuestion` — 1 question, options = approaches + `"Just analysis"` + `"Modify"`.
-- **On Codex:** numbered list + STOP.
+- **On Codex:** numbered list with STOP marker.
 
 Wait for user reply.
 
@@ -135,11 +124,13 @@ Wait for user reply.
 
 ## STEP 7 — Write Plan File
 
-Read `templates/plan-template.md`. Write to:
+Read `templates/plan-template.md` — that's the canonical schema. Write to:
 
 `docs/plans/{NNNN}__YYYY-MM-DD__implementation_plan__{SLUG}.md`
 
-Use the same `NNNN` and `SLUG` from Step 4. Set `Status: In Progress`. The WORKFLOW STATE section MUST reference the research file path (if Step 4 ran) and include a Brainstorming Summary block.
+Use the same `NNNN` and `SLUG` from Step 4. Set `Status: In Progress`, `Current Phase: 1 (Research + Plan)`. The WORKFLOW STATE section MUST reference the research file path (if Step 4 ran) and include a Brainstorming Summary block.
+
+The plan file is the artifact Phase 1 will pick up and extend with the HOW-level locks table.
 
 ---
 
@@ -150,15 +141,7 @@ Use the same `NNNN` and `SLUG` from Step 4. Set `Status: In Progress`. The WORKF
 Display a concise design summary in chat (5-10 lines: WHAT, WHY, selected approach, key risks). Then gate:
 
 - **On Claude Code:** `AskUserQuestion` — *"Approve the design and proceed to implementation?"* — options: `"Approve and proceed (Recommended)"`, `"Modify"`.
-- **On Codex:** numbered list:
-  ```
-  Design summary above. Approve to proceed to implementation?
-
-  1. Approve and proceed (Recommended)
-  2. Modify
-
-  Reply with the number. STOP. Wait.
-  ```
+- **On Codex:** numbered list with STOP marker.
 
 **Anti-rationalization line** — read this to yourself before deciding to skip the gate:
 > *"If thinking 'this is too simple to need approval' — STOP. Display the gate."*
@@ -195,3 +178,4 @@ Invoke `development-skills:core-dev` via the Skill tool, no arguments. `core-dev
 - **Writing the plan without an approach decision** — Step 6 must happen before Step 7.
 - **Routing to core-dev without the hard gate** — Step 8 is mandatory, not optional.
 - **Multiple questions in one turn that reframe each other** — split them. Q1's answer must be in hand before Q2 makes sense.
+- **Skipping Step 5 because complexity score is low** — critical analysis is unconditional. Score 0-5 still gets a 2-line risk-and-mitigation statement.

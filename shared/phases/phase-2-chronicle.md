@@ -1,4 +1,4 @@
-# Phase 3: CHRONICLE CREATION — GATE
+# Phase 2: CHRONICLE — GATE
 
 **When in doubt, create the chronicle.** Cost: ~30 seconds. Cost of missing one: losing the WHY forever.
 
@@ -17,11 +17,13 @@
 - Change is self-evident from the diff
 - No business context worth preserving
 
+Apply [Iron Rules](../iron-rules.md) — especially #6 (every gate explicit).
+
 ---
 
 ## If Chronicle IS Needed
 
-**Announce:** "Creating chronicle to capture task context."
+**Announce:** *"Creating chronicle to capture task context."*
 
 ### Create the Chronicle File
 
@@ -72,17 +74,19 @@
 
 ---
 
-## CLAUDE.md Updates
+## Agent doc updates
 
 ### Updates to apply:
 
-- [ ] `CLAUDE.md` - [What to add/update]
+- [ ] `AGENTS.md` - [What to add/update]
 ```
 
 ### Lifecycle
 
-- **Phase 4:** Update Discoveries, record design decisions
-- **Phase 7:** Align with final code, condense User Requirements, fill "After" state, set Completed, identify CLAUDE.md updates
+- **Phase 3 (Implement-Verify):** Update Discoveries; record design decisions encountered during implementation.
+- **Phase 4 (Review-Finalize):** Align with final code, condense User Requirements, fill "After" state, set Completed, identify AGENTS.md updates.
+
+**Update WORKFLOW STATE in plan file:** `Chronicle: docs/chronicles/NNNN__YYYY-MM-DD__brief-description.md`, `Current Phase: 3`.
 
 **Gate:** State **"CHRONICLE INITIATED — [filename]"**
 
@@ -90,11 +94,14 @@
 
 ## If Chronicle NOT Needed
 
-1. Update plan file WORKFLOW STATE: `Chronicle: NOT NEEDED — [reason]`
+1. Update plan file WORKFLOW STATE: `Chronicle: NOT NEEDED — [reason]`, `Current Phase: 3`.
 2. **Gate:** State **"CHRONICLE: NOT NEEDED — [reason]"**
 
-## Expected Artifacts
-- Chronicle file in `docs/chronicles/` (if needed), OR WORKFLOW STATE with `NOT NEEDED`
-- WORKFLOW STATE: `Current Phase: 4`
+---
 
-**→ Proceed immediately to Phase 4. Read `phase-4-implement.md`.**
+## Expected Artifacts
+
+- Chronicle file in `docs/chronicles/` (if needed), OR WORKFLOW STATE annotated with `NOT NEEDED + reason`
+- WORKFLOW STATE: `Current Phase: 3`
+
+**→ Proceed immediately to Phase 3. Read `phase-3-implement-verify.md`.**

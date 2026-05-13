@@ -20,7 +20,7 @@ Edit `~/.codex/config.toml` and add:
 multi_agent = true
 ```
 
-Required for subagent-dispatching skills (`core-dev`, `brainstorming`, `roast-my-code`, `create-test`, `distill`, `eval-regression`). Unlocks `spawn_agent`, `wait`, `close_agent`. Without it, those skills fail mid-execution.
+Required for subagent-dispatching skills (`brainstorming`, `roast-my-code`, `create-test`, `distill`, `eval-regression` — anything that spawns a research subagent or the `staff-reviewer` agent). Unlocks `spawn_agent`, `wait`, `close_agent`. Without it, those skills fail mid-execution.
 
 Restart Codex.
 
@@ -37,7 +37,7 @@ Restart Codex.
 
 ## Subagents (workaround on Codex)
 
-Claude Code has native named subagents (`development-skills:implementer`, `staff-reviewer`, `test-verifier`). Codex does not — skills dispatch them via the read-wrap-spawn pattern in `skills/using-development-skills/references/codex-tools.md`.
+development-skills ships one named subagent: `staff-reviewer`. Codex has no named subagent registry — dispatch it via the read-wrap-spawn pattern in `skills/using-development-skills/references/codex-tools.md`.
 
 ## Hooks Not Supported
 

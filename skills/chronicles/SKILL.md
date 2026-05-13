@@ -29,9 +29,9 @@ Chronicles = WHY it happened, USER CONTEXT, PROJECT STATE
 
 ## Usage
 
-### Within Workflow (Phase 3)
+### Within Workflow (Phase 2)
 
-Read `shared/phases/phase-3-chronicle.md` for template and instructions.
+Read `shared/phases/phase-2-chronicle.md` for template and instructions.
 
 ### Standalone
 
@@ -61,4 +61,4 @@ Create chronicle for the exploration. Document approaches considered and WHY eac
 - Condense, don't lose — summarize for readability, preserve intent
 - Reference, don't repeat — point to locations, don't paste code
 - Evolve continuously — update as you learn
-- Promote insights — valuable discoveries belong in CLAUDE.md
+- Promote insights — valuable discoveries belong in `AGENTS.md` (or `CLAUDE.md` if that's the project's primary)

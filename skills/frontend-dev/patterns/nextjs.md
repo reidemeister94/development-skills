@@ -6,7 +6,7 @@ Next.js-specific patterns. Used alongside [react.md](react.md) for Next.js proje
 
 ## Review Standards
 
-Enforce these during Staff Engineer Review (Phase 6) — **in addition to** React review standards:
+Enforce these during Staff Engineer Review (Phase 4) — **in addition to** React review standards:
 
 - Server Components by default — `"use client"` only when needed (interactivity, hooks, browser APIs)
 - Data fetching in Server Components (not `useEffect`)

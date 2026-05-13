@@ -2,16 +2,16 @@
 name: python-dev
 description: "Python development. Use for Python, FastAPI, Pydantic, asyncpg, pytest, pandas, SQLAlchemy."
 user-invocable: true
-allowed-tools: Glob, Read, Grep, Bash, Task, Skill, Edit, Write, EnterPlanMode
+allowed-tools: Glob, Read, Grep, Bash, Task, Skill, Edit, Write, AskUserQuestion
 ---
 
 # Python Development
 
-**Announce:** "I'm using the python-dev skill. Following the mandatory 7-phase workflow."
+**Announce:** "I'm using the python-dev skill. Following the 4-phase workflow."
 
 ## MANDATORY: Read and Follow the Shared Workflow
 
-**You MUST read [workflow.md](../../shared/workflow.md) NOW** and follow ALL 7 phases defined there. The sections below provide Python-specific inputs for each phase.
+**You MUST read [workflow.md](../../shared/workflow.md) NOW** and follow ALL 4 phases defined there. The sections below provide Python-specific inputs for each phase.
 
 Read [patterns.md](patterns.md) during Phase 1.
 
@@ -21,27 +21,27 @@ Read [patterns.md](patterns.md) during Phase 1.
 
 ## Python-Specific Configuration
 
-### Verification Commands (Phase 2 + Phase 5)
+### Verification Commands (Phase 1 plan + Phase 3 verify)
 
 WORKFLOW STATE Verification line: `pytest, ruff check, ruff format --check`
 
-**Phase 5 Tier A commands:**
+**Phase 3 Tier A commands:**
 - `pytest` — run tests
 - `ruff check` — linting
 - `ruff format --check` — formatting
 - Coverage target: 70-80%
 
-**Phase 5 Tier B additional MCP verifications:**
+**Phase 3 Tier B additional MCP verifications:**
 - PostgreSQL MCP → Query DB state before/after
 - Legacy DB MCP → Query legacy databases for data verification
 
-### Implementation Rules (Phase 4)
+### Implementation Rules (Phase 3)
 
 - **Model structure** — Pydantic CRUD variants per entity (Base/Create/Update/Read), domain-driven `schemas.py`, AppBaseModel with ConfigDict, composition over deep inheritance
 - **Minimize complexity** — generators for large data, dict lookups over list scans
 - **Preserve compatibility** — Aliases for renamed fields, defaults for new fields, preserve public signatures, re-export moved symbols
 
-### Staff Review Configuration (Phase 6)
+### Staff Review Configuration (Phase 4)
 
 - **Patterns file path:** Path to this skill's `patterns.md`
 

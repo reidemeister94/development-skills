@@ -1,3 +1,32 @@
+## 0.4.0 (2026-05-13)
+
+### BREAKING
+
+- **Workflow refactor: 7 phases → 4 phases.** `shared/phases/` now contains four files (`phase-1-research-plan.md`, `phase-2-chronicle.md`, `phase-3-implement-verify.md`, `phase-4-review-finalize.md`). Old per-phase files (`phase-1-research.md`, `phase-2-plan.md`, `phase-3-chronicle.md`, `phase-4-implement.md`, `phase-5-verify.md`, `phase-6-review.md`, `phase-7-finalize.md`) are removed. `lightweight-mode.md` is gone — triage is now `PASS_THROUGH` (trivial single-file mechanical change) or `FULL` (the 4 phases), decided upstream in `using-development-skills`.
+- **Subagents: 3 → 1.** Removed `agents/implementer.md` and `agents/test-verifier.md`. The only named subagent is `staff-reviewer`. Implementation and verification now run in the main thread as standing instructions in `phase-3-implement-verify.md` (TDD, anti-slop self-check, 5-step verification gate).
+- **Gate statements changed.** Phase 1 gate now `"RESEARCH + PLAN COMPLETE — APPROVED"`. Phase 3 gate `"IMPLEMENT + VERIFY COMPLETE"` with evidence. Phase 4 gate `"WORKFLOW COMPLETE"`.
+
+### Feat
+
+- **shared/iron-rules.md** (new): canonical 8 Core Pillars + 3 workflow process rules. Every phase, skill, and subagent references this single file. Pillars permeate phase-1 HOW-level Q&A, phase-3 quality checklist, phase-4 staff review priorities, brainstorming Step 5 Simplicity Audit.
+- **shared/lint-enforcement.md** (new): JS/TS lint detection algorithm (union, not priority — runs every detected linter). Lint failure blocks Phase 3 verify with the same severity as a failing test. No `--fix` auto-remediation.
+- **shared/package-manager.md** (new): package-manager detection (`packageManager` field → lockfile → user prompt) with full command-translation table for npm / pnpm / yarn / bun. Result recorded durably in plan WORKFLOW STATE so it survives `/compact`.
+- **phase-1**: HOW-level Q&A locks table — 6 dimensions (edge cases / data shapes / error semantics / contract boundaries / test scope / rollback) must be filled or marked N/A before implementation. Primary "zero ambiguity at impl start" gate.
+- **phase-3**: 5-step verification gate (IDENTIFY → RUN → READ → VERIFY → CLAIM); explicit anti-slop self-check during REFACTOR; module-refactoring discipline (grep all imports + mocks before/after moves).
+- **frontend-dev**: package-manager + framework dual pre-step gates. Adds `patterns/coding-conventions.md` (framework-agnostic readability / structure / type-safety rules with "What NOT to Do" summary), `patterns/shadcn.md` (Radix uncontrolled default, `shadcn add` overwrite warning), `patterns/styling.md` (Tailwind + CSS-in-JS layer order, `cn()` helper, no inline `style`).
+- **typescript-dev**: lint enforcement as a Phase 3 blocking gate via the new `shared/lint-enforcement.md`.
+- **staff-reviewer**: Stage 2 review priorities re-anchored to the Iron Rules pillars (Pillar 1 simplicity, Pillar 2 signal-not-noise, Pillar 3 zero regression, Pillar 5 WHY comments, Pillar 6 refactoring objective).
+- **brainstorming**: critical analysis is now unconditional with intensity scaling (MINIMAL / LIGHT / FULL) by complexity score — no SKIP path. Single canonical `shared/agents/research-agent.md` handles both brainstorming web research and Phase 1 gap-fill via `EXISTING_RESEARCH_FILE` parameter.
+- **using-development-skills**: stripped to ~50 lines — explicit triage (PASS_THROUGH vs FULL), 3 behavioral rules (external spec is INPUT not substitute · ambiguity ≥1% → ask · phase-skip → rejoin), platform mapping, user override priority.
+- **core-dev**: language-detection table simplified; only invokes brainstorming or routes to a language skill (no `LIGHTWEIGHT_MODE` plumbing).
+
+### Fix
+
+- **language skills** (python-dev, java-dev, typescript-dev, swift-dev): announcement and verification-command references updated to the 4-phase numbering.
+- **resolve-merge**: AUTO vs JUDGMENT classification rules rewritten — default JUDGMENT, explicit byte-identity / lockfile / whitespace AUTO rules only; JUDGMENT gate displays OURS/THEIRS/Resolved hunks as plain markdown (not nested fences).
+- **debugging**: integration block points to Phase 1 (Research + Plan) and Phase 2 (Chronicle), aligned with the 4-phase numbering.
+- **chronicles**: standalone usage now points to `shared/phases/phase-2-chronicle.md` for template.
+
 ## 0.3.0 (2026-04-29)
 
 ### Feat

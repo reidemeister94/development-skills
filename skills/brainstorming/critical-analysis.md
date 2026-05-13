@@ -1,6 +1,20 @@
 # Critical Analysis Framework
 
-Reference for the brainstorming evaluation phase.
+Reference for the brainstorming evaluation phase (Step 5). **Critical analysis is unconditional**; intensity scales with complexity score. The default IS critical analysis — never SKIP.
+
+Apply [Iron Rules](../../shared/iron-rules.md) Pillar 0 (be critical) and Pillar 1 (maximize simplicity) throughout. Every approach gets a simplicity audit before a recommendation.
+
+---
+
+## Simplicity Audit (Pillar 1) — Apply to Every Approach
+
+Before scoring complexity, answer these for the candidate approach:
+
+1. **Overlap:** Does an existing mechanism already cover >50% of this need? If yes → reject or fold in.
+2. **Reduction:** Can this be one fewer file / one fewer abstraction / one fewer config? If yes → do it.
+3. **Earn-your-place:** Would removing the proposed addition cause a real failure (not a hypothetical one)? If no → don't add it.
+
+Surface the answers in the verdict. An approach that fails the simplicity audit is `RECONSIDER` regardless of other strengths.
 
 ---
 
@@ -16,14 +30,47 @@ Score 0-2 per dimension. Sum them.
 | **Novelty** | Done this exact thing before | Similar but different context | First time, unfamiliar domain/tech |
 | **Stakes** | Low (cosmetic, internal) | Moderate (user-facing, performance) | High (security, data integrity, compliance) |
 
-### Decision Threshold
+### Intensity Threshold
 
-| Score | Action |
-|-------|--------|
-| 0-3 | SKIP analysis. Low-risk. |
-| 4-5 | SKIP. Only analyze if specific, concrete risk visible. |
-| 6-7 | LIGHT analysis. Focus on 1-2 highest-risk dimensions. |
-| 8-10 | FULL analysis. Complete framework below. |
+| Score | Analysis depth |
+|-------|----------------|
+| 0-3 | **MINIMAL** — 2 lines (one biggest risk + one mitigation) |
+| 4-5 | **MINIMAL** — 2 lines (or LIGHT if a specific concrete concern is visible) |
+| 6-7 | **LIGHT** — 1-2 highest-risk dimensions |
+| 8-10 | **FULL** — complete framework below |
+
+**No SKIP.** Even score-0 work gets the 2-line risk-and-mitigation statement. The framework scales down to minimum, not to zero — proves the model thought about risk before proceeding.
+
+---
+
+## MINIMAL (score 0-5)
+
+### Risk
+[One sentence — the biggest thing that could go wrong]
+
+### Mitigation
+[One sentence — how the approach handles it]
+
+[If no real risk exists: state *"Risk: Trivial — [why]. No mitigation needed."* — still write it.]
+
+---
+
+## LIGHT Analysis (score 6-7)
+
+### Decision
+[One sentence]
+
+### Key Risk
+[Biggest risk with evidence]
+
+### Watch Out For
+[1-2 anti-patterns]
+
+### Recommendation
+**PROCEED** / **PROCEED WITH CHANGES** / **RECONSIDER** — [One sentence]
+
+### Source
+[1-2 references]
 
 ---
 
@@ -46,7 +93,7 @@ Score 0-2 per dimension. Sum them.
 [2-5 risks. Quality over quantity.]
 
 ### Hidden Assumptions
-"You are assuming [X]. This breaks if [Y]."
+*"You are assuming [X]. This breaks if [Y]."*
 [Only assumptions that could actually break.]
 
 ### Alternatives Considered
@@ -54,11 +101,11 @@ Score 0-2 per dimension. Sum them.
 |----------|------|------|-----------|
 
 ### Anti-Patterns to Avoid
-"Do NOT [X] because [Y]. Source: [Z]"
+*"Do NOT [X] because [Y]. Source: [Z]"*
 
 ### Verdict
 
-**[PROCEED / PROCEED WITH CHANGES / RECONSIDER / STOP]**
+**PROCEED / PROCEED WITH CHANGES / RECONSIDER / STOP**
 
 - **PROCEED**: Sound. Risks manageable.
 - **PROCEED WITH CHANGES**: Direction right, adjustments needed. [List.]
@@ -69,25 +116,6 @@ Score 0-2 per dimension. Sum them.
 
 ### Sources
 [Numbered list with URLs]
-
----
-
-## LIGHT Analysis (score 6-7)
-
-### Decision
-[One sentence]
-
-### Key Risk
-[Biggest risk with evidence]
-
-### Watch Out For
-[1-2 anti-patterns]
-
-### Recommendation
-[PROCEED / PROCEED WITH CHANGES / RECONSIDER] — [One sentence]
-
-### Source
-[1-2 references]
 
 ---
 
