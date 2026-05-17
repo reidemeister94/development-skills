@@ -1,6 +1,6 @@
 {
   "name": "development-skills",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Three-tier triage (PASS_THROUGH / LIGHT / FULL 4-phase Research+Plan → Chronicle → Implement+Verify → Review+Finalize) development workflow with language auto-detection (Python, Java, TypeScript, Swift, frontend) and a staff-reviewer subagent.",
   "skills": "./skills/",
   "hooks": "./hooks/hooks.json",
