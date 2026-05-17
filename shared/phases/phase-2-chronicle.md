@@ -1,5 +1,13 @@
 # Phase 2: CHRONICLE — GATE
 
+A chronicle is a **project snapshot** — months later, a reader should understand what the user wanted, why decisions were made, what was discovered, and what changed. Focus: the intent and the *whys* behind the choices.
+
+```
+Code + Git = WHAT changed (diffs)
+Plan docs  = HOW implemented (tasks, approaches)
+Chronicles = WHY it happened, USER CONTEXT, PROJECT STATE
+```
+
 **When in doubt, create the chronicle.** Cost: ~30 seconds. Cost of missing one: losing the WHY forever.
 
 **Chronicle IS NEEDED when ANY apply:**
@@ -17,13 +25,11 @@
 - Change is self-evident from the diff
 - No business context worth preserving
 
-Apply [Iron Rules](../iron-rules.md) — especially #6 (every gate explicit).
+Apply [Iron Rules](../iron-rules.md) — especially Process Rule C (every gate explicit) and Pillar 4 (document every discovery).
 
 ---
 
 ## If Chronicle IS Needed
-
-**Announce:** *"Creating chronicle to capture task context."*
 
 ### Create the Chronicle File
 

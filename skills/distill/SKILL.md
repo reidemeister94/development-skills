@@ -149,28 +149,6 @@ Three layers:
 
 Why: The "Overview" paragraph is pure filler — "today's rapidly evolving landscape", "crucial role", "delve into" carry no facts. The "Summary" restates the list. "Leverages a multi-layered approach" just means "has three layers". "Comprehensive and holistic" is decoration. The numbered list is cleaner than the bold-prefixed bullets.
 
-**Example 3 — Preserving nuance while tightening:**
-
-Before:
-```
-The caching system can potentially help improve performance in scenarios where
-the database queries might be slow. It should be noted that the cache has a TTL
-of 5 minutes, which means that in some cases, users could possibly see slightly
-stale data. However, it's important to understand that for our particular use case,
-this trade-off between freshness and speed is generally considered to be acceptable
-by the team, due to the fact that the underlying data only changes approximately
-once per hour on average.
-```
-
-After:
-```
-The cache (5-minute TTL) trades freshness for speed: users may see stale data
-up to 5 minutes old. This is acceptable because the underlying data changes
-roughly once per hour.
-```
-
-Why: "Can potentially help improve" → direct statement. "It should be noted" → deleted. "Due to the fact that" → "because". The key nuance (why staleness is acceptable) is preserved and moved into a clear causal chain. "Could possibly see slightly stale" → "may see stale" — same meaning, fewer hedges.
-
 </examples>
 
 ## Step 3 — Self-Check

@@ -7,31 +7,33 @@ A plugin for [Claude Code](https://docs.claude.com/en/docs/claude-code) and [Cod
 
 ## Installation
 
+Same marketplace flow on both CLIs.
+
 ### Claude Code
 
-```bash
+```text
 /plugin marketplace add reidemeister94/development-skills
 /plugin install development-skills@development-skills
 ```
 
-Activates on any coding task. No configuration needed.
-
 ### Codex CLI
 
 ```bash
-git clone https://github.com/reidemeister94/development-skills.git ~/.codex/development-skills
-mkdir -p ~/.agents/skills
-ln -s ~/.codex/development-skills/skills ~/.agents/skills/development-skills
+codex plugin marketplace add reidemeister94/development-skills
 ```
 
-Then add to `~/.codex/config.toml`:
+Then run `codex`, open `/plugins`, search `development-skills`, install.
+
+Activates on any coding task. No further configuration needed.
+
+For native hook execution on Codex (auto-format, SessionStart context inject), add to `~/.codex/config.toml`:
 
 ```toml
 [features]
-multi_agent = true
+plugin_hooks = true
 ```
 
-`multi_agent` is required so skills can dispatch the `staff-reviewer` subagent and the optional research subagent. Full details in [`.codex/INSTALL.md`](.codex/INSTALL.md).
+Without it, Codex skills + subagents still work; only the auto-format / SessionStart hooks need to be run manually (commands in [`AGENTS.md`](AGENTS.md)).
 
 ## Why it exists
 
@@ -53,7 +55,8 @@ Numbered like SQL migrations.
 Triaged at session start:
 
 - **`PASS_THROUGH`** — trivial single-file mechanical change (rename, format, typo). Skips the workflow.
-- **`FULL`** — everything else. Runs the four phases below in order. Each is a hard gate.
+- **`LIGHT`** — mechanical change with no design choice, no logic/business/architecture impact, no new patterns. Follows a 6-step inline flow (detect language → read patterns → sketch+gate → implement+verify → iron-rules walk → done) without plan file or staff-reviewer. File count is NOT the criterion — qualitative.
+- **`FULL`** (default on uncertainty) — runs the four phases below in order. Each is a hard gate.
 
 | Phase | What happens | Output |
 |---|---|---|
@@ -62,7 +65,7 @@ Triaged at session start:
 | 3. Implement + Verify | Main-thread TDD (RED → GREEN → REFACTOR). Anti-slop self-check during REFACTOR. 5-step verification gate (`IDENTIFY → RUN → READ → VERIFY → CLAIM`) before any positive claim. | Updated `## Task Checklist`, `## Implementation Log`, `## Verification Results` |
 | 4. Review + Finalize | `staff-reviewer` subagent runs two-stage review (spec compliance → code quality), iterates until `APPROVED`. Chronicle finalised. Docs aligned. User decides whether to commit. | `## Review Log`, completed chronicle |
 
-The rules that apply across phases live in [`shared/iron-rules.md`](shared/iron-rules.md) — 8 Core Pillars + 3 process rules, referenced from every skill and phase rather than duplicated.
+The rules that apply across phases live in [`shared/iron-rules.md`](shared/iron-rules.md) — 9 Core Pillars + 4 Process Rules (A · B · C · D, including spirit-beats-letter), referenced from every skill and phase rather than duplicated.
 
 ## What's included
 
@@ -71,7 +74,7 @@ The rules that apply across phases live in [`shared/iron-rules.md`](shared/iron-
 - **Workflow** — `using-development-skills`, `core-dev`, `brainstorming`, `debugging`, `chronicles`
 - **Languages** — `python-dev`, `java-dev`, `typescript-dev`, `swift-dev`, `frontend-dev` (React / Next.js / Vite / Raycast auto-detection)
 - **Testing** — `create-test`, `roast-my-code` (`--fix` optional), `eval-regression`, `ai-agent-bench`
-- **Utilities** — `commit`, `distill`, `align-docs`, `resolve-merge`, `update-precommit`, `update-reqs`, `update-reqs-dev`, `best-practices`, `claude-to-codex`
+- **Utilities** — `commit`, `distill`, `align-docs`, `resolve-merge`, `update-precommit`, `update-reqs`, `update-reqs-dev`, `best-practices`, `claude-to-agents`
 - **User-invocable** — `context-transfer`, `produce-feedback`, `ingest-feedback`
 
 **1 named subagent:** `staff-reviewer`. Implementation and verification run in the main thread per [`shared/phases/phase-3-implement-verify.md`](shared/phases/phase-3-implement-verify.md) — fewer context handoffs, less state to reconstruct.

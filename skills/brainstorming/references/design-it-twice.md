@@ -2,7 +2,7 @@
 
 From "A Philosophy of Software Design" (John Ousterhout): your first idea is rarely the best. Generate multiple radically different designs, then compare.
 
-**When to use**: during brainstorming Step 4 (Approach Sketch) when the task is designing a new interface / API / module. Skip when the task is tweaking existing code.
+**When to use**: during brainstorming Step 4 (Approach Sketch) when the task is designing something new or choose a new approach. Skip when the task is tweaking existing code.
 
 ## Workflow
 
@@ -20,9 +20,7 @@ If answers are missing, return to Step 2 Q&A. Do not proceed blindly.
 
 ### 2. Generate 2-3 radically different designs
 
-**On Claude Code**: spawn 2-3 parallel subagents via the `Task` tool in a single message. Each subagent receives a divergent constraint. **They do not implement code** — only the shape of the interface.
-
-**On Codex**: same logic via `spawn_agent(agent_type="worker", message=...)` with `multi_agent = true` in `~/.codex/config.toml`. If unavailable, generate the designs sequentially in-thread.
+Spawn 2-3 parallel subagents via the `Task` tool in a single message. Each subagent receives a divergent constraint. **They do not implement code** — only the shape of the interface. If subagents are unavailable, generate the designs sequentially in-thread. Tool translations for non-Claude-Code platforms: see `../../using-development-skills/references/codex-tools.md`.
 
 Orthogonal constraints to assign (one per agent):
 
@@ -93,8 +91,3 @@ From Ousterhout's "A Philosophy of Software Design":
 - **Skipping the comparison**: the value is in the contrast. Don't lock onto a single design without putting them side by side.
 - **Implementing during the design phase**: stop at the shape. Implementation comes later, in core-dev.
 - **Evaluating based on implementation effort**: implementation effort doesn't matter at this stage. The shape does.
-
-## Cross-link
-
-- Glossary `module`, `interface`, `depth`, `seam`, `adapter`: see `roast-my-code/references/architectural-depth.md`.
-- Deletion test to validate depth: same file.

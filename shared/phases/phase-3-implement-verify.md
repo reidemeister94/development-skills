@@ -1,81 +1,33 @@
 # Phase 3: IMPLEMENT + VERIFY — GATE
 
-**Cannot start without user-approved plan.** No approval? Go back to Phase 1.
+**Cannot start without user-approved plan.** No approval → Phase 1.
 
-Implementation runs **in main thread**. Test verification runs inline via `Bash`. You own the discipline.
-
-Apply [Iron Rules](../iron-rules.md) throughout — especially #2 (no positive claims without evidence), #3 (WHY comments), #4 (RED-GREEN-REFACTOR), #6 (every gate explicit).
+Implementation in main thread; verification inline via `Bash`. Apply [Iron Rules](../iron-rules.md) — Process Rule B (Red/Green TDD) and Process Rule D (spirit beats letter) govern every cycle; Pillar 3 (no claim without fresh evidence) governs every verification claim.
 
 ---
 
-## Step 1: Update plan file BEFORE implementation
+## Step 1: Update plan file BEFORE any source file
 
-**Before writing any code:**
-
-1. **Update WORKFLOW STATE:** `Current Phase: 3 (Implement + Verify)`, remove completed phases.
-2. **Add `## Task Checklist`** with one line per task from the plan:
-   ```markdown
-   ## Task Checklist
-   - [ ] Task 1: [description]
-   - [ ] Task 2: [description]
-   ```
-3. **Verify** — Read plan file back to confirm both updates persisted.
-
-**Do NOT touch any source file until the plan file has both updates.**
+1. **WORKFLOW STATE** → `Current Phase: 3 (Implement + Verify)`.
+2. **Add `## Task Checklist`** — one `- [ ]` line per task.
 
 ---
 
 ## Implementation Discipline (main-thread standing instructions)
 
-### Surgical changes
-Only modify what's required. No bundled cleanup. No refactoring of nearby code beyond what the task demands.
+**Vertical slices only:** one behavior/check → minimal implementation → verification → next behavior. Do NOT write all tests first and then all code; that's horizontal slicing and produces brittle tests for imagined implementation shape. If a task would require >100 lines before feedback, split it smaller.
 
-### Decompose
-Functions >70 lines → split (single responsibility, 20-40 lines).
+**TDD cycle:** RED (one test, run, must fail for the *expected reason*) → GREEN (simplest code that passes, no regressions) → REFACTOR (kill duplication, unclear names, >70 lines, dead code, defensive try/catch on safe paths, wrapper-for-nothing — run tests after). One test = one cycle. **Wrote production code before the test? Delete it. Start with the test.**
 
-### TDD cycle per behavior
-**RED** — Write ONE test. Run — must FAIL for the expected reason.
-**GREEN** — Write simplest passing code. Run — must PASS. No regressions.
-**REFACTOR** — Duplication? Unclear names? >70 lines? Run tests after.
+**Surgical:** modify only what the task requires. No bundled cleanup. No refactoring of nearby code. Functions >70 lines → split.
 
-One test = one cycle. Multiple behaviors = separate cycles. Skip RED = test proves nothing. Skip REFACTOR = design quality lost. **If you wrote production code before the test: delete it. Start with the test.**
+**Anti-poisoning:** before each task, confirm file paths exist (Glob/Grep) and signatures match source. Never trust memory of file contents across tasks — re-read.
 
-### Anti-Slop Self-Check (during REFACTOR)
+**Module refactoring:** before moving anything, `Grep` every import + every mock/patch path in `src/` and `tests/`. After moving, update every caller + every mock; linter clean; tests show zero `ImportError`. Don't claim split complete until ALL callers + mocks are updated.
 
-- **Restating comments?** Delete `x += 1  # increment x` and friends.
-- **Defensive try/catch on safe paths?** Remove. Only handle errors at boundaries.
-- **Wrapper for nothing?** Inline functions that wrap a single call without adding logic.
-- **Naming drift?** Grep for similar entities. Match conventions.
-- **Dependencies for trivial ops?** Stdlib first; new deps need justification.
+**Comments:** WHY only. Never restate WHAT the code does.
 
-### Comments
-Apply [Iron Rule #3](../iron-rules.md) — WHY for ambiguous/non-obvious code, no WHAT comments on clean code.
-
-### Anti-Poisoning Verification
-
-After each task, verify all references are grounded:
-- Confirm file paths exist (Glob/Grep)
-- Confirm function signatures match actual source
-- Do NOT trust memory of file contents across tasks — re-read when uncertain
-
-### Module Refactoring Discipline
-
-**Before moving anything:**
-1. `Grep` all imports of the source module across `src/` and `tests/`.
-2. `Grep` all mock/patch paths referencing the source module in `tests/`.
-3. Record every caller and mock path.
-
-**After creating new modules:**
-4. Update every caller's import.
-5. Update every mock/patch path.
-6. Run linter — zero unused/missing imports.
-7. Run tests — zero `ImportError`s.
-
-**Never claim a split complete without updating ALL callers and mock paths.**
-
-### Progress Checkpoints (for 5+ tasks)
-
-Every 3 completed tasks, mark `[x]` in plan file with affected files and write partial `## Implementation Log` entries. If context nears capacity, write all progress to disk and summarize.
+**Progress checkpoints (5+ tasks):** every 3 done, mark `[x]` in plan with affected files. Context near capacity → write progress to disk + summarize.
 
 ---
 
@@ -122,17 +74,14 @@ Run verification commands from your language skill's config via the `Bash` tool:
 ```markdown
 ## Verification Results
 
-### Iteration 1
-- **Command:** `pytest tests/ -v`
-- **Result:** 45/47 passed
-- **Failures (from /tmp/verify-out-0015.log):**
-  - `test_auth`: [error and root cause]
-  - `test_validation`: [error and root cause]
+### Iteration N
+- **Command:** `<test command>`
+- **Result:** `<N/M passed>` (or details from `/tmp/verify-out-NNNN.log`)
 - **Action:** [what was fixed]
 
 ### Final
-- **Command:** `pytest tests/ -v && ruff check . && ruff format --check`
-- **Result:** 47/47 passed, lint clean
+- **Command:** `<test && lint && format-check>`
+- **Result:** all green
 ```
 
 ### Tiers
@@ -169,34 +118,13 @@ After all tasks complete and verification PASS, append `## Implementation Log` t
 ```markdown
 ## Implementation Log
 
-### Task 1: [name]
+### Task N: [name]
 - **Approach:** [why this, not alternatives]
-- **TDD cycles:** [N — omit for single-cycle]
-- **Refactoring:** [what improved — omit if none]
-- **Discoveries:** [unexpected findings]
-- **Decisions:** [design choices and rationale]
-
-### Notes
-[Cross-cutting observations, suggestions for future work]
+- **Discoveries:** [unexpected findings — omit if none]
+- **Decisions:** [design choices + rationale — omit if none]
 ```
 
 Update chronicle (if created in Phase 2) with discoveries from Implementation Log.
-
----
-
-## Quality Checklist (before claiming COMPLETE)
-
-Each row maps to an [Iron Rule](../iron-rules.md) pillar — if you can't check a row, that's a real gap, not a formality.
-
-- [ ] **Pillar 1 (simplicity):** simplest working solution; no over-engineering; no function > 70 lines
-- [ ] **Pillar 2 (all signal, zero noise):** no dead code, no wrapper-for-nothing, no defensive try/catch on safe paths
-- [ ] **Pillar 3 (zero regression):** verification output captured fresh this turn; 5-step gate honored
-- [ ] **Pillar 5 (WHY comments):** ambiguous code has WHY; clean code has no WHAT
-- [ ] **Pillar 6 (refactoring objective):** any refactor measurably improved at least one of clear/descriptive/efficient/performant/reliable/robust/maintainable
-- [ ] **Rule B (TDD):** RED → GREEN → REFACTOR honored
-- [ ] Plan file has Task Checklist `[x]` + Implementation Log + Verification Results
-
-Also apply the language skill's quality checklist.
 
 ---
 

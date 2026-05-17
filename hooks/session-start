@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SessionStart hook for development-skills plugin.
-# Mirrors obra/superpowers' approach: inject the full using-development-skills SKILL
-# content as additionalContext so the model has skill-routing rules + anti-rationalization
+# inject the full using-development-skills SKILL content as additionalContext so the model
+# has skill-routing rules + anti-rationalization
 # devices (Iron Rule, Red Flags, "1% chance" rule) loaded from token 0.
 #
 # Why: textual rules in SKILL.md are not self-enforcing — they require auto-discovery

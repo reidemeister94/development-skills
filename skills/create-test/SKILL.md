@@ -10,7 +10,7 @@ allowed-tools: Glob, Grep, Read, Bash, Agent, Edit, Write, AskUserQuestion
 
 ultrathink
 
-**Announce:** "Using the create-test skill. Analyzing code to design tests that find bugs, not just exist."
+Apply [Iron Rules](../../shared/iron-rules.md) — Pillar 1 (simplicity: plain pytest before any library), Pillar 3 (no claim without fresh test output), and Pillar 6 (measurably better — tests must find bugs, not just exist).
 
 ## Rules (apply to ALL modes)
 

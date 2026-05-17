@@ -2,76 +2,53 @@
 name: core-dev
 description: "Use when any coding, development, analysis, debugging, or code-related task is detected. Triggers on: implementing features, fixing bugs, refactoring code, reviewing diffs, investigating errors, evaluating approaches, or making architecture decisions."
 user-invocable: false
-allowed-tools: Glob, Read, Bash, Task, Skill, Edit, Write, AskUserQuestion
+allowed-tools: Glob, Grep, Read, Bash, Skill, AskUserQuestion
 ---
 
-# Development Workflow Director
+# Development Workflow Router
 
-**DEFAULT ACTION: Invoke brainstorming.** The burden of proof is on SKIPPING brainstorming, not on activating it.
+Triage (PASS_THROUGH/LIGHT/FULL) is upstream in `using-development-skills`. If you're here, you're FULL. Iron Rules: `../../shared/iron-rules.md`.
 
-Triage (PASS_THROUGH or FULL) is handled upstream by `using-development-skills`. PASS_THROUGH tasks never reach here.
+## 1. Active plan?
 
----
+`Grep("Status: In Progress", path="docs/plans/", glob="*.md")`. Match → read the plan file, resume at the phase listed (skip language detection — plan already specifies). Still invoke the language skill for implementation rules. No match → step 2.
 
-## Step 1: Check for In-Progress Workflow (FIRST)
+## 2. Brainstorming gate
 
-Check `docs/plans/` for an active plan: `Grep("Status: In Progress", path="docs/plans/", glob="*.md")`. If `docs/plans/` doesn't exist, skip — no active plan.
+**Default: invoke `development-skills:brainstorming`** with the user's full request as args.
 
-- **`ACTIVE_PLAN:`** — in-progress workflow exists. **Skip the brainstorming guard entirely.**
-  1. Read the plan file to recover full context (WORKFLOW STATE, Research path, Chronicle path).
-  2. **Brainstorming-created plans** (has Approach Decision section): Start from Phase 1 — read existing research, fill HOW-level gaps only.
-  3. **Non-brainstorming plans** at Phase 1 with user saying proceed: Treat as plan approval, advance to Phase 2.
-  4. Announce: *"Resuming workflow from Phase [N] based on `[filename]`."*
-  5. **Skip language detection** — the plan already specifies the language.
-  6. **STILL invoke the language skill** — REQUIRED for workflow instructions.
-- **`NO_ACTIVE_PLAN`** — proceed to Step 2.
+**Skip ONLY if all three hold:**
 
----
+- Fully reversible in < 1 hour
+- ONE obvious approach (forced shape, not *"I think this is right"*)
+- WHY doesn't affect HOW
 
-## Step 2: Brainstorming Guard
+**Specialized routes:**
 
-**STOP.** Before announcing yourself, before identifying the language, before doing anything: complete this guard.
+- Bug fix with error / stack trace → `development-skills:debugging`
+- Test creation / strategy / coverage analysis → `development-skills:create-test`
 
-Read `routing-rules.md` in this skill's directory (use Glob to find `**/core-dev/routing-rules.md`). Follow ALL instructions there. Return here after the guard completes.
+**User bypass:** *"skip brainstorming"*, *"just code it"*, *"I already know the approach"* → respect it. *"Fast"* is NOT a bypass.
 
----
+### Anti-rationalization
 
-## Step 3: Post-Brainstorming Handler
+| Your thought | Reality |
+|---|---|
+| *"User said exactly what to do"* | WHAT ≠ HOW. Multiple approaches → brainstorm. |
+| *"I already have a good approach"* | First approach ≠ best. Brainstorming costs nothing. |
+| *"Just analysis / investigation"* | Analysis IS development. Brainstorm. |
+| *"User confirmed, so my analysis was correct"* | Confirmation validates the decision, not the analysis. |
 
-After brainstorming returns:
+## 3. Language
 
-- **If brainstorming invoked core-dev (Proceed path):** Step 1 handles it via active plan detection.
-- **If brainstorming returned Standalone/Abandon:** STOP core-dev. Return control to user.
-- **If unexpected format:** Present output and ask user (1. Proceed, 2. Adjust, 3. Stop).
+After brainstorming returns (or after a skip-decision), detect language:
 
----
+| Signal | Skill |
+|---|---|
+| `next.config.*`, `app/{layout,page}.tsx`, `@raycast/api`, `vite.config.*` + react, `*.tsx` + react dep | `frontend-dev` |
+| `*.py`, `requirements*.txt`, `pyproject.toml` | `python-dev` |
+| `*.ts`, `tsconfig.json` (no frontend signals) | `typescript-dev` |
+| `*.java`, `pom.xml`, `build.gradle`, `*.kt` | `java-dev` |
+| `*.swift`, `Package.swift` | `swift-dev` |
 
-## Step 4: Identify Project Language/Framework
-
-Check in this order (first match wins):
-
-1. `*.py`, `requirements*.txt`, `pyproject.toml`, `setup.py`, `Makefile` with Python targets → **Python**
-2. `*.java`, `pom.xml`, `build.gradle`, `*.kt` → **Java**
-3. `*.swift`, `Package.swift`, `*.xcodeproj` → **Swift**
-4. **Frontend detection** (check BEFORE generic TypeScript):
-   - `next.config.*`, or `app/` directory with `layout.tsx`/`page.tsx` → **Frontend (Next.js)**
-   - `@raycast/api` in `package.json` deps → **Frontend (Raycast)**
-   - `vite.config.*` + (`react` in deps) → **Frontend (Vite + framework)**
-   - `*.tsx`/`*.jsx` + `react` in `package.json` deps → **Frontend (React)**
-5. `*.ts`, `tsconfig.json`, `package.json` with TypeScript deps (no frontend framework signals) → **TypeScript**
-
-**Note:** Any project with a frontend UI framework MUST use frontend-dev, NOT typescript-dev.
-
-## Step 5: Invoke Language Skill (REQUIRED)
-
-| Language/Framework | Skill to invoke |
-|----------|----------------|
-| Python | `development-skills:python-dev` |
-| Java | `development-skills:java-dev` |
-| Swift | `development-skills:swift-dev` |
-| Frontend (any) | `development-skills:frontend-dev` |
-| TypeScript (pure) | `development-skills:typescript-dev` |
-
-**Do NOT write any code before invoking the language skill.** The language skill loads the mandatory workflow that governs ALL development work.
-
-If the language skill is already in your context: defer to it. Do NOT re-invoke.
+Frontend signals trump pure TypeScript. Invoke the matching skill before writing any code.

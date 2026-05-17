@@ -1,3 +1,49 @@
+## 0.5.0 (2026-05-17)
+
+### BREAKING
+
+- **Unified marketplace install on both CLIs.** Codex installation now goes through `codex plugin marketplace add reidemeister94/development-skills` → `/plugins` UI → Install — the same shape as Claude Code's `/plugin marketplace add` + `/plugin install`. Removes the prior clone+symlink workaround. Users on the old install path: re-install via the new marketplace command.
+- **Iron Rules: 8 Pillars + 3 Process Rules → 9 Pillars + 4 Process Rules.** Adds **Pillar 8: Language & Memory Standards** (English-only artifacts, MEMORY.md hygiene with three destinations by ownership) and **Process Rule D: Spirit beats letter** (*"Violating the letter IS violating the spirit"*). Files referencing the old numbering (`shared/iron-rules.md`, `shared/phases/phase-1..4`, `agents/staff-reviewer.md`, `skills/using-development-skills/SKILL.md`, `skills/core-dev/SKILL.md`, `skills/brainstorming/*`) updated.
+- **`claude-to-codex` skill renamed → `claude-to-agents`.** Generalized scope: makes a project's agent context compatible with Claude Code AND Codex CLI AND the AGENTS.md standard. Template embeds the canonical 9 Core Pillars verbatim. Directory + frontmatter `name` + description updated; README skills table reflects new name.
+- **Three-tier triage replaces two-tier.** `using-development-skills/SKILL.md` adds **LIGHT** between PASS_THROUGH (trivial) and FULL (default). LIGHT is a 6-step inline flow for mechanical changes with no design choice / no logic impact / no new patterns / no chronicle-worthy knowledge. Tier is qualitative (not file count) — a 30-file mechanical rename is LIGHT; a 1-file new-caching-strategy is FULL. Mid-execution discovery that breaks LIGHT criteria escalates to FULL with plan materialization. Canonical definition in `shared/workflow.md` § Tier selection.
+
+### Feat
+
+- **`.codex-plugin/plugin.json`** (new): Codex plugin manifest with `interface{}` block (`displayName`, `shortDescription`, `longDescription`, `category`, `capabilities[]`, `defaultPrompt`, `brandColor`) for Codex's `/plugins` UI. Required for `codex plugin marketplace add` to recognize the plugin.
+- **`.agents/plugins/marketplace.json`** (new): Codex marketplace catalog parallel to `.claude-plugin/marketplace.json`. Source-object schema (`{source: "local", path: "./"}`) per Codex spec.
+- **README install section**: single marketplace flow for both CLIs. Symmetric structure (marketplace-add command on both sides; install is one-liner on Claude Code, interactive `/plugins` UI on Codex).
+- **Cross-platform reference centralized**: `skills/using-development-skills/references/codex-tools.md` is now the SOLE source for tool translations (`Task` ↔ `spawn_agent`, `AskUserQuestion` fallback, named-agent dispatch recipe, hooks, marketplace). Skill bodies are clean of inline "on Claude Code / on Codex" branching — they point at codex-tools.md when relevant. Follows the superpowers pattern.
+- **`.agents/rules/plugin-packaging.md`** (rewritten): documents dual manifest + dual marketplace catalog + marketplace-only install policy + cross-platform reference single-source rule. Scope expanded to `.codex-plugin/**` and `.agents/plugins/**`.
+- **shared/templates/plan-template.md** (new): canonical plan-file schema referenced by `phase-1-research-plan.md` and `brainstorming/SKILL.md`. Replaces the per-skill `templates/plan-template.md`. Adds "File responsibilities", "Task decomposition", and "Plan buildability checks" sections (no placeholders / exact paths / consistent names / vertical slices / per-task verification).
+- **brainstorming**: Step 0 declares HYPOTHESIS + numeric CONFIDENCE (0-100%) before any question. Step 2 Q&A format `Q + GUESS + numeric CONFIDENCE` per question — calibration forces honesty. Adds 95% stop test, want-vs-should-want rescue, non-yes detection (sounds good / whatever you think / sure let's go / silence-then-okay = NOT yes). Step 8 hard gate renders both the 6-line restate (Outcome/User/Why now/Success/Constraint/**Out of scope**) AND a plan-mode-style implementation outline (Approach/Files/Tasks/Verification/Risks/Out of scope/Open questions) before approval.
+- **brainstorming/critical-analysis.md**: renames LIGHT depth → MID (avoids tier-name collision with workflow LIGHT tier).
+- **phase-3-implement-verify.md**: "Vertical slices only" rule promoted to standing instruction — one behavior/check → minimal impl → verification → next behavior. Horizontal slicing (all tests first, then all code) explicitly rejected.
+- **phase-4-review-finalize.md**: 4d integration step uses `AskUserQuestion` directly (Codex fallback delegated to `codex-tools.md`).
+- **agents/staff-reviewer.md**: adds artifact-trail review — reads `## Task Checklist` + `## Implementation Log` + `## Verification Results` directly from the plan file. Flags HIGH if tasks unchecked, verification stale/partial, HOW-level locks ignored, or RED-evidence missing where TDD was feasible. "ARTIFACT vs CONTRACT" framing: diff is artifact, plan/patterns are contract.
+- **shared/workflow.md**: LIGHT 6-step inline flow + Tier selection table + escalation rule consolidated. Default-on-uncertainty → FULL.
+- **using-development-skills**: stripped further to ~45 lines. Triage (PASS_THROUGH / LIGHT / FULL) + 3 FULL rules + LIGHT rule + platform mapping. Drops `<SUBAGENT-STOP>` / `<EXTREMELY-IMPORTANT>` XML tags (redundant with hook injection).
+- **core-dev**: thin router (~45 lines). Active-plan detection via `Grep("Status: In Progress", path="docs/plans/")`, then brainstorming guard with 4-condition skip + anti-rationalization table, then language detection.
+
+### Evals
+
+- **evals/evals.json**: regression suite rewritten — 25 cases covering all decisional branches: triage tiers (incl. 1-file FULL borderline), brainstorming gate + skip-conditions + user-bypass, specialized routes (debugging, create-test), anti-rationalization (all rows incl. Process Rule D), brainstorming SOTA patterns (Hypothesis+Confidence, Q+GUESS+CONFIDENCE numeric, design-it-twice, 6-line restate with Out-of-scope, plan-mode-style outline, non-yes detection), phase progression + WORKFLOW STATE recovery + chronicle IS/NOT NEEDED + Phase 4 integration choice, HOW-level locks (all 6 dimensions), TDD vertical slicing (no horizontal), 5-step verification gate, language detection (frontend > TS), LIGHT escalation, Pillar 0/3 (anti-flattery + root cause).
+
+### Removed
+
+- **`.codex/INSTALL.md`** deleted: obsolete clone+symlink workaround. README is now the single install source.
+
+### Fix
+
+- **shared/workflow.md** + **skills/brainstorming/references/design-it-twice.md**: inline "on Codex use spawn_agent" branching removed; both now point at `skills/using-development-skills/references/codex-tools.md` as the canonical cross-platform reference (no embedded harness-specific instructions in non-bootstrap skill bodies).
+- **shared/phases/phase-1-research-plan.md**: references `../templates/plan-template.md` as canonical schema (was duplicated inline). Drops separate "Step 6 Critical evaluation" (folded into Step 5/Step 6 plan-and-gate).
+- **shared/phases/phase-2-chronicle.md**: drops the inline "Announce" line; chronicle philosophy block preserved (Code+Git vs Plan vs Chronicles framing).
+- **shared/phases/phase-3-implement-verify.md** + **phase-4**: tighter prose. Codex-branching removed (delegated to `codex-tools.md`). Quality Checklist removed (replaced by Iron Rules walk during LIGHT and gate-by-gate in FULL).
+- **shared/references/workflow-reference.md**: removed (content folded into `shared/workflow.md`).
+- **skills/core-dev/routing-rules.md**: removed (content folded into `core-dev/SKILL.md`).
+- **skills/using-development-skills/references/codex-tools.md**: MultiAgentV2 (Codex 0.128+) notes — `spawn_agent` / `wait_agent` / `close_agent` built-in by default in 0.128+; legacy `[features] multi_agent = true` flag explicitly deprecated.
+- **.codex/INSTALL.md**: updated for Codex 0.128+ MultiAgentV2 defaults + optional `plugin_hooks = true` for native hook execution.
+- **README.md** + **AGENTS.md** + **CLAUDE.md**: updated to reflect 9 Pillars + 4 Process Rules, LIGHT tier, `claude-to-agents` rename, and Codex 0.128+ defaults.
+
 ## 0.4.0 (2026-05-13)
 
 ### BREAKING
