@@ -30,22 +30,22 @@ This plugin enforces discipline on AI agents — we hold ourselves to the same s
 
 ## Regression Testing with skill-creator
 
-The plugin ships with **27 evals and 89 assertions** covering 10 behavioral dimensions. These are the project's test suite — the equivalent of unit tests for a skill-based system.
+The plugin ships with **25 evals and 94 assertions** covering 10 behavioral dimensions. These are the project's test suite — the equivalent of unit tests for a skill-based system.
 
 ### Eval Categories
 
 | Category | Evals | What It Tests |
 |----------|-------|--------------|
-| `brainstorming-guard` | 7 | Triggers brainstorming when needed, skips when appropriate |
-| `smart-isolation` | 6 | Parallel vs single agent decisions, worktree safety |
-| `anti-rationalization` | 4 | Resists shortcuts, catches flawed premises |
-| `workflow-phases` | 3 | Phase progression, resumption, plan discovery |
-| `implementer-discipline` | 2 | TDD, caller updates, verification honesty |
-| `language-detection` | 1 | Frontend vs TypeScript backend routing |
-| `chronicle-quality` | 1 | WHY documentation quality |
-| `askuserquestion-avoidance` | 1 | Uses conversational text, not AskUserQuestion tool |
-| `turn-boundary` | 1 | Stops at the right moment, doesn't overflow turns |
-| `project-directives` | 1 | Respects existing project directives |
+| `anti-rationalization` | 5 | Resists shortcuts, catches flawed premises, Process Rule D adherence |
+| `brainstorming-guard` | 5 | Triggers brainstorming when needed, skip-conditions, user-bypass |
+| `implementer-discipline` | 3 | TDD vertical slicing, 5-step verification gate, no horizontal slicing |
+| `workflow-phases` | 3 | Phase progression, WORKFLOW STATE recovery, chronicle IS/NOT NEEDED, Phase 4 integration |
+| `anti-sycophancy` | 2 | Pillar 0 — no flattery, evidence over confirmation |
+| `brainstorming-internal-runtime` | 2 | Hypothesis + numeric Confidence, Q+GUESS+CONFIDENCE calibration |
+| `workflow-tier` | 2 | Triage tiers including 1-file FULL borderline, LIGHT escalation |
+| `brainstorming-sota` | 1 | Design-it-twice, 6-line restate, plan-mode-style outline, non-yes detection |
+| `create-test` | 1 | Specialized route for test-design tasks |
+| `language-detection` | 1 | Frontend > TypeScript routing |
 
 ### Running the Full Regression Suite
 
@@ -57,7 +57,7 @@ Use the `/eval-regression` skill or run manually with `skill-creator`:
 
 This will:
 1. **Snapshot** the current committed version as baseline
-2. **Execute** all 27 evals against both baseline and your modified version
+2. **Execute** all 25 evals against both baseline and your modified version
 3. **Grade** each eval's assertions (pass/fail with evidence)
 4. **Compare** results and generate a regression report
 5. **Verdict**: `SAFE TO COMMIT` or `REGRESSIONS FOUND`
@@ -68,7 +68,7 @@ This will:
 plugins/
 ├── development-skills/              # Your plugin (modified)
 │   └── evals/
-│       └── evals.json               # Eval definitions (27 evals, 89 assertions)
+│       └── evals.json               # Eval definitions (25 evals, 94 assertions)
 └── development-skills-workspace/    # Created by skill-creator (gitignored)
     ├── skill-snapshot/              # Baseline snapshot
     └── iteration-N/
@@ -93,7 +93,7 @@ If your PR adds a skill or changes behavior, you must add corresponding evals to
 
 ```json
 {
-  "id": 28,
+  "id": 26,
   "name": "your-eval-name",
   "category": "brainstorming-guard",
   "prompt": "The exact user prompt to test",
@@ -128,35 +128,35 @@ If your PR adds a skill or changes behavior, you must add corresponding evals to
 
 ## Skill Structure
 
-Each language skill follows this pattern:
+Each skill is a directory under `skills/`:
 ```
 skills/
   your-skill/
-    SKILL.md          # Frontmatter + instructions
-    references/       # Optional reference files
-    patterns/         # Optional pattern files
+    SKILL.md          # Required: YAML frontmatter + body
+    references/       # Optional: detailed material loaded on demand (subdir)
+    patterns.md       # Optional: language-specific patterns (single file convention used by python-dev, java-dev, typescript-dev, swift-dev)
 ```
 
 The `SKILL.md` must include:
-- YAML frontmatter with `name`, `description`, `user-invocable`
-- Verification commands (test, lint, build)
-- Language-specific implementation rules
-- Quality checklist
+- YAML frontmatter with `name` (matches directory name) and `description` (the trigger contract — lead with "Use when …" and list explicit keyword triggers)
+- A markdown body — no mandatory section headings; aim for ≤ 200 lines (push longer material into `references/`)
+- For language skills: verification commands (test / lint / build), implementation rules, quality checklist
 
-Look at `skills/python-dev/SKILL.md` as a reference implementation.
+Look at `skills/python-dev/SKILL.md` for a language-skill reference and `skills/using-development-skills/SKILL.md` for a workflow-skill reference.
 
 ## Design Principles
 
-All changes must align with the [Model Behavior Principles](CLAUDE.md):
+All changes must align with the canonical Iron Rules — **9 Core Pillars + 4 Process Rules** — in [`shared/iron-rules.md`](shared/iron-rules.md). The pillars and process rules apply to every skill, agent, and phase. Particularly load-bearing when contributing:
 
-1. **Maximum honesty, zero accommodation** — skills should make the model challenge wrong approaches
-2. **Critical thinking is always on** — never skip evaluation
-3. **Planning is 90% of the work** — invest in brainstorming and planning phases
-4. **Persist knowledge to disk** — context windows are ephemeral
+- **Pillar 0 (don't pander)** — skills must make the model challenge wrong approaches, not defer to user confirmation as validation
+- **Pillar 1 (simplicity)** — refuse to add a new file / abstraction / config / dependency when an existing mechanism covers >50% of the need
+- **Pillar 3 (no claim without fresh evidence)** — every eval must verify outcomes against actual run output, not assumed behavior
+- **Pillar 4 (document every discovery)** — non-trivial decisions in PRs go in `docs/chronicles/`, not just in commit messages
+- **Process Rule B (Red/Green TDD)** — new skill behavior is paired with a failing eval before the skill is written
 
 ## Pull Request Checklist
 
-- [ ] Ran `/eval-regression` — all 27 evals pass (zero regressions)
+- [ ] Ran `/eval-regression` — all 25 evals pass (zero regressions)
 - [ ] `benchmark.md` pasted in PR description
 - [ ] New evals added for any new or modified behavior
 - [ ] One concern per PR
