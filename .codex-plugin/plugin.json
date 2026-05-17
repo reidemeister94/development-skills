@@ -2,6 +2,17 @@
   "name": "development-skills",
   "version": "0.5.1",
   "description": "Three-tier triage (PASS_THROUGH / LIGHT / FULL 4-phase Research+Plan → Chronicle → Implement+Verify → Review+Finalize) development workflow with language auto-detection (Python, Java, TypeScript, Swift, frontend) and a staff-reviewer subagent.",
+  "repository": "https://github.com/reidemeister94/development-skills",
+  "homepage": "https://github.com/reidemeister94/development-skills",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "tdd",
+    "code-review",
+    "subagent",
+    "claude-code",
+    "codex"
+  ],
   "skills": "./skills/",
   "hooks": "./hooks/hooks.json",
   "interface": {
@@ -19,6 +30,7 @@
       "Use development-skills to implement this feature.",
       "Use development-skills to debug this failure."
     ],
-    "brandColor": "#2563EB"
+    "brandColor": "#2563EB",
+    "composerIcon": "./assets/icon.svg"
   }
 }
