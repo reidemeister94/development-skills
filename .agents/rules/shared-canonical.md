@@ -33,7 +33,7 @@ paths:
 ## What does NOT belong in shared/
 
 - Project-specific examples (those belong in skill `references/`).
-- User-facing install instructions (README.md / .codex/INSTALL.md).
+- User-facing install instructions (README.md is the single source — `.codex/INSTALL.md` was removed in 0.5.0 when both CLIs unified on marketplace install).
 - Cross-version changelog narrative (CHANGELOG.md).
 
 If you're about to add a file under `shared/`, ask: would every skill / phase / agent reference it? If not, it belongs elsewhere.

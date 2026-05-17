@@ -15,16 +15,27 @@ Files in this scope control how the plugin is installed, listed, and version-tra
 
 ## Version — single source of truth
 
-`.claude-plugin/plugin.json` `"version"` field is canonical. `.codex-plugin/plugin.json` `"version"` and the repo-root `VERSION` file mirror it. Every release bumps all three atomically — never one without the others.
+Five locations carry the plugin version. `cz bump` (invoked via `make bump-version-{minor,major,patch}`) keeps them in sync atomically — never bump manually.
 
-Check before any version-related commit:
+| Location | Role |
+|----------|------|
+| `pyproject.toml` `[tool.commitizen] version` | Source of truth that `cz` reads on bump. |
+| `VERSION` | Mirror, consumed by the Makefile (`VERSION=v$(cat VERSION)`). |
+| `.claude-plugin/plugin.json` `"version"` | Claude Code plugin manifest. |
+| `.codex-plugin/plugin.json` `"version"` | Codex plugin manifest. |
+| `.claude-plugin/marketplace.json` plugins[0] `"version"` | Claude Code marketplace catalog. |
+
+`tag_format = "$version"` means `cz bump` creates an annotated git tag matching the new version (e.g., `0.6.0`, not `v0.6.0`). `cz` then commits the bump with message `bump: version <old> → <new>` and updates `CHANGELOG.md`.
+
+Sanity check before any version-related commit:
 
 ```bash
-grep -E '"version"' .claude-plugin/plugin.json .codex-plugin/plugin.json
+grep -E '"version"' .claude-plugin/plugin.json .codex-plugin/plugin.json .claude-plugin/marketplace.json
 cat VERSION
+grep -A1 '\[tool.commitizen\]' pyproject.toml | grep version
 ```
 
-All three values must match exactly. If they diverge, the divergence is the bug — fix before continuing.
+All five values must match exactly. If they diverge, the divergence is the bug — first audit `pyproject.toml`'s `version_files` list (every location above must appear, with the `:version` selector where applicable), then re-bump or align by hand.
 
 ## Manifests — dual, parallel structure
 
