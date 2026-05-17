@@ -7,7 +7,7 @@ allowed-tools: Glob, Grep, Read, Bash, Task, Skill, Edit, Write, AskUserQuestion
 
 # Systematic Debugging
 
-**Announce:** "I'm using the debugging skill. Following the systematic root-cause methodology."
+Apply [Iron Rules](../../shared/iron-rules.md) — Pillar 0 (be critical, don't pander to a wrong hypothesis), Pillar 3 (root cause beats symptom suppression), and Process Rule D (spirit beats letter — *"I'll add logging"* is not investigation) govern every step.
 
 ## THE IRON LAW
 

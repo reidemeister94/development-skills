@@ -2,7 +2,7 @@
 
 Combines staff review with finalization. The staff-reviewer agent is the workflow's only named subagent — independent context, scoped tools, fresh eyes on the diff.
 
-Apply [Iron Rules](../iron-rules.md) — staff review enforces Pillars 0-6 against the diff; finalization applies Pillar 4 (document discoveries) and Pillar 7 (keep project docs slim). Rule A (no commits without explicit user request) gates step 4d.
+Apply [Iron Rules](../iron-rules.md) throughout. Staff review enforces the diff-relevant pillars (Pillar 1 Simplicity, Pillar 2 Signal/zero noise, Pillar 3 No claim without evidence, Pillar 5 WHY comments, Pillar 6 Refactoring objective). Finalization applies Pillar 4 (document discoveries), Pillar 7 (keep project docs slim), and Pillar 8 (English + memory hygiene). Process Rule A (no commits without explicit user request) gates step 4d.
 
 ---
 
@@ -80,15 +80,13 @@ Invoke `development-skills:align-docs` via the Skill tool.
 
 ## 4d: Integration
 
-**Default (changes on current branch):** Ask the user — on Claude Code via `AskUserQuestion`:
+**Default (changes on current branch):** Ask via `AskUserQuestion`:
 
 - *"Implementation complete. Commit the changes now?"* — options: `"Yes, commit now"`, `"No, I'll handle it myself (Recommended)"`.
 
-On Codex, numbered list + STOP.
-
 **STOP and wait.** Only commit if user picks `"Yes, commit now"`. Use `development-skills:commit` via the Skill tool.
 
-**Unmerged worktree branch (rare):** Ask via `AskUserQuestion` (Claude Code) or numbered list + STOP (Codex):
+**Unmerged worktree branch (rare):** Ask via `AskUserQuestion`:
 
 - *"Implementation complete. How would you like to land the changes?"* — options: `"Merge to current branch locally"`, `"Push and create a Pull Request"`, `"Keep the branch as-is"`, `"Discard this work"`.
 

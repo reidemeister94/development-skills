@@ -41,6 +41,8 @@ Verification: TBD
 - **Unknowns** — [anything unclear — state explicitly, don't guess]
 - **Verification strategy** — [how to prove it works]
 - **Files to modify** — [specific files and planned changes]
+- **File responsibilities** — [what each touched/new file owns]
+- **Task decomposition** — [smallest buildable slices; each has a test/check]
 
 ### HOW-level locks (Phase 1 will fill these in)
 
@@ -53,6 +55,14 @@ Verification: TBD
 | Test scope | [decision or N/A: reason] |
 | Rollback | [decision or N/A: reason] |
 
+### Plan buildability checks
+
+- [ ] No placeholders: no `TBD`, `TODO`, `later`, `similar to above`, or vague "add appropriate..." steps.
+- [ ] Every task has exact file paths or an explicit discovery step that produces them.
+- [ ] New/changed functions, types, fields, routes, and commands are named consistently across tasks.
+- [ ] Tasks are vertical slices: one behavior/check -> minimal implementation -> verification -> next behavior.
+- [ ] Every task has a verification command or manual evidence target.
+
 ## Implementation Steps
 
-[High-level numbered steps for the recommended approach. Include specific files to modify where known.]
+[Numbered, buildable steps for the recommended approach. Each step should include: target file(s), behavior changed, expected failing test/check when applicable, minimal implementation action, and verification command. Do not write placeholders.]

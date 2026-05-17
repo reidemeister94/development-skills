@@ -32,9 +32,7 @@ Before roasting, understand the terrain:
 
 ## Step 2 — Staff Review (Code Quality Roast)
 
-Dispatch the `development-skills:staff-reviewer` subagent:
-- **Claude Code:** `Agent` tool, `subagent_type: "development-skills:staff-reviewer"`.
-- **Codex:** see `using-development-skills/references/codex-tools.md` — read `agents/staff-reviewer.md`, wrap its body in the XML template, and pass it as `message` to `spawn_agent(agent_type="worker", ...)` (requires `[features] multi_agent = true`).
+Dispatch the `development-skills:staff-reviewer` subagent via the `Agent` tool with `subagent_type: "development-skills:staff-reviewer"`. On Codex, follow the named-agent dispatch recipe in `../using-development-skills/references/codex-tools.md`.
 
 Build the target description based on scope:
 - **Entire repo:** `"Standalone review. Target: the entire repository at <cwd>. Read the project structure, then systematically review all source files."`

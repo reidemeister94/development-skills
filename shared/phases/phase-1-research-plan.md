@@ -1,10 +1,10 @@
 # Phase 1: RESEARCH + PLAN — GATE
 
-**Combined phase.** Research informs planning; planning locks ambiguity. **Planning is 90% of the work** — a flawed plan produces flawed code. Last checkpoint before implementation tokens are spent.
+Planning locks ambiguity; flawed plan → flawed code. Last checkpoint before implementation tokens are spent.
 
-**Knowledge-first:** check what's on disk, fill only gaps in an **isolated subagent** so raw results never bloat your context. Then write a plan to disk, lock the HOW-level ambiguities, gate.
+Apply [Iron Rules](../iron-rules.md) — especially Pillar 0 (be critical of every assumption), Pillar 1 (simplicity audit on every approach), and Pillar 3 (no claim without fresh evidence).
 
-Apply [Iron Rules](../iron-rules.md) — especially #2 (no positive claims without evidence) and #6 (every gate explicit).
+**Knowledge-first:** check disk; fill gaps in an isolated subagent (raw results stay there). Write the plan to disk; lock HOW-level ambiguities; gate.
 
 ---
 
@@ -49,7 +49,7 @@ Review task requirements against existing research. Identify missing implementat
    - No research file → create `docs/plans/NNNN__research__{slug}.md` (plan's NNNN prefix, slug = kebab-case task topic)
 5. Returns brief summary (max 10 lines) + file path.
 
-**Subagent prompt template:** Read `shared/agents/research-agent.md`. Fill `{TASK}`, `{RESEARCH_TARGETS}` (the gaps), `{CODEBASE_FINDINGS}`, `{EXISTING_RESEARCH_FILE}` (path if any, else `"none"`), `{NNNN}`, `{SLUG}`. Spawn via Task tool.
+**Subagent prompt template:** Read `../agents/research-agent.md`. Fill `{TASK}`, `{RESEARCH_TARGETS}` (the gaps), `{CODEBASE_FINDINGS}`, `{EXISTING_RESEARCH_FILE}` (path if any, else `"none"`), `{NNNN}`, `{SLUG}`. Spawn via Task tool.
 
 After return, read summary only (full research stays on disk for later phases).
 
@@ -57,28 +57,17 @@ After return, read summary only (full research stays on disk for later phases).
 
 ## Step 4: Write the Plan to disk
 
-**The plan file is the single persistent artifact.**
+The plan file is the single persistent artifact. Schema is canonical in `../templates/plan-template.md` — read it and instantiate.
 
-Write or update `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__brief-description.md` with:
+Set in `## WORKFLOW STATE`:
 
-```markdown
-## WORKFLOW STATE
+```
 Status: In Progress
 Current Phase: 1 (Research + Plan)
 Phases remaining: 2, 3, 4
 Research: [docs/plans/NNNN__research__{slug}.md or NOT AVAILABLE]
 Chronicle: [TBD — decided in Phase 2]
 Verification: [commands from language skill]
-
-**Sections:** WORKFLOW STATE | Clarifications | Plan | Task Checklist | Implementation Log | Verification Results | Review Log
-
-## Plan
-- **Assumptions** — about codebase, requirements, environment
-- **Risks** — what could go wrong, edge cases, side effects
-- **Unknowns** — anything unclear (note explicitly — do NOT guess)
-- **Verification strategy** — how to prove it works
-- **Files to modify** — specific files and planned changes
-- **HOW-level locks** — see Step 5 below (mandatory)
 ```
 
 Each subsequent phase appends: `## Task Checklist` + `## Implementation Log` + `## Verification Results` (all P3), `## Review Log` (P4).
@@ -87,9 +76,7 @@ Each subsequent phase appends: `## Task Checklist` + `## Implementation Log` + `
 
 ## Step 5: Zero-Ambiguity HOW-Level Q&A — MANDATORY
 
-**No plan survives ambiguity at the HOW level.** For every dimension below, the plan must lock the answer OR state N/A with a one-line reason. The model does not guess.
-
-Apply [Iron Rules](../iron-rules.md) Pillar 1 (simplicity) and Pillar 2 (signal-not-noise) when filling each cell — pick the simplest answer that handles the dimension. If a dimension genuinely doesn't apply, state N/A explicitly; never leave a cell blank.
+**No plan survives ambiguity at the HOW level.** Lock each dimension OR state N/A with a one-line reason. Never guess. Pick the simplest answer that handles the dimension. Never leave a cell blank.
 
 | Dimension | What to lock |
 |---|---|
@@ -116,23 +103,17 @@ Apply [Iron Rules](../iron-rules.md) Pillar 1 (simplicity) and Pillar 2 (signal-
 
 A blank cell is a red flag — the model doesn't know yet. Ask the user.
 
-**For unknowns:** Display questions as plain text and STOP. Wait for response. (`AskUserQuestion` fits when the answer is a discrete pick from 2-4 options; use plain text for free-form unknowns.)
+**For unknowns:** Display questions as plain text and STOP. Wait for response. (`AskUserQuestion` fits when the answer is a discrete pick from 2-4 options.)
 
 ---
 
-## Step 6: Critical evaluation
-
-If the user proposed a solution, evaluate against research. If a better approach exists, say so directly. Apply [Iron Rule #1](../iron-rules.md): critical, not agreeable. Keep it brief.
-
----
-
-## Step 7: Present plan summary, gate on approval
+## Step 6: Present plan summary, gate on approval
 
 Display a 6-10 line summary in chat: scope, approach, files to touch, HOW-level locks status, verification strategy, key risk.
 
-Ask: **"Approve the plan and proceed to Chronicle/Implementation?"** — on Claude Code use `AskUserQuestion` with options `"Approve and proceed (Recommended)"` / `"Modify"`. On Codex, numbered list + STOP.
+Ask: **"Approve the plan and proceed to Chronicle/Implementation?"** via `AskUserQuestion` with options `"Approve and proceed (Recommended)"` / `"Modify"`.
 
-**WAIT for explicit user approval.** No "looks good" inferred from silence.
+**WAIT for explicit user approval.** No "looks good" inferred from silence. Non-yes detection per brainstorming Step 8.
 
 **On approval:** Update WORKFLOW STATE to `Current Phase: 2`. Proceed immediately.
 
@@ -145,6 +126,7 @@ Ask: **"Approve the plan and proceed to Chronicle/Implementation?"** — on Clau
 - Plan file at `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__brief-description.md`
 - `## Clarifications` (if questions asked)
 - `## Plan` with `### HOW-level locks` table — all 6 dimensions filled or marked N/A
+- Buildable task decomposition with exact file paths, no placeholders, per-task verification (`plan-template.md` § Plan buildability checks)
 - User has explicitly approved
 
 **Gate:** State **"RESEARCH + PLAN COMPLETE — APPROVED"**

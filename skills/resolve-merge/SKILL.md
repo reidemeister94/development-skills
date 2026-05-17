@@ -123,22 +123,11 @@ The Class column already marks JUDGMENT rows — do NOT print a separate JUDGMEN
 
 ### Gate (up-front, once)
 
-After displaying the table:
-
-**On Claude Code:** use `AskUserQuestion`:
+After displaying the table, gate via `AskUserQuestion`:
 - Question: "Approve plan and execute?"
 - Options: `"Approve (Recommended)"` / `"Modify plan"` / `"Abort"`
 
-**On Codex:**
-```
-Approve plan and execute?
-
-1. Approve (Recommended)
-2. Modify plan
-3. Abort
-
-Reply with the number. STOP. Wait.
-```
+(Codex: numbered list + STOP — see `../using-development-skills/references/codex-tools.md`.)
 
 - **Approve:** proceed to Phase 2/3.
 - **Modify plan:** ask what to change. Allowed modifications: (a) re-classify a row AUTO ↔ JUDGMENT; (b) exclude a row from execution (leave the file conflicted, surface in summary); (c) change the action for a row to a different listed action (e.g., switch lock-file from `--ours` regen to `--theirs` regen). Any other modification (custom actions, re-orderings, or "auto-merge this JUDGMENT file without showing me") MUST be refused — point the user to the per-file JUDGMENT gate instead. Then update the plan table, re-display, re-gate.
@@ -254,19 +243,10 @@ For each file classified JUDGMENT:
    - blank line
    - rationale line: `Why: <one short sentence>`
 
-4. **Then ask the question** using the platform's mechanism:
+4. **Then ask via `AskUserQuestion`:**
+   - Options: `"Approve (Recommended)"` / `"Edit and re-show"` / `"Skip this file (leave conflict)"`
 
-**On Claude Code:** `AskUserQuestion`:
-- Options: `"Approve (Recommended)"` / `"Edit and re-show"` / `"Skip this file (leave conflict)"`
-
-**On Codex:**
-```
-1. Approve (Recommended)
-2. Edit and re-show
-3. Skip this file (leave conflict)
-
-Reply with the number. STOP. Wait.
-```
+(Codex: numbered list + STOP — see `../using-development-skills/references/codex-tools.md`.)
 
 - **Approve:** apply the edit, stage the file.
 - **Edit and re-show:** ask what to change, update the proposed resolution, re-display the gate.

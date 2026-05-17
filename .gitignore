@@ -22,6 +22,10 @@ venv/
 
 # Claude Code
 .claude/settings.local.json
+.claude/CLAUDE.md
+
+# Codex CLI personal override (avoid; prefer ~/.codex/AGENTS.md for user-global instructions)
+AGENTS.override.md
 
 # Testing workspaces (ephemeral eval data)
 *-workspace/
