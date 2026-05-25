@@ -10,30 +10,35 @@
 #   Swift:      swift-format — official Apple toolchain (Xcode 16+)
 #   Web files:  biome       — same binary handles JSON, CSS, GraphQL
 
-# Read hook input JSON, extract file_path from tool_input.
+# Read hook input JSON and collect every candidate file path to format.
 # python3 is required by the plugin elsewhere; using it here is robust to
 # pretty-printed JSON, escaped quotes, and the key appearing inside string values.
-# Codex compatibility: under `apply_patch` (Codex 0.124+), tool_input.file_path is
-# absent — the patch text lives in tool_input.command. Best-effort: derive the path
-# from the first `*** {Add,Update,Delete} File:` header in the patch.
+# Sources:
+#   - Claude Code Edit / Write / MultiEdit:  tool_input.file_path (single path).
+#   - Codex apply_patch (0.124+):            every `*** {Add,Update} File:` header
+#     in tool_input.command. Delete headers are skipped — the file no longer exists.
+# Multi-file patches yield multiple paths; we format each independently.
 INPUT=$(cat)
-FILE_PATH=$(printf '%s' "$INPUT" | python3 -c 'import json,re,sys
+FILE_PATHS=$(printf '%s' "$INPUT" | python3 -c 'import json,re,sys
 try:
     d = json.load(sys.stdin)
 except Exception:
     sys.exit(0)
 ti = d.get("tool_input") or {}
+paths = []
 fp = ti.get("file_path")
-if not fp:
-    cmd = ti.get("command") or ""
-    m = re.search(r"^\*\*\* (?:Add|Update|Delete) File:\s*(.+)$", cmd, re.MULTILINE)
-    fp = m.group(1).strip() if m else ""
-print(fp or "")' 2>/dev/null || true)
+if fp:
+    paths.append(fp)
+cmd = ti.get("command") or ""
+for m in re.finditer(r"^\*\*\* (?:Add|Update) File:\s*(.+)$", cmd, re.MULTILINE):
+    paths.append(m.group(1).strip())
+seen = set()
+for p in paths:
+    if p and p not in seen:
+        seen.add(p)
+        print(p)' 2>/dev/null || true)
 
-[ -z "$FILE_PATH" ] && exit 0
-[ ! -f "$FILE_PATH" ] && exit 0
-
-EXT="${FILE_PATH##*.}"
+[ -z "$FILE_PATHS" ] && exit 0
 
 # Find a command in PATH or node_modules/.bin/
 find_cmd() {
@@ -53,39 +58,42 @@ find_ruff() {
   return 1
 }
 
-case "$EXT" in
-  py)
-    # Python: ruff (best-in-class, 30x faster than Black)
-    RUFF=$(find_ruff) && "$RUFF" format --quiet "$FILE_PATH" 2>/dev/null || true
-    ;;
-  ts|tsx|js|jsx|mjs|cjs)
-    # JS/TS: biome (best), then prettier (fallback)
-    FMT=$(find_cmd biome) && "$FMT" format --write "$FILE_PATH" 2>/dev/null ||
-    FMT=$(find_cmd prettier) && "$FMT" --write --log-level error "$FILE_PATH" 2>/dev/null || true
-    ;;
-  java)
-    # Java: google-java-format (standard standalone CLI)
-    command -v google-java-format &>/dev/null && google-java-format --replace "$FILE_PATH" 2>/dev/null || true
-    ;;
-  kt|kts)
-    # Kotlin: ktfmt (best, 40% faster than ktlint), then ktlint (fallback)
-    command -v ktfmt &>/dev/null && ktfmt "$FILE_PATH" 2>/dev/null ||
-    command -v ktlint &>/dev/null && ktlint --format "$FILE_PATH" 2>/dev/null || true
-    ;;
-  swift)
-    # Swift: swift-format (official Apple toolchain), then swiftformat (community)
-    command -v swift-format &>/dev/null && swift-format format --in-place "$FILE_PATH" 2>/dev/null ||
-    command -v swiftformat &>/dev/null && swiftformat "$FILE_PATH" 2>/dev/null || true
-    ;;
-  css|scss|less|graphql|json|jsonc)
-    # Web assets: biome (best for CSS/JSON/GraphQL), then prettier (fallback)
-    FMT=$(find_cmd biome) && "$FMT" format --write "$FILE_PATH" 2>/dev/null ||
-    FMT=$(find_cmd prettier) && "$FMT" --write --log-level error "$FILE_PATH" 2>/dev/null || true
-    ;;
-  html|vue|svelte|yaml|yml)
-    # HTML/YAML/templates: prettier (biome YAML/HTML support still maturing)
-    FMT=$(find_cmd prettier) && "$FMT" --write --log-level error "$FILE_PATH" 2>/dev/null || true
-    ;;
-esac
+format_file() {
+  local FILE_PATH="$1"
+  [ ! -f "$FILE_PATH" ] && return 0
+  local EXT="${FILE_PATH##*.}"
+  case "$EXT" in
+    py)
+      RUFF=$(find_ruff) && "$RUFF" format --quiet "$FILE_PATH" 2>/dev/null || true
+      ;;
+    ts|tsx|js|jsx|mjs|cjs)
+      FMT=$(find_cmd biome) && "$FMT" format --write "$FILE_PATH" 2>/dev/null ||
+      FMT=$(find_cmd prettier) && "$FMT" --write --log-level error "$FILE_PATH" 2>/dev/null || true
+      ;;
+    java)
+      command -v google-java-format &>/dev/null && google-java-format --replace "$FILE_PATH" 2>/dev/null || true
+      ;;
+    kt|kts)
+      command -v ktfmt &>/dev/null && ktfmt "$FILE_PATH" 2>/dev/null ||
+      command -v ktlint &>/dev/null && ktlint --format "$FILE_PATH" 2>/dev/null || true
+      ;;
+    swift)
+      command -v swift-format &>/dev/null && swift-format format --in-place "$FILE_PATH" 2>/dev/null ||
+      command -v swiftformat &>/dev/null && swiftformat "$FILE_PATH" 2>/dev/null || true
+      ;;
+    css|scss|less|graphql|json|jsonc)
+      FMT=$(find_cmd biome) && "$FMT" format --write "$FILE_PATH" 2>/dev/null ||
+      FMT=$(find_cmd prettier) && "$FMT" --write --log-level error "$FILE_PATH" 2>/dev/null || true
+      ;;
+    html|vue|svelte|yaml|yml)
+      FMT=$(find_cmd prettier) && "$FMT" --write --log-level error "$FILE_PATH" 2>/dev/null || true
+      ;;
+  esac
+}
+
+while IFS= read -r FILE_PATH; do
+  [ -z "$FILE_PATH" ] && continue
+  format_file "$FILE_PATH"
+done <<< "$FILE_PATHS"
 
 exit 0
