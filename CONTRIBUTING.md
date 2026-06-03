@@ -36,11 +36,11 @@ The plugin ships with **25 evals and 94 assertions** covering 10 behavioral dime
 
 | Category | Evals | What It Tests |
 |----------|-------|--------------|
-| `anti-rationalization` | 5 | Resists shortcuts, catches flawed premises, Process Rule D adherence |
+| `anti-rationalization` | 5 | Resists shortcuts, catches flawed premises, meta-rule (spirit beats letter) adherence |
 | `brainstorming-guard` | 5 | Triggers brainstorming when needed, skip-conditions, user-bypass |
 | `implementer-discipline` | 3 | TDD vertical slicing, 5-step verification gate, no horizontal slicing |
 | `workflow-phases` | 3 | Phase progression, WORKFLOW STATE recovery, chronicle IS/NOT NEEDED, Phase 4 integration |
-| `anti-sycophancy` | 2 | Pillar 0 — no flattery, evidence over confirmation |
+| `anti-sycophancy` | 2 | Principle 0 — no flattery, evidence over confirmation |
 | `brainstorming-internal-runtime` | 2 | Hypothesis + numeric Confidence, Q+GUESS+CONFIDENCE calibration |
 | `workflow-tier` | 2 | Triage tiers including 1-file FULL borderline, LIGHT escalation |
 | `brainstorming-sota` | 1 | Design-it-twice, 6-line restate, plan-mode-style outline, non-yes detection |
@@ -146,13 +146,13 @@ Look at `skills/python-dev/SKILL.md` for a language-skill reference and `skills/
 
 ## Design Principles
 
-All changes must align with the canonical Iron Rules — **9 Core Pillars + 4 Process Rules** — in [`shared/iron-rules.md`](shared/iron-rules.md). The pillars and process rules apply to every skill, agent, and phase. Particularly load-bearing when contributing:
+All changes must align with the canonical Iron Rules — **14 principles (0-13) + 1 meta-rule (spirit beats letter)** — in [`shared/iron-rules.md`](shared/iron-rules.md). The principles apply to every skill, agent, and phase. Particularly load-bearing when contributing:
 
-- **Pillar 0 (don't pander)** — skills must make the model challenge wrong approaches, not defer to user confirmation as validation
-- **Pillar 1 (simplicity)** — refuse to add a new file / abstraction / config / dependency when an existing mechanism covers >50% of the need
-- **Pillar 3 (no claim without fresh evidence)** — every eval must verify outcomes against actual run output, not assumed behavior
-- **Pillar 4 (document every discovery)** — non-trivial decisions in PRs go in `docs/chronicles/`, not just in commit messages
-- **Process Rule B (Red/Green TDD)** — new skill behavior is paired with a failing eval before the skill is written
+- **Principle 0 (don't pander)** — skills must make the model challenge wrong approaches, not defer to user confirmation as validation
+- **Principle 3 (simplicity by default)** — refuse to add a new file / abstraction / config / dependency when an existing mechanism covers >50% of the need
+- **Principle 8 (no claim without fresh evidence)** — every eval must verify outcomes against actual run output, not assumed behavior
+- **Principle 10 (document every discovery)** — non-trivial decisions in PRs go in `docs/chronicles/`, not just in commit messages
+- **Principle 7 (TDD: Red → Green → Refactor)** — new skill behavior is paired with a failing eval before the skill is written
 
 ## Pull Request Checklist
 
