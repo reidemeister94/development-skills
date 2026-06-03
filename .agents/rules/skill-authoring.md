@@ -53,4 +53,4 @@ A vague description ("helps with code") wastes triggering budget. Concrete trigg
 
 ## Length budget
 
-SKILL.md body: aim for ≤ 200 lines. Anything longer belongs in `references/`. Pillar 7 (slim docs) applies recursively — every skill obeys it.
+SKILL.md body: aim for ≤ 200 lines. Anything longer belongs in `references/`. Principle 13 (slim docs) applies recursively — every skill obeys it.
