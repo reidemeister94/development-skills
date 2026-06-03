@@ -2,7 +2,7 @@
 
 Planning locks ambiguity; flawed plan → flawed code. Last checkpoint before implementation tokens are spent.
 
-Apply [Iron Rules](../iron-rules.md) — especially Pillar 0 (be critical of every assumption), Pillar 1 (simplicity audit on every approach), and Pillar 3 (no claim without fresh evidence).
+Apply [Iron Rules](../iron-rules.md) — especially Principle 0 (be critical of every assumption), Principle 1 (think before coding · surface assumptions), Principle 2 (plan before implementing · lock the HOW), Principle 3 (simplicity audit on every approach), and Principle 8 (no claim without fresh evidence).
 
 **Knowledge-first:** check disk; fill gaps in an isolated subagent (raw results stay there). Write the plan to disk; lock HOW-level ambiguities; gate.
 
@@ -126,7 +126,7 @@ Ask: **"Approve the plan and proceed to Chronicle/Implementation?"** via `AskUse
 - Plan file at `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__brief-description.md`
 - `## Clarifications` (if questions asked)
 - `## Plan` with `### HOW-level locks` table — all 6 dimensions filled or marked N/A
-- Buildable task decomposition with exact file paths, no placeholders, per-task verification (`plan-template.md` § Plan buildability checks)
+- Buildable task decomposition with exact file paths, no placeholders, per-task verification (`plan-template.md` # Plan buildability checks)
 - User has explicitly approved
 
 **Gate:** State **"RESEARCH + PLAN COMPLETE — APPROVED"**

@@ -2,7 +2,7 @@
 
 Combines staff review with finalization. The staff-reviewer agent is the workflow's only named subagent — independent context, scoped tools, fresh eyes on the diff.
 
-Apply [Iron Rules](../iron-rules.md) throughout. Staff review enforces the diff-relevant pillars (Pillar 1 Simplicity, Pillar 2 Signal/zero noise, Pillar 3 No claim without evidence, Pillar 5 WHY comments, Pillar 6 Refactoring objective). Finalization applies Pillar 4 (document discoveries), Pillar 7 (keep project docs slim), and Pillar 8 (English + memory hygiene). Process Rule A (no commits without explicit user request) gates step 4d.
+Apply [Iron Rules](../iron-rules.md) throughout. Staff review enforces the diff-relevant principles (Principle 3 Simplicity, Principle 4 Surgical changes, Principle 5 Signal/zero noise, Principle 6 WHY comments, Principle 7 TDD, Principle 8 No claim without evidence, Principle 9 Root cause). Finalization applies Principle 10 (document discoveries) and Principle 13 (slim docs · English · memory hygiene). Principle 12 (no commits without explicit user request) gates step 4d.
 
 ---
 
@@ -55,15 +55,13 @@ After each cycle, append `## Review Log`:
 
 Iterate until APPROVED.
 
-**After fix-review cycle:** Run `/compact` before re-spawning.
-
 **Gate:** State **"STAFF REVIEW: APPROVED"**
 
 ---
 
 ## 4b: Chronicle Finalization
 
-1. **Chronicle created:** Read `## Implementation Log` for discoveries. Align with final code. Update Status to Completed. Identify insights for `AGENTS.md` (or `CLAUDE.md` if the project uses that as primary).
+1. **Chronicle created:** Read `## Implementation Log` for discoveries. Align with final code. Keep **critical user input verbatim** (prompts, decisions, Q&A) — never condense it; summarize only *non-critical* input, losslessly. Update Status to Completed. Identify insights for `AGENTS.md` (or `CLAUDE.md` if the project uses that as primary).
 2. **Chronicle NOT NEEDED:** Check WORKFLOW STATE reason. If significant discoveries emerged (check Implementation Log), consider retroactive chronicle.
 3. **Update `AGENTS.md`** (or `CLAUDE.md` if primary) with new patterns/rules/knowledge.
 4. **Update WORKFLOW STATE:** `Status: Completed`, `Current Phase: 4 (Complete)`.
