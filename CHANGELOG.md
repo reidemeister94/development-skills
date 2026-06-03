@@ -1,3 +1,35 @@
+## 0.6.0 (2026-06-03)
+
+### BREAKING
+
+- **Iron Rules restructured: 9 Pillars + 4 Process Rules → 14 principles (0-13) + 1 meta-rule (spirit beats letter).** New principles: Think before coding (1), Plan before implementing (2), Surgical changes (4), Root cause not symptoms (9, split out of evidence), Context is the constraint (11). Process Rules A-D folded in as Principles 12 (no commits), 7 (TDD), workflow gate discipline (moved to `shared/workflow.md`), and the meta-rule. Every skill, phase, and agent reference renumbered.
+- **Canonical severity scale is CRITICAL / HIGH / MEDIUM / LOW** — defined once in `shared/review-categories.md` (new). Staff-reviewer standalone output, roast-my-code, and ai-agent-bench anomaly log (`info` → `low`) all classify by it.
+- **`context-transfer` and `chronicles` skills removed.** Context transfer is replaced by the new `handoff` skill; chronicle guidance lives in `shared/phases/phase-2-chronicle.md`.
+- **`shared/lint-enforcement.md` and `shared/package-manager.md` moved to `skills/typescript-dev/references/`** — they are JS/TS-scoped, not workflow-wide. `shared/phases/compaction-guide.md` removed: compaction recovery + handoff are unified in `shared/workflow.md` (# Context Compaction & Handoff). Prescriptive `/compact` steps removed — context management is the user's prerogative (Principle 11).
+
+### Feat
+
+- **`staff-review` skill (new):** user-facing deep code review on a local branch, repo, directory, or file. Branch mode diffs against merge-base; `--spec <path>` adds compliance, scope-creep, and verification-trail checks. Returns CRITICAL/HIGH/MEDIUM/LOW findings with `file:line` and fixes.
+- **`handoff` skill (new):** self-contained session handoff document written to the OS temp directory (never the repo); works with or without an active plan file.
+- **`agents/staff-reviewer.md`:** standalone mode now resolves scope itself from a plain-language brief; reads plan AND chronicle when they exist; reads `shared/review-categories.md` as the severity rubric; new "False Positives — Do Not Report" filter (pre-existing lines, linter-catchable, non-codified style, documented intentional changes, speculative concerns).
+- **`shared/phases/phase-2-chronicle.md`:** chronicle template captures user input with graduated fidelity — critical input (requirements, decisions, Q&A answers) verbatim, everything else summarized losslessly; new "Prompts & relevant messages", "Q&A", and "How the understanding evolved" sections.
+- **`skills/python-dev/patterns.md`:** rewritten in two layers — Principles (deletion bias, depth/seams/types-as-contract, default-on-safe, async/FastAPI exception handling, adapter-at-lifespan, Pydantic models-as-contract) and Tactics. `python-dev/SKILL.md` verification commands now cover the 4-tier test layout (unit/golden/e2e/integration) and pre-commit chain.
+- **`skills/java-dev/patterns.md` + `skills/swift-dev/patterns.md`:** LSP / behavioral-substitutability guidance (honor the base contract, beware marker-subinterfaces for DI identity); SRP reframed as one-actor-per-class.
+- **`skills/create-test/SKILL.md`:** Python projects also consult `python-dev/patterns.md` Testing section (4-tier layout, asyncio_mode, TestClient conventions).
+- **`skills/update-reqs` / `update-reqs-dev`:** post-apply `uv pip compile` lockfile recompilation step.
+- **`skills/claude-to-agents`:** canonical AGENTS.md prepend block updated to the 14-principle set.
+
+### Fix
+
+- **`skills/resolve-merge/SKILL.md`:** distilled from ~320 lines to a 10-step flow — same AUTO/JUDGMENT classification, single plan gate, per-file judgment loop, and verification, minus the procedural prose.
+- **`skills/roast-my-code/SKILL.md`:** Step 2 now invokes the `staff-review` skill (scope echo confirmation) instead of dispatching the subagent directly; LOW severity informational in `--fix`.
+- **`codex-tools.md` hooks:** Codex 0.131+ auto-loads plugin hooks (no flag); `plugin_hooks = true` only needed on 0.128–0.130; marketplace-files maintainer section added.
+- **`shared/workflow.md`:** gate-discipline rule made explicit (was Process Rule C); auto-recovery protocol documented inline.
+
+### Evals
+
+- **evals/evals.json:** 27 cases / 103 assertions (was 25/96). New: staff-review routing on "deep code review of branch X" phrasing (must beat built-in /code-review and /roast-my-code) and `--spec` compliance-check briefing.
+
 ## 0.5.1 (2026-05-17)
 
 ## 0.5.0 (2026-05-17)
