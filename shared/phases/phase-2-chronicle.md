@@ -1,11 +1,11 @@
 # Phase 2: CHRONICLE — GATE
 
-A chronicle is a **project snapshot** — months later, a reader should understand what the user wanted, why decisions were made, what was discovered, and what changed. Focus: the intent and the *whys* behind the choices.
+A chronicle is a **project snapshot** — months later, a reader should understand what the user wanted (in their own words), how the conversation got there, why decisions were made, what was discovered, and what changed. Focus: the intent, the conversation that shaped it, and the *whys* behind the choices.
 
 ```
 Code + Git = WHAT changed (diffs)
 Plan docs  = HOW implemented (tasks, approaches)
-Chronicles = WHY it happened, USER CONTEXT, PROJECT STATE
+Chronicles = WHY it happened, USER INPUT (verbatim + Q&A), PROJECT STATE
 ```
 
 **When in doubt, create the chronicle.** Cost: ~30 seconds. Cost of missing one: losing the WHY forever.
@@ -25,7 +25,7 @@ Chronicles = WHY it happened, USER CONTEXT, PROJECT STATE
 - Change is self-evident from the diff
 - No business context worth preserving
 
-Apply [Iron Rules](../iron-rules.md) — especially Process Rule C (every gate explicit) and Pillar 4 (document every discovery).
+Apply [Iron Rules](../iron-rules.md) — especially Principle 10 (document every discovery). Workflow gate discipline (every gate explicit) per `../workflow.md`.
 
 ---
 
@@ -36,7 +36,7 @@ Apply [Iron Rules](../iron-rules.md) — especially Process Rule C (every gate e
 1. `mkdir -p docs/chronicles/`
 2. Find next number: `ls docs/chronicles/*.md 2>/dev/null | sort | tail -1` — increment (start at 0001)
 3. Write using template below
-4. Fill: User Requirements, Context, Objective (WHY), Project State (before), Affected Areas
+4. Fill: User Input & Conversation, Context, Objective (WHY), Project State (before), Affected Areas
 
 **Naming:** `docs/chronicles/NNNN__YYYY-MM-DD__brief-description.md`
 
@@ -48,9 +48,26 @@ Apply [Iron Rules](../iron-rules.md) — especially Process Rule C (every gate e
 > Chronicle: NNNN__YYYY-MM-DD__brief-description.md
 > Status: Draft | In Progress | Completed
 
-## User Requirements (Complete)
+## User Input & Conversation (Always Captured)
 
-[FULL user communication — requirements, constraints, preferences. Preserve ALL signal.]
+Preserve what the user actually wrote — enough to understand the task **and how the conversation got there**: their prompts, their answers to the agent's questions, and any other message carrying requirements, constraints, preferences, or course corrections.
+
+**Fidelity rule (graduated):**
+- **Critical input** (requirements, constraints, explicit decisions, course corrections, the answer that locked a design choice) — keep in the user's **exact words** (verbatim); never condense.
+- **Everything else** — may be summarized, but without losing any useful information (remove noise, never signal).
+
+### Prompts & relevant messages (chronological)
+
+> [in order, so the evolution is visible — verbatim if critical, else a faithful lossless summary]
+
+### Q&A (agent ↔ user)
+
+[one bullet per exchange, in order]
+- **Q:** [question the agent asked] → **A:** [user's answer — verbatim when it locks a decision]
+
+### How the understanding evolved
+
+[short narrative: initial ask → what was surfaced → how the user refined it → net result]
 
 ## Context
 
@@ -90,7 +107,7 @@ Apply [Iron Rules](../iron-rules.md) — especially Process Rule C (every gate e
 ### Lifecycle
 
 - **Phase 3 (Implement-Verify):** Update Discoveries; record design decisions encountered during implementation.
-- **Phase 4 (Review-Finalize):** Align with final code, condense User Requirements, fill "After" state, set Completed, identify AGENTS.md updates.
+- **Phase 4 (Review-Finalize):** Align with final code; fill "After" state, set Completed, identify AGENTS.md updates. **Fidelity on finalization:** keep **critical user input verbatim** (prompts, decisions, Q&A) — never condense; summarize only *non-critical* input, losslessly.
 
 **Update WORKFLOW STATE in plan file:** `Chronicle: docs/chronicles/NNNN__YYYY-MM-DD__brief-description.md`, `Current Phase: 3`.
 

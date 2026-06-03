@@ -2,7 +2,7 @@
 
 **Cannot start without user-approved plan.** No approval → Phase 1.
 
-Implementation in main thread; verification inline via `Bash`. Apply [Iron Rules](../iron-rules.md) — Process Rule B (Red/Green TDD) and Process Rule D (spirit beats letter) govern every cycle; Pillar 3 (no claim without fresh evidence) governs every verification claim.
+Implementation in main thread; verification inline via `Bash`. Apply [Iron Rules](../iron-rules.md) — Principle 4 (surgical changes), Principle 7 (Red/Green TDD), and the meta-rule (spirit beats letter) govern every cycle; Principle 8 (no claim without fresh evidence) governs every verification claim; Principle 9 (root cause, not symptoms) governs every fix.
 
 ---
 
@@ -107,8 +107,6 @@ If verification FAILS:
 
 **Regression guard:** Track pass/fail across iterations. Net regression → STOP and reassess. Two consecutive regressions → return to Phase 1.
 
-**After fix-verify cycle:** Run `/compact` before re-running.
-
 ---
 
 ## Step 6: Final Implementation Log
@@ -138,4 +136,4 @@ Update chronicle (if created in Phase 2) with discoveries from Implementation Lo
 
 **Gate:** State **"IMPLEMENT + VERIFY COMPLETE"** with evidence.
 
-**→ Run `/compact` now** — this is the heaviest phase. Then proceed to Phase 4. Read `phase-4-review-finalize.md`.
+**→ Proceed to Phase 4. Read `phase-4-review-finalize.md`.**

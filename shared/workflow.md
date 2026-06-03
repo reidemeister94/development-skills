@@ -4,6 +4,8 @@ Two tiers — apply to all development work. PASS_THROUGH (trivial, 1-file, no d
 
 Iron Rules in `shared/iron-rules.md` apply across tiers and phases. Reference, don't duplicate.
 
+**Gate discipline (workflow rule, complements the Iron Rules).** Every gate stated in this doc must be explicitly passed — *"proceed immediately"* means execute the next gate, NOT skip its requirements. Mandatory outputs per phase are non-negotiable; the plan file is the persistent record, updated incrementally as each phase completes (not in bulk).
+
 ## Tier selection
 
 | Tier | When | Shape |
@@ -20,9 +22,9 @@ Iron Rules in `shared/iron-rules.md` apply across tiers and phases. Reference, d
 1. **Detect language inline** (`.py` → python · `.java` → java · `.swift` → swift · frontend signals → frontend · `.ts` + `tsconfig.json` → typescript · markdown/config-only → skip step 2).
 2. **Read `skills/{lang}-dev/patterns.md`** + extract Verification Commands. Reference only — do NOT invoke the language skill (its workflow chain is FULL).
 3. **One-paragraph sketch + single gate.** WHAT changes · WHICH files · VERIFY command · one-line risk-or-N/A. Then `AskUserQuestion`: *"Proceed (Recommended) / Modify / Escalate to FULL"*.
-4. **Implement + verify inline.** TDD if tests exist for the area (Process Rule B). 5-step verification gate with FRESH evidence (Pillar 3).
-5. **Iron-Rules walk against the diff** — each Pillar + Process Rule. Any "no" → fix → re-verify.
-6. **Done.** State *"LIGHT WORKFLOW COMPLETE"* with evidence. Process Rule A still applies — no commit without explicit user request.
+4. **Implement + verify inline.** TDD if tests exist for the area (Principle 7). 5-step verification gate with FRESH evidence (Principle 8).
+5. **Iron-Rules walk against the diff** — each of the 14 principles + the meta-rule. Any "no" → fix → re-verify.
+6. **Done.** State *"LIGHT WORKFLOW COMPLETE"* with evidence. Principle 12 still applies — no commit without explicit user request.
 
 **Escalate to FULL** the moment any of: a design choice surfaces · business/logic decision surfaces · `AGENTS.md` / `.agents/rules/` needs updating · verification fails twice. Materialize the sketch into `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__<slug>.md` and resume at Phase 1 below.
 
@@ -61,10 +63,14 @@ Do NOT invoke a Skill via Task or an Agent via Skill. Implementation and verific
 
 ### User Interaction
 
-- **Discrete options (2-4):** `AskUserQuestion`. Auto-resolves inside Task subagents — never call from `staff-reviewer` prompts. Tool translations for non-Claude-Code platforms: `skills/using-development-skills/references/codex-tools.md`.
+- **Discrete options (2-4):** `AskUserQuestion`. Auto-resolves inside Task subagents — never call from `staff-reviewer` prompts. On Codex, swap for the numbered-list + STOP fallback (see `skills/using-development-skills/references/codex-tools.md`).
 - **Free-form:** plain text + STOP, one at a time.
 - **Confirmations:** state action, ask *"Proceed?"*, STOP.
 
-### Context Compaction
+### Context Compaction & Handoff — unified
 
-When compressed, recover via plan file. See `phases/compaction-guide.md`. Run `/compact` after Phase 3 implementation, after fix-verify cycles, and after fix-review cycles.
+When the system auto-compresses prior messages or `/clear` fires, the plan file (when one exists) is the persistent record. Do NOT prescribe or suggest `/compact` — context management is the user's prerogative (Principle 11).
+
+**Auto-recovery protocol** (mid-task context loss): read the plan file's `## WORKFLOW STATE` for current phase + remaining phases + all file paths → read the language skill's config (verification commands, implementation rules) → re-read `shared/workflow.md` if dropped → read the current phase file from `phases/`. Everything else lives on disk (research, clarifications, HOW-level locks, implementation log, verification results, review log, chronicle, code).
+
+**User-initiated handoff to a new chat:** use `development-skills:handoff`. The handoff doc is self-contained (works with OR without an active plan file) and lives in the OS temp directory (`${TMPDIR:-/tmp}/claude-handoff-…md`) — never in the repo. The skill prints the absolute path so the user can paste it into the new chat. See `skills/handoff/SKILL.md`.
