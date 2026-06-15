@@ -68,7 +68,7 @@ If either fact changes upstream, update `skills/using-development-skills/referen
 
 ## Cross-platform reference — single source of truth
 
-Skill bodies use Claude Code tool names as canonical. Cross-platform translations (Codex `spawn_agent` ↔ Claude Code `Task`, `AskUserQuestion` fallback, named-agent dispatch recipe, hooks, marketplace) live ONLY in `skills/using-development-skills/references/codex-tools.md`. Do NOT add inline "on Claude Code do X / on Codex do Y" branching in any other skill body — point at `codex-tools.md` instead. Exception: `claude-to-agents` is the dual-platform bridge skill by design.
+Skill bodies use Claude Code tool names as canonical. Cross-platform translations (Codex `spawn_agent` ↔ Claude Code `Task`, `AskUserQuestion` fallback, named-agent dispatch recipe, hooks, marketplace) live ONLY in `skills/using-development-skills/references/codex-tools.md`. Do NOT add inline "on Claude Code do X / on Codex do Y" branching in any other skill body — point at `codex-tools.md` instead. Exception: `align-docs` is the dual-platform bridge skill by design.
 
 ## Changelog
 
