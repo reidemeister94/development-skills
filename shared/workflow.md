@@ -32,7 +32,7 @@ Iron Rules in `shared/iron-rules.md` apply across tiers and phases. Reference, d
 
 ## FULL — 4 phases, each a GATE
 
-**CRITICAL FLOW RULE:** after each gate, **IMMEDIATELY proceed to the next phase** — except Phase 1 (user approval of plan) and Phase 4d (user choice on committing).
+**CRITICAL FLOW RULE:** after each gate, **IMMEDIATELY proceed to the next phase** — except Phase 1 (user approval of plan) and Phase 4e (user choice on committing).
 
 | Phase | Name | Gate Statement | Instructions |
 |-------|------|----------------|--------------|
@@ -58,7 +58,7 @@ Do NOT invoke a Skill via Task or an Agent via Skill. Implementation and verific
 - Skip or combine phases · substitute the plan with an alternative artifact
 - Start coding without explicit plan approval (Phase 1 gate)
 - Claim completion without all gates checked
-- Stop between phases (except Phase 1 approval and Phase 4d commit-choice)
+- Stop between phases (except Phase 1 approval and Phase 4e commit-choice)
 - **Commit without user explicitly asking** — completing phases is NOT permission
 
 ### User Interaction

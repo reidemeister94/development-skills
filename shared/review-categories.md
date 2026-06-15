@@ -2,6 +2,8 @@
 
 Canonical severity scale for every code-review surface in this repo (`staff-reviewer` agent in both modes, `staff-review`, `roast-my-code`, `github-pr`, `bitbucket-pr`, FULL Phase 4). Four tiers: **CRITICAL / HIGH / MEDIUM / LOW**.
 
+**Comment format (every surface):** `> **[TIER]** {description}` — add `> **Why:** {impact}` for CRITICAL/HIGH, and `> **Suggestion:** {fix}` for all tiers except LOW.
+
 ## CRITICAL — Must Fix Before Merge (catastrophic)
 
 Will cause a production incident, security breach, or data loss the moment it ships.
@@ -11,13 +13,6 @@ Will cause a production incident, security breach, or data loss the moment it sh
 - Secrets committed to the repo (keys, tokens, passwords)
 - Data loss or corruption (missing transaction boundaries, unsafe bulk deletes, races that drop writes)
 - Changes that break production on merge (crash on startup, broken migration, removed-but-still-called API)
-
-**Comment format:**
-> **[CRITICAL]** {description of the issue}
->
-> **Why:** {impact if not fixed}
->
-> **Suggestion:** {how to fix}
 
 ---
 
@@ -32,13 +27,6 @@ A real defect or weakness that is serious but not immediately catastrophic.
 - Resource leaks (unclosed connections, file handles, memory)
 - Concurrency bugs (deadlocks, lost updates)
 - Security weaknesses that are not directly exploitable yet (weak defaults, missing authz on a low-traffic path)
-
-**Comment format:**
-> **[HIGH]** {description of the issue}
->
-> **Why:** {impact if not fixed}
->
-> **Suggestion:** {how to fix}
 
 ---
 
@@ -56,11 +44,6 @@ Degrades quality, performance, or maintainability but won't cause immediate fail
 - Missing logging for error paths
 - Incorrect or missing type annotations on public interfaces
 
-**Comment format:**
-> **[MEDIUM]** {description}
->
-> **Suggestion:** {how to improve}
-
 ---
 
 ## LOW — Consider Fixing
@@ -74,9 +57,6 @@ Style and readability improvements. Nice to have, not blocking.
 - Missing or outdated comments/docstrings on public APIs
 - Import ordering, unused imports
 - Minor readability improvements
-
-**Comment format:**
-> **[LOW]** {description}
 
 ---
 
