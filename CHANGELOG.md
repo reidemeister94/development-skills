@@ -1,3 +1,23 @@
+## 0.7.0 (2026-06-14)
+
+### Feat
+
+- **`changelog` skill (new):** manage `CHANGELOG.md` per Keep a Changelog 1.1.0 + SemVer 2.0.0. Three actions — `add` (one hand-written entry), `from-commits` (derive from Conventional Commits), `release` (cut a version + print suggested git commands). Edits `CHANGELOG.md` only; bootstraps the file on first use. Per-action references + shared `writing-guidelines.md` under `skills/changelog/references/`.
+- **`align-docs` rewritten** as the single canonical-agent-context skill: converts structure (`CLAUDE.md` → `@AGENTS.md`, `.agents/rules/` + `.claude/rules` symlink), captures session discoveries, sweeps project memory into the repo, and total-cleans every docs/agents file. `--clean` consolidates obsolete chronicles/plans into an index without losing decisions (`references/clean-mode.md`). Absorbs the former `claude-to-agents` skill.
+- **frontend-dev loading-skeletons pattern:** layout-mirroring skeletons established as the content-loading pattern across React, Next.js (`loading.tsx` / `Suspense`), Vite (route `Suspense` fallback), shadcn (`Skeleton` primitive), and Raycast (`isLoading`). A bare spinner / empty container is the anti-pattern.
+- **`skills/python-dev`:** function-length guidance softened to ~50-60 lines (soft guide; cohesion over line-counting); imports-at-module-top rule added.
+- **`shared/iron-rules.md`:** Principle 3 gains "Small, modular units" (~50-60-line functions); Principle 6 "Scale the WHY to the flow's intricacy"; Principle 13 reframed `MEMORY hygienic` → `memory ≈ empty` (memory is per-machine and invisible to teammates).
+
+### Fix
+
+- **`hooks/hooks.json`:** scripts resolve via `${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT}}` so bundled hooks run on Codex (sets `PLUGIN_ROOT`) as well as Claude Code. `codex-tools.md` documents the resolution and that `SessionStart`'s `additionalContext` shape is identical on both harnesses.
+- **`shared/phases/phase-4-review-finalize.md`:** new step 4c "Capture Discoveries — GATE" (Principle 10); prior 4c/4d renumbered to 4d/4e.
+- **`shared/review-categories.md`:** comment format consolidated into a single one-line rule across all severity tiers.
+
+### Removed
+
+- **`claude-to-agents` skill** — folded into `align-docs`, now the dual-platform agent-context bridge. Run `/align-docs` instead.
+
 ## 0.6.0 (2026-06-03)
 
 ### BREAKING
