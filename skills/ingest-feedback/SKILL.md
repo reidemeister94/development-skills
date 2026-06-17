@@ -21,7 +21,7 @@ Iron Rules to apply here (canonical: `../../shared/iron-rules.md`):
 
 ## Step 1: Read the Report
 
-Extract friction points (Section 3), proposed evals (Section 4), chain-of-thought (Section 2).
+Extract friction points (Section 3), chain-of-thought (Section 2).
 
 ## Step 2: Read Current Plugin State
 
@@ -55,29 +55,18 @@ Write verdicts in `docs/reports/ingest-YYYY-MM-DD.md`.
 | # | Friction Point | Verdict | Rejection filter? | Reasoning |
 |---|---------------|---------|-------------------|-----------|
 
-## Step 5: Proposed Evals
-
-| Verdict | Meaning |
-|---------|---------|
-| **ADD** | Real scenario tied to a FIX verdict |
-| **SKIP** | Tied to SKIP, duplicates existing, or tests model behavior |
-| **MERGE** | Combine with existing eval |
-
-**Rule: ADD only if friction point is FIX.** Cross-reference `evals/evals.json` for duplicates.
-
-## Step 6: Apply Changes
+## Step 5: Apply Changes
 
 **FIX verdicts only.** Surgical edits:
 - Prefer removing/shortening over adding
 - If adding words, remove at least as many elsewhere (net-zero or negative)
-- ADD evals: append to `evals.json` with next ID
 
-## Step 7: Validate
+## Step 6: Validate
 
-Verify `evals.json` is valid JSON. Run `pre-commit run` (if `.py` touched: `ruff format .` + `ruff check . --fix`).
+Run `pre-commit run` (if `.py` touched: `ruff format .` + `ruff check . --fix`).
 
-## Step 8: Summary
+## Step 7: Summary
 
-Report: FIX/SKIP/INVESTIGATE counts, files changed and why, evals added/merged/skipped, report location.
+Report: FIX/SKIP/INVESTIGATE counts, files changed and why, report location.
 
 **Expected: most friction points SKIP.** If >30% FIX, re-examine critical rigor.

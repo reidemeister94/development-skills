@@ -1,6 +1,6 @@
 # development-skills
 
-A plugin for [Claude Code](https://docs.claude.com/en/docs/claude-code) and [Codex CLI](https://github.com/openai/codex) that adds a 4-phase development workflow, language-specific patterns for Python, Java, TypeScript, Swift, and frontend frameworks, and a `staff-reviewer` subagent that does a fresh-eyes code review on every change.
+A plugin for [Claude Code](https://docs.claude.com/en/docs/claude-code) and [Codex CLI](https://github.com/openai/codex) that adds a 4-phase development workflow and a `staff-reviewer` subagent that does a fresh-eyes code review on every change.
 
 <a href="https://github.com/reidemeister94/development-skills/releases"><img src="https://img.shields.io/github/v/release/reidemeister94/development-skills?style=flat-square&color=blue" alt="Release"/></a>
 <a href="LICENSE"><img src="https://img.shields.io/github/license/reidemeister94/development-skills?style=flat-square" alt="License"/></a>
@@ -65,7 +65,7 @@ Triaged at session start:
 | 3. Implement + Verify | Main-thread TDD (RED → GREEN → REFACTOR). Anti-slop self-check during REFACTOR. 5-step verification gate (`IDENTIFY → RUN → READ → VERIFY → CLAIM`) before any positive claim. | Updated `## Task Checklist`, `## Implementation Log`, `## Verification Results` |
 | 4. Review + Finalize | `staff-reviewer` subagent runs two-stage review (spec compliance → code quality), iterates until `APPROVED`. Chronicle finalised. Docs aligned. User decides whether to commit. | `## Review Log`, completed chronicle |
 
-The rules that apply across phases live in [`shared/iron-rules.md`](shared/iron-rules.md) — 14 principles (0-13) plus one meta-rule (spirit beats letter), referenced from every skill and phase rather than duplicated.
+The rules that apply across phases live in [`shared/iron-rules.md`](shared/iron-rules.md) — 13 principles (0-12) plus one meta-rule (spirit beats letter), referenced from every skill and phase rather than duplicated.
 
 ## What's included
 
@@ -101,7 +101,7 @@ This plugin diverges in three places: language-specific patterns (5 languages wi
 
 ## Contributing
 
-Contributions welcome — especially new language skills (Rust, Go, Kotlin, Ruby, C#). See [CONTRIBUTING.md](CONTRIBUTING.md). Open an issue first. PRs need a passing `/eval-regression`.
+Contributions welcome — especially new language skills (Rust, Go, Kotlin, Ruby, C#). See [CONTRIBUTING.md](CONTRIBUTING.md). Open an issue first.
 
 ## License
 

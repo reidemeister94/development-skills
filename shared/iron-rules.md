@@ -114,7 +114,7 @@ Anything you learned that you lacked at the start — non-obvious patterns, edge
 
 ---
 
-## 12. No commits without explicit user request
+## 11. No commits without explicit user request
 
 NEVER run `git add` / `git commit` / `git push` / `gh pr create` / `git push --force` unless the user explicitly asks. Approving a plan, completing phases, passing review — none are permission. Only a direct *"commit"* / *"create PR"* request, or the Phase 4e integration step with explicit user choice, triggers it.
 
@@ -122,7 +122,7 @@ When authorized, the commit message MUST omit every AI-attribution trailer — n
 
 ---
 
-## 13. Slim docs · English · memory ≈ empty
+## 12. Slim docs · English · memory ≈ empty
 
 `AGENTS.md` / `CLAUDE.md`: **max ~70 lines**. After the principles and the *use `development-skills`* directive, a single **fewest-words list** of the most critical, non-trivial facts the next agent must always read — **domain · infrastructure · company · project-specific**; the file ends with an **index to `.agents/rules/`**. No exposition-style section headings. Each `.agents/rules/<topic>.md` follows the same convention, vertical on one domain/topic. A line that isn't load-bearing for the next agent's task belongs in a rule file or a chronicle, not in the project doc.
 

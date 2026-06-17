@@ -1,3 +1,23 @@
+## 0.8.0 (2026-06-17)
+
+### Changed
+
+- **Iron Rules: 14 principles (0-13) → 13 principles (0-12) + 1 meta-rule.** The standalone "Context is the constraint" principle was dropped (its guidance now lives in the workflow and phase contracts); remaining principles renumbered (No commits 12 → 11, Slim docs 13 → 12). `AGENTS.md`, `README.md`, and `using-development-skills` updated to match.
+- **"Simplify and reduce" pass across the workflow and process skills.** Each distilled to a tighter form with no loss of function: `using-development-skills`, `core-dev`, `brainstorming`, `debugging`, `create-test`, `distill`, `eval-regression`, `best-practices`, `roast-my-code`, `commit`, `changelog`, `align-docs`, `resolve-merge`, `handoff`, `ai-agent-bench`, `update-precommit`, `update-reqs`. `shared/workflow.md`, `shared/phases/*`, `shared/review-categories.md`, `shared/templates/plan-template.md`, `shared/agents/research-agent.md`, and `agents/staff-reviewer.md` tightened alongside.
+
+### Added
+
+- **`shared/skill-authoring.md`** — reduce-gate for authoring/editing any skill, referenced from `shared/workflow.md`.
+- **`shared/architectural-depth.md`** — depth-and-seams guidance, relocated from `roast-my-code/references/` and referenced by `roast-my-code`.
+- **`shared/adopting-external-features.md`** — filter for adopting any external library/pattern, referenced by `brainstorming`.
+- **`shared/templates/chronicle-template.md`** — canonical chronicle scaffold.
+- **`skills/align-docs/references/agents-template.md`** — `AGENTS.md` scaffold for `align-docs`.
+
+### Removed
+
+- **`evals/` regression suite removed** (`evals.json`, `distill-evals.json`, and the distill fixtures), and the eval-gated contribution flow dropped from `CONTRIBUTING.md` and the PR template. The `eval-regression` skill stays as a generic tool.
+- Per-skill reference files folded into their `SKILL.md` during the reduce pass: `changelog/references/{add,from-commits}.md`, `create-test/references/{tdd-workflow,e2e-browser-patterns,language-templates}.md`, `distill/references/{distill-theory,case-study-linkedin-speak}.md`, and `roast-my-code/references/architectural-depth.md` (moved to `shared/`).
+
 ## 0.7.0 (2026-06-14)
 
 ### Feat

@@ -62,7 +62,3 @@ Verification: TBD
 - [ ] New/changed functions, types, fields, routes, and commands are named consistently across tasks.
 - [ ] Tasks are vertical slices: one behavior/check -> minimal implementation -> verification -> next behavior.
 - [ ] Every task has a verification command or manual evidence target.
-
-## Implementation Steps
-
-[Numbered, buildable steps for the recommended approach. Each step should include: target file(s), behavior changed, expected failing test/check when applicable, minimal implementation action, and verification command. Do not write placeholders.]
