@@ -213,7 +213,7 @@ A `PostToolUse` hook automatically formats files when Claude edits them:
 |-------|---------|-------------|
 | `create-test` | `/create-test` | Risk-scored test design with explorer and targeted modes |
 | `roast-my-code` | `/roast-my-code` | Brutally honest code critique + AI-readiness audit (`--fix` to auto-fix) |
-| `eval-regression` | `/eval-regression` | Pre-commit regression testing (30 evals, 98 assertions) |
+| `eval-regression` | `/eval-regression` | Pre-commit regression testing for skill changes |
 
 ### Utilities
 
@@ -228,26 +228,6 @@ A `PostToolUse` hook automatically formats files when Claude edits them:
 | `update-reqs` | `/update-reqs` | Update requirements.in with latest PyPI versions |
 | `update-reqs-dev` | `/update-reqs-dev` | Update requirements-dev.in with latest PyPI versions |
 | `best-practices` | `/best-practices <topic>` | Deep web research producing structured state-of-the-art report |
-
----
-
-## Regression Testing
-
-**30 evals, 98 assertions** across 11 behavioral dimensions — a test suite for agent behavior. Powered by Anthropic's [`skill-creator`](https://github.com/anthropics/claude-plugins-official) plugin.
-
-```
-/eval-regression
-```
-
-Covers: brainstorming guard (7), smart isolation (6), anti-rationalization (4), performance review (3), workflow phases (3), implementer discipline (2), language detection, chronicle quality, turn boundaries, project directives, and AskUserQuestion avoidance.
-
-Each eval snapshots the committed version as baseline, runs the modified version, and produces a verdict: **SAFE TO COMMIT** or **REGRESSIONS FOUND**.
-
-Requires the `skill-creator` plugin:
-
-```bash
-/plugin install skill-creator@claude-plugins-official
-```
 
 ---
 

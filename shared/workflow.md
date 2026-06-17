@@ -1,76 +1,46 @@
 # Mandatory Development Workflow
 
-Two tiers — apply to all development work. PASS_THROUGH (trivial, 1-file, no design choice) is triaged upstream in `skills/using-development-skills/SKILL.md` and bypasses both tiers.
-
-Iron Rules in `shared/iron-rules.md` apply across tiers and phases. Reference, don't duplicate.
-
-**Gate discipline (workflow rule, complements the Iron Rules).** Every gate stated in this doc must be explicitly passed — *"proceed immediately"* means execute the next gate, NOT skip its requirements. Mandatory outputs per phase are non-negotiable; the plan file is the persistent record, updated incrementally as each phase completes (not in bulk).
+Two tiers. PASS_THROUGH (trivial, 1-file, no design choice) is triaged in `skills/using-development-skills/SKILL.md` and bypasses both. [Iron Rules](iron-rules.md) apply across tiers and phases — referenced, never duplicated. Every gate must be explicitly passed; the plan file is the persistent record, updated as each phase completes.
 
 ## Tier selection
 
-| Tier | When | Shape |
-|------|------|-------|
-| **LIGHT** | Mechanical change: one forced approach · no logic/business/architecture impact · no new patterns · no chronicle-worthy knowledge | 6-step inline (below) |
-| **FULL** | Default — everything else | 4 phases, each a gate, plan-file-backed (below) |
+- **LIGHT** — mechanical change: one forced approach, no logic/business/architecture impact, no new pattern, no chronicle-worthy knowledge. 6-step inline (below).
+- **FULL** — everything else. 4 gated phases, plan-file-backed.
 
-**Default on uncertainty → FULL.** Picking FULL is never wrong; picking LIGHT wrongly skips brainstorming on something that needed it.
-
----
+Default on uncertainty → FULL.
 
 ## LIGHT — inline 6-step
 
-1. **Detect language inline** (`.py` → python · `.java` → java · `.swift` → swift · frontend signals → frontend · `.ts` + `tsconfig.json` → typescript · markdown/config-only → skip step 2).
-2. **Read `skills/{lang}-dev/patterns.md`** + extract Verification Commands. Reference only — do NOT invoke the language skill (its workflow chain is FULL).
-3. **One-paragraph sketch + single gate.** WHAT changes · WHICH files · VERIFY command · one-line risk-or-N/A. Then `AskUserQuestion`: *"Proceed (Recommended) / Modify / Escalate to FULL"*.
-4. **Implement + verify inline.** TDD if tests exist for the area (Principle 7). 5-step verification gate with FRESH evidence (Principle 8).
-5. **Iron-Rules walk against the diff** — each of the 14 principles + the meta-rule. Any "no" → fix → re-verify.
-6. **Done.** State *"LIGHT WORKFLOW COMPLETE"* with evidence. Principle 12 still applies — no commit without explicit user request.
+1. **Detect language inline** (`.py`→python, `.java`→java, `.swift`→swift, frontend signals→frontend, `.ts`+`tsconfig.json`→typescript; markdown/config-only → skip step 2).
+2. **Read `skills/{lang}-dev/patterns.md`** + its verification commands. Reference only — do NOT invoke the language skill (its chain is FULL).
+3. **One-paragraph sketch + single gate:** WHAT changes, WHICH files, VERIFY command, one-line risk-or-N/A. Then `AskUserQuestion`: Proceed (Recommended) / Modify / Escalate to FULL.
+4. **Implement + verify inline** with fresh evidence.
+5. **Iron-Rules walk against the diff.** Any "no" → fix → re-verify. Diff touches `plugins/**` or any `SKILL.md` → also apply the [`skill-authoring.md`](skill-authoring.md) reduce-gate.
+6. **Done** — state "LIGHT WORKFLOW COMPLETE" with evidence.
 
-**Escalate to FULL** the moment any of: a design choice surfaces · business/logic decision surfaces · `AGENTS.md` / `.agents/rules/` needs updating · verification fails twice. Materialize the sketch into `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__<slug>.md` and resume at Phase 1 below.
-
----
+**Escalate to FULL** the moment any of: a design/business/logic choice surfaces, `AGENTS.md`/`.agents/rules/` needs updating, verification fails twice. Materialize the sketch into `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__<slug>.md` and resume at Phase 1.
 
 ## FULL — 4 phases, each a GATE
 
-**CRITICAL FLOW RULE:** after each gate, **IMMEDIATELY proceed to the next phase** — except Phase 1 (user approval of plan) and Phase 4e (user choice on committing).
+Read each via `Glob("**/development-skills/shared/phases/phase-*.md")`. Implementation + verification run in the main thread. After each gate, proceed to the next phase — except Phase 1 (plan approval) and Phase 4d (commit choice).
 
-| Phase | Name | Gate Statement | Instructions |
-|-------|------|----------------|--------------|
-| 1 | Research + Plan | "RESEARCH + PLAN COMPLETE — APPROVED" | Read `phases/phase-1-research-plan.md` |
-| 2 | Chronicle | "CHRONICLE INITIATED" or "NOT NEEDED" | Read `phases/phase-2-chronicle.md` |
-| 3 | Implement + Verify | "IMPLEMENT + VERIFY COMPLETE" + evidence | Read `phases/phase-3-implement-verify.md` |
-| 4 | Review + Finalize | "WORKFLOW COMPLETE" | Read `phases/phase-4-review-finalize.md` |
+| Phase | Gate statement | File |
+|---|---|---|
+| 1 Research + Plan | "RESEARCH + PLAN COMPLETE — APPROVED" | `phases/phase-1-research-plan.md` |
+| 2 Chronicle | "CHRONICLE INITIATED" / "NOT NEEDED" | `phases/phase-2-chronicle.md` |
+| 3 Implement + Verify | "IMPLEMENT + VERIFY COMPLETE" + evidence | `phases/phase-3-implement-verify.md` |
+| 4 Review + Finalize | "WORKFLOW COMPLETE" | `phases/phase-4-review-finalize.md` |
 
-Read phase files via `Glob("**/development-skills/shared/phases/phase-*.md")`.
+No skipping/combining phases, no substituting the plan with another artifact, no coding before plan approval, no commit unless the user explicitly asks.
 
-### Skills vs Agents — use the correct tool
+## Tools
 
-| Name | Type | Tool |
-|------|------|------|
-| `development-skills:brainstorming` | **Skill** | `Skill` tool |
-| `development-skills:debugging` | **Skill** | `Skill` tool |
-| Language skills (`python-dev`, `java-dev`, `typescript-dev`, `swift-dev`, `frontend-dev`) | **Skill** | `Skill` tool |
-| `development-skills:staff-reviewer` | **Agent** | `Task` tool |
+`staff-reviewer` is an **Agent** (`Task` tool). `brainstorming`, `debugging`, and the language skills are **Skills** (`Skill` tool). Never cross them.
 
-Do NOT invoke a Skill via Task or an Agent via Skill. Implementation and verification run in the main thread per `phases/phase-3-implement-verify.md`.
+## User interaction
 
-**You CANNOT:**
-- Skip or combine phases · substitute the plan with an alternative artifact
-- Start coding without explicit plan approval (Phase 1 gate)
-- Claim completion without all gates checked
-- Stop between phases (except Phase 1 approval and Phase 4e commit-choice)
-- **Commit without user explicitly asking** — completing phases is NOT permission
+Any discrete choice — including approvals and gates → `AskUserQuestion` (auto-resolves inside Task subagents — never call from `staff-reviewer` prompts; Codex → numbered list + STOP per `skills/using-development-skills/references/codex-tools.md`). Plain text + STOP only for genuinely open-ended answers with no options, one at a time.
 
-### User Interaction
+## Context compaction & handoff
 
-- **Discrete options (2-4):** `AskUserQuestion`. Auto-resolves inside Task subagents — never call from `staff-reviewer` prompts. On Codex, swap for the numbered-list + STOP fallback (see `skills/using-development-skills/references/codex-tools.md`).
-- **Free-form:** plain text + STOP, one at a time.
-- **Confirmations:** state action, ask *"Proceed?"*, STOP.
-
-### Context Compaction & Handoff — unified
-
-When the system auto-compresses prior messages or `/clear` fires, the plan file (when one exists) is the persistent record. Do NOT prescribe or suggest `/compact` — context management is the user's prerogative (Principle 11).
-
-**Auto-recovery protocol** (mid-task context loss): read the plan file's `## WORKFLOW STATE` for current phase + remaining phases + all file paths → read the language skill's config (verification commands, implementation rules) → re-read `shared/workflow.md` if dropped → read the current phase file from `phases/`. Everything else lives on disk (research, clarifications, HOW-level locks, implementation log, verification results, review log, chronicle, code).
-
-**User-initiated handoff to a new chat:** use `development-skills:handoff`. The handoff doc is self-contained (works with OR without an active plan file) and lives in the OS temp directory (`${TMPDIR:-/tmp}/claude-handoff-…md`) — never in the repo. The skill prints the absolute path so the user can paste it into the new chat. See `skills/handoff/SKILL.md`.
+On auto-compression or `/clear`, the plan file is the persistent record (don't prescribe `/compact` — context is the user's prerogative). Auto-recovery: read the plan's `## WORKFLOW STATE` → language skill config → re-read this file + the current phase file. Cross-session handoff to a new chat: `development-skills:handoff`.
