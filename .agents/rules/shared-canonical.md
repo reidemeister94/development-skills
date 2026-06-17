@@ -11,7 +11,7 @@ paths:
 
 | File | Role |
 |------|------|
-| `shared/iron-rules.md` | 14 principles (0-13) + 1 meta-rule (spirit beats letter). Authoritative behavioral standard. Every skill references it. |
+| `shared/iron-rules.md` | 13 principles (0-12) + 1 meta-rule (spirit beats letter). Authoritative behavioral standard. Every skill references it. |
 | `shared/workflow.md` | LIGHT (6-step inline) and FULL (4-phase) tiers, triage gate, gate discipline, compaction recovery + handoff protocol. Authoritative tier definition. |
 | `shared/phases/phase-1-research-plan.md` | Phase 1 contract: research, plan file, HOW-level locks, user approval. |
 | `shared/phases/phase-2-chronicle.md` | Phase 2 contract: chronicle file or NOT NEEDED annotation. |
@@ -20,6 +20,10 @@ paths:
 | `shared/review-categories.md` | Canonical CRITICAL/HIGH/MEDIUM/LOW severity definitions for every review surface. |
 | `shared/templates/plan-template.md` | Plan file skeleton. NNNN__YYYY-MM-DD__implementation_plan__slug.md naming. |
 | `shared/agents/research-agent.md` | Research subagent spec referenced from Phase 1. |
+| `shared/skill-authoring.md` | Reduce-gate for authoring/editing any skill, reference, or plugin doc. Referenced from `workflow.md` and `staff-reviewer`. |
+| `shared/architectural-depth.md` | Depth-and-seams guidance. Referenced by `roast-my-code`. |
+| `shared/adopting-external-features.md` | Filter for adopting any external library/pattern. Referenced by `brainstorming`. |
+| `shared/templates/chronicle-template.md` | Chronicle file skeleton. |
 
 JS/TS lint enforcement and package-manager detection moved to `skills/typescript-dev/references/` — referenced from `typescript-dev` and `frontend-dev`, not workflow-wide.
 

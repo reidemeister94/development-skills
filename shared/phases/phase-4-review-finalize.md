@@ -1,122 +1,31 @@
 # Phase 4: REVIEW + FINALIZE — GATE
 
-Combines staff review with finalization. The staff-reviewer agent is the workflow's only named subagent — independent context, scoped tools, fresh eyes on the diff.
+Staff review + finalization. The `staff-reviewer` agent is a subagent with independent context, scoped tools, fresh eyes on the diff. Apply [Iron Rules](../iron-rules.md).
 
-Apply [Iron Rules](../iron-rules.md) throughout. Staff review enforces the diff-relevant principles (Principle 3 Simplicity, Principle 4 Surgical changes, Principle 5 Signal/zero noise, Principle 6 WHY comments, Principle 7 TDD, Principle 8 No claim without evidence, Principle 9 Root cause). Finalization applies Principle 10 (document discoveries) and Principle 13 (slim docs · English · memory hygiene). Principle 12 (no commits without explicit user request) gates step 4e.
+## 4a — Staff review (MANDATORY, cannot self-approve)
 
----
+1. `git diff` — if >500 lines, write to a temp file and pass the path; if >2000 lines, split by component (the `## Task Checklist` file list) into separate reviews, all must pass.
+2. Spawn `staff-reviewer` via the Task tool with: task, constraints (from the plan), diff (or path), plan file path, patterns file path(s), Phase 3 verification summary, detected framework.
+3. Returns `APPROVED` / `SPEC_ISSUES` / `ISSUES` (file:line). Append `## Review Log` to the plan each cycle; fix → re-verify (Phase 3 Step 4) → re-review until APPROVED.
 
-## 4a: Staff Engineer Review (MANDATORY)
+**Gate:** state **"STAFF REVIEW: APPROVED"**.
 
-**Cannot skip.** Do not rationalize *"simple changes"* or *"already verified."*
+## 4b — Chronicle finalization
 
-### Before spawning
+Created → align with final code, fill "After", set Completed; keep critical user input verbatim (summarize only non-critical input, losslessly). NOT NEEDED → if significant discoveries emerged (check `## Implementation Log`), reconsider a retroactive chronicle. WORKFLOW STATE → `Status: Completed`.
 
-1. Run `git diff` — if >500 lines, write to a temp file and pass the path.
-2. Collect Phase 3 pass/fail summary (full details already in plan file — pass path, not content).
-3. **If diff >2000 lines:** Split by component using `## Task Checklist` file list. Spawn separate reviews. All must pass.
+**Gate:** state **"CHRONICLE FINALIZED — [filename]"** (or confirm NOT NEEDED).
 
-### Spawn `staff-reviewer` via Task tool
+## 4c — Capture discoveries + align docs (cannot skip)
 
-Pass:
+Invoke `development-skills:align-docs` and let it run in full — the single discovery-capture + doc-alignment step. It harvests what the session learned (Principle 10) into `AGENTS.md` / `.agents/rules/`, sweeps project facts out of memory into the repo (teammates share only the repo), then cleans and aligns every docs/agents file. Do NOT capture discoveries inline first — that duplicates align-docs.
 
-- **Task:** Original requirement.
-- **Constraints:** From approved plan.
-- **Git diff:** The changes (path if >500 lines).
-- **Plan file path:** FULL path — reviewer reads `## Task Checklist` and `## Verification Results` directly from the file.
-- **Patterns file path(s):** From language skill config.
-- **Verification summary:** Phase 3 pass/fail.
-- **Detected framework / additional context** from language skill.
+**Gate:** state **"DISCOVERIES CAPTURED + DOCS ALIGNED — [files] / NONE"**.
 
-Two-stage review: spec compliance → code quality. Returns `APPROVED`, `SPEC_ISSUES`, or `ISSUES` with file:line.
+## 4d — Integration
 
-### Persist results to plan file
+Changes on current branch → ask via `AskUserQuestion`: *"Commit now?"* (`Yes, commit now` / `No, I'll handle it (Recommended)`). Commit only on explicit yes, via `development-skills:commit`.
 
-After each cycle, append `## Review Log`:
+Unmerged worktree branch (rare) → ask how to land: merge locally (checkout base → merge → test → delete branch) · push + `gh pr create` with the plan summary · keep as-is · discard (confirm "discard" first).
 
-```markdown
-## Review Log
-
-### Review 1
-- **Stage 1 (Spec):** PASS / SPEC_ISSUES
-- **Stage 2 (Quality):** APPROVED / ISSUES
-- **Issues:**
-  1. [file:line] [SEVERITY] [description] → Fix: [action]
-- **Action:** Applied fixes, re-verified, re-submitted
-
-### Review 2
-- **Result:** APPROVED
-```
-
-### Handling results
-
-- **SPEC_ISSUES** → fix → re-verify (Phase 3 Step 4) → re-review.
-- **ISSUES** → fix → re-verify → re-review.
-
-Iterate until APPROVED.
-
-**Gate:** State **"STAFF REVIEW: APPROVED"**
-
----
-
-## 4b: Chronicle Finalization
-
-1. **Chronicle created:** Read `## Implementation Log` for discoveries. Align with final code. Keep **critical user input verbatim** (prompts, decisions, Q&A) — never condense it; summarize only *non-critical* input, losslessly. Update Status to Completed. Identify insights for `AGENTS.md` (or `CLAUDE.md` if the project uses that as primary).
-2. **Chronicle NOT NEEDED:** Check WORKFLOW STATE reason. If significant discoveries emerged (check Implementation Log), consider retroactive chronicle.
-3. **Update WORKFLOW STATE:** `Status: Completed`, `Current Phase: 4 (Complete)`.
-
-**Gate:** State **"CHRONICLE FINALIZED — [filename]"** (or confirm NOT NEEDED).
-
----
-
-## 4c: Capture Discoveries — GATE
-
-**Cannot skip.** Principle 10 — harvest anything you learned that you lacked at the start: non-obvious · domain · infrastructure · company · project-specific.
-
-- Critical, always-read fact → one line in the `AGENTS.md` (or `CLAUDE.md`) list.
-- Topic deep enough to stand alone → `.agents/rules/<topic>.md` (same convention), indexed from `AGENTS.md`.
-
-Fewest words that stay clear. **Never memory** — teammates share only the repo. Nothing beyond what the diff already shows → NONE.
-
-**Gate:** State **"DISCOVERIES CAPTURED — [files] / NONE"**
-
----
-
-## 4d: Align Documentation
-
-Invoke `development-skills:align-docs` via the Skill tool.
-
----
-
-## 4e: Integration
-
-**Default (changes on current branch):** Ask via `AskUserQuestion`:
-
-- *"Implementation complete. Commit the changes now?"* — options: `"Yes, commit now"`, `"No, I'll handle it myself (Recommended)"`.
-
-**STOP and wait.** Only commit if user picks `"Yes, commit now"`. Use `development-skills:commit` via the Skill tool.
-
-**Unmerged worktree branch (rare):** Ask via `AskUserQuestion`:
-
-- *"Implementation complete. How would you like to land the changes?"* — options: `"Merge to current branch locally"`, `"Push and create a Pull Request"`, `"Keep the branch as-is"`, `"Discard this work"`.
-
-| Option | Actions |
-|--------|---------|
-| 1. Merge | checkout base → merge → test → delete branch → cleanup |
-| 2. PR | push → `gh pr create` with plan summary → keep branch |
-| 3. Keep | Report branch name and path |
-| 4. Discard | Confirm with "discard" → checkout base → delete branch → cleanup |
-
----
-
-## Expected Artifacts
-
-- `## Review Log` in plan file
-- Staff reviewer APPROVED
-- Chronicle finalized (or confirmed NOT NEEDED)
-- Discoveries captured to `AGENTS.md` / `.agents/rules/` (or NONE)
-- Documentation aligned
-- Changes integrated per user's choice
-- WORKFLOW STATE: `Status: Completed`, `Current Phase: 4 (Complete)`
-
-State: **"WORKFLOW COMPLETE"**
+State: **"WORKFLOW COMPLETE"**.

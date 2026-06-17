@@ -34,19 +34,4 @@ Step 3: core-dev/SKILL.md Step 1: "Run: bash scripts/find-plan.sh active"
 | # | Step | Plugin file + instruction | What happened | Tool calls |
 |---|------|--------------------------|---------------|------------|
 
-## Section 4: Proposed Behavioral Evals
-
-One eval per friction point:
-
-```json
-{
-  "name": "kebab-case-name",
-  "category": "category",
-  "tests_change": "which friction point",
-  "prompt": "user prompt",
-  "expected_output": "what model should do",
-  "assertions": [{"name": "x", "type": "behavioral", "check": "what", "pass_criteria": "criteria"}]
-}
-```
-
 Verify Section 2 covers every interaction, then report location.
