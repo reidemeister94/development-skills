@@ -3,7 +3,6 @@ paths:
   - ".claude-plugin/**"
   - ".codex-plugin/**"
   - ".agents/plugins/**"
-  - "evals/**"
   - "VERSION"
   - "CHANGELOG.md"
   - "pyproject.toml"
@@ -72,12 +71,8 @@ Skill bodies use Claude Code tool names as canonical. Cross-platform translation
 
 ## Changelog
 
-`CHANGELOG.md` follows Keep a Changelog-ish format. One entry per release. Group by `BREAKING / Feat / Fix / Evals / Removed`. The unreleased section accumulates until the version bump.
-
-## Evals
-
-`evals/evals.json` defines the regression suite that `/eval-regression` runs. Skill behavior changes that move pass/fail outcomes MUST update the eval expectations in the same change — never let the eval file lag behind the skill it tests.
+`CHANGELOG.md` follows Keep a Changelog-ish format. One entry per release. Group by `BREAKING / Feat / Fix / Removed`. The unreleased section accumulates until the version bump.
 
 ## Python tooling
 
-`pyproject.toml` exists for the plugin's internal scripts (eval runners, lint helpers), NOT as a user-facing Python package. Do not advertise PyPI distribution. The plugin's surface stays markdown-first.
+`pyproject.toml` exists for the plugin's internal scripts (lint helpers), NOT as a user-facing Python package. Do not advertise PyPI distribution. The plugin's surface stays markdown-first.
