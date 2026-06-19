@@ -39,7 +39,7 @@ Verification: TBD
 - **Assumptions** — [about codebase, requirements, environment]
 - **Risks** — [what could go wrong, edge cases, side effects]
 - **Unknowns** — [anything unclear — state explicitly, don't guess]
-- **Verification strategy** — [how to prove it works]
+- **Verification strategy** — [the 0-ambiguity verification procedure that says DONE — see `../definition-of-done.md`; the concrete check phase-3 runs]
 - **Files to modify** — [specific files and planned changes]
 - **File responsibilities** — [what each touched/new file owns]
 - **Task decomposition** — [smallest buildable slices; each has a test/check]

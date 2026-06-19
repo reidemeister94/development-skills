@@ -9,6 +9,8 @@ Two tiers. PASS_THROUGH (trivial, 1-file, no design choice) is triaged in `skill
 
 Default on uncertainty → FULL.
 
+**Formatting (every tier, incl. PASS_THROUGH):** apply the language skill's formatter (`ruff format`, Biome/Prettier, etc.) after editing code, before claiming done.
+
 ## LIGHT — inline 6-step
 
 1. **Detect language inline** (`.py`→python, `.java`→java, `.swift`→swift, frontend signals→frontend, `.ts`+`tsconfig.json`→typescript; markdown/config-only → skip step 2).

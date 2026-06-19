@@ -15,7 +15,7 @@ WORKFLOW STATE → `Current Phase: 3`; add `## Task Checklist`, one `- [ ]` per 
 Read source fresh → if unclear STOP and ask (never guess) → run TDD cycle(s) → record in plan: `- [x] Task N — files: path:lines`.
 
 ## Step 3 — Verify (inline Bash, no subagent)
-Run the language skill's verification commands from project root. Long output → temp file, read excerpts. Append the full trail to the plan's `## Verification Results`; keep only pass/fail + failing excerpts in chat. Don't write useless unit tests that bring zero value: instead, analyze with critical thinking what are the use cases and edge cases and write the tests that actually verify the behaviors.
+Run the locked verification procedure (the plan's Verification strategy, per [`../definition-of-done.md`](../definition-of-done.md)) plus the language skill's verification commands from project root. Long output → temp file, read excerpts. Append the full trail to the plan's `## Verification Results`; keep only pass/fail + failing excerpts in chat. Don't write useless unit tests that bring zero value: instead, analyze with critical thinking what are the use cases and edge cases and write the tests that actually verify the behaviors.
 
 Tiers: **A** (has tests) — run all commands, add tests for new code first, 70-80% coverage. **B** (legacy, no tests) — run inline, but confirm with the user before any command that mutates state (DB/network/filesystem beyond the working tree).
 

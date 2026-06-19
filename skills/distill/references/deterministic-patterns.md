@@ -25,6 +25,7 @@ HEDGE = [
     r"[ÈE]' importante notare che\s*", r"[Vv]ale la pena (menzionare|ricordare|notare)( che)?\s*",
     r"[Vv]a sottolineato che\s*", r"[Cc]ome (accennato|menzionato) (sopra|in precedenza|prima),?\s*",
     r"[Tt]enere presente che\s*", r"[Aa] questo punto nel tempo,?\s*", r"[Ii]n sostanza,?\s*",
+    r"[Pp]er quanto riguarda\s+",
 ]
 for p in HEDGE:
     text = re.sub(p, '', text, flags=re.IGNORECASE)

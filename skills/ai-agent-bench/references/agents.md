@@ -35,6 +35,8 @@ Add a branch to `build_agent_command()` returning the argv list. The command mus
 - run with the worktree as CWD or via an agent-native flag (`--cd`, `--add-dir`)
 - run non-interactively without approval prompts (Claude `--dangerously-skip-permissions`; Codex `exec` subcommand)
 
+Verify the agent's current `--help` before hardcoding flags — these CLIs change their flag contracts often.
+
 ## 4. Pricing in `scripts/pricing.json`
 
 USD per 1M tokens. Set `cache_creation_1h` to `0` when the provider has no TTL split:
@@ -44,3 +46,7 @@ USD per 1M tokens. Set `cache_creation_1h` to `0` when the provider has no TTL s
 ```
 
 `estimate_cost_usd` matches exact key first, then prefix (`model.startswith(k)`) — registering a family root like `"gpt-5"` covers its variants.
+
+## Validate the parser
+
+Parse a real transcript and sanity-check before trusting a trial: `python scripts/parse_transcript.py --agent <new> --session session.jsonl`. Confirm `tokens.total > 0`, `tool_calls.total > 0`, `cost_usd` (or `cost_usd_estimated`) present, and `trajectory.files_read_before_first_edit` non-trivial (zero = blind-editing or a broken parser).

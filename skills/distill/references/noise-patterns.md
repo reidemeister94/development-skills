@@ -17,3 +17,7 @@ Intro paragraphs without information; 5-paragraph structure forced on content th
 ## Repetition
 
 Same idea reworded within a section; `X, which means Y` where Y is obvious from X; echo sentences ("This is important. The importance cannot be overstated."); overlapping list items; re-explaining a covered concept. State each fact once, where most relevant.
+
+## Empty transitions
+
+Words that add no contrast or information: "On the other hand" when not actually contrasting; "In terms of...", "When it comes to...", "With respect to...", "In the context of...". Cut, or rewrite to the bare claim.
