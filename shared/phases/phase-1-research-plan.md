@@ -9,7 +9,7 @@ Check the plan's WORKFLOW STATE for `Research:` → read `docs/plans/NNNN__resea
 Read ALL pattern files from the skill's config. Ask focused questions if unclear; for non-trivial tasks, ask which existing patterns NOT to follow and which legacy workarounds to avoid. Record answers under `## Clarifications` (Q / A / Impact).
 
 ## Step 3 — Fill research gaps
-Identify missing implementation/library/API/codebase knowledge. No gaps → state **"RESEARCH OK — leveraging `[file]`"**. Gaps or multiple possible valid approaches → dispatch an isolated subagent per `../agents/research-agent.md` and then read the results.
+Identify missing implementation/library/API/codebase knowledge. No gaps → state **"RESEARCH OK — leveraging `[file]`"**. Gaps or multiple possible valid approaches → dispatch an isolated subagent (`model: opus`) per `../agents/research-agent.md` and then read the results.
 
 ## Step 4 — Write the plan
 Instantiate `../templates/plan-template.md` (canonical schema, including the HOW-locks table). Set WORKFLOW STATE: Status, Current Phase, Phases remaining, Research path, Chronicle (TBD — Phase 2), Verification commands.

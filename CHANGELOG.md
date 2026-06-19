@@ -1,3 +1,18 @@
+## 0.9.0 (2026-06-19)
+
+### Added
+
+- **`shared/definition-of-done.md`** — a hard pre-code lock: both the problem/specs AND a 0-ambiguity verification procedure (the binary check that says DONE/NOT-DONE) must be explicit before implementation. Wired into the `brainstorming` Q&A lock + 6-line restate **Success** line, the `plan-template` **Verification strategy** field, and `phase-3` verify.
+- **`python-dev/patterns.md`: Postgres advisory locks** — transaction- vs session-scoped cross-process mutual exclusion, lock-id derivation from a string key, `pg_try_advisory_lock` fail-fast, sorted-key deadlock avoidance.
+- **`ai-agent-bench/references/agents.md`**: verify the agent's current `--help` before hardcoding CLI flags, and a "Validate the parser" step (sanity-check tokens/tool-calls/cost/trajectory on a real transcript before trusting a trial).
+
+### Changed
+
+- **`shared/workflow.md`**: formatting is now an explicit every-tier step (incl. PASS_THROUGH) — run the language formatter after editing code, before claiming done.
+- **`core-dev`**: added the "don't rationalize skipping brainstorming" guard (WHAT ≠ HOW; first ≠ best; analysis IS development).
+- **`phase-1-research-plan`**: research subagent dispatched with `model: opus`.
+- **`distill`**: new Italian hedge regex (`per quanto riguarda`) and an "Empty transitions" semantic-noise category.
+
 ## 0.8.0 (2026-06-17)
 
 ### Changed

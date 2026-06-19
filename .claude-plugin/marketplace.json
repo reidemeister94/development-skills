@@ -8,7 +8,7 @@
     {
       "name": "development-skills",
       "description": "Three-tier triage (PASS_THROUGH / LIGHT / FULL 4-phase) development workflow with staff-reviewer subagent and multi-language support",
-      "version": "0.8.0",
+      "version": "0.9.0",
       "source": "./"
     }
   ]

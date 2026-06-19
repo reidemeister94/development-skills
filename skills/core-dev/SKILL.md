@@ -13,6 +13,8 @@ Iron Rules: `../../shared/iron-rules.md`.
 
 **Brainstorming gate.** Default: invoke `development-skills:brainstorming` with the user's full request as args. Skip ONLY if all three hold: fully reversible with low effort; ONE obvious forced approach (not *"I think this is right"*); WHY doesn't affect HOW. User bypass (*"skip brainstorming"*, *"just code it"*, *"I already know the approach"*) → respect it; *"Fast"* is NOT a bypass.
 
+Don't rationalize skipping it: *"user said exactly what to do"* — WHAT ≠ HOW, multiple approaches → brainstorm; *"I already have a good approach"* — first ≠ best; *"just analysis/investigation"* — analysis IS development.
+
 Specialized routes: bug fix with error / stack trace → `development-skills:debugging`; test creation / strategy / coverage → `development-skills:create-test`.
 
 **Language.** After brainstorming returns (or a skip-decision), detect and invoke the matching skill before writing code:

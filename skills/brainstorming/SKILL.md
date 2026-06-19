@@ -28,8 +28,9 @@ Glob + Grep + Read of entry points, similar features, related modules → `CODEB
 
 ## 2 — Q&A
 
-Lock `WHY → scope → WHAT → quality bars → HOW`. One topic at a time, resolve one branch before opening another.
+Lock `WHY → scope → WHAT → quality bars → HOW → definition of done`. One topic at a time, resolve one branch before opening another.
 
+- **Definition of done is a hard lock.** Before you finish, BOTH the problem/specs AND the 0-ambiguity verification procedure (the check that definitively says DONE/NOT-DONE) must be explicit — ask the user; if either is unclear, reach it via more Q&A + analysis of reality (codebase, docs, live database/logs). [`../../shared/definition-of-done.md`](../../shared/definition-of-done.md). It becomes the gate's **Success** line and the plan's **Verification strategy**.
 - **Q + GUESS per question.** Every question carries your reasoned hypothesis — the user reacts faster to a wrong guess than to generating an answer cold. Format: `Q: <question> · GUESS: <hypothesis + reasoning> · CONFIDENCE: <0-100>%`. The number forces honesty.
 - **WHY / scope / priority / trade-off can never be derived from the codebase** — always ask if missing.
 - **95% stop test:** stop when you can predict the user's reaction to the next 3 questions you'd ask, or on *"enough"* / *"just propose"*. Three rounds without confidence rising → reframe.
@@ -78,7 +79,7 @@ HARD-GATE: no code or scaffold until the design is presented AND user-approved �
 - Outcome:      <one line>
 - User:         <one line — who benefits>
 - Why now:      <one line — what changed>
-- Success:      <one line — how we know it worked>
+- Success:      <one line — the 0-ambiguity verification procedure that says DONE>
 - Constraint:   <one line — the binding limit>
 - Out of scope: <one line — what we're explicitly NOT doing>
 ```
