@@ -1,3 +1,9 @@
+## 0.9.1 (2026-06-25)
+
+### Changed
+
+- **`align-docs`**: run the alignment steps regardless of the project's current state — relentlessly reduce `CLAUDE.md`, `AGENTS.md`, and supporting docs/rules until they converge on the target principles and structure.
+
 ## 0.9.0 (2026-06-19)
 
 ### Added
