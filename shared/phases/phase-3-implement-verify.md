@@ -5,6 +5,8 @@ Cannot start without a user-approved plan; no approval → Phase 1. Implementati
 ## Step 1 — Plan file before any source file
 WORKFLOW STATE → `Current Phase: 3`; add `## Task Checklist`, one `- [ ]` per task.
 
+**Pre-flight plan scan (before Task 1):** one adversarial pass over the approved plan for internal contradictions — task-vs-task, task-vs-**Global Constraints**, a HOW-lock a task defeats, conflicts that only surface at implementation. A conflict → STOP, return to Phase 1, fix, re-approve (do not code around it). Record the one-line result under `## Pre-Flight Plan Review`.
+
 ## Implementation discipline
 - **Vertical slices:** one behavior → minimal code → verify → next. Never all tests first then all code (horizontal slicing breeds brittle tests for an imagined shape). A task needing >100 lines before feedback → split it.
 - **Anti-poisoning:** re-read source before each task (Glob/Grep paths, confirm signatures). Never trust memory of file contents across tasks.

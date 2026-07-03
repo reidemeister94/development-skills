@@ -12,7 +12,7 @@ Read ALL pattern files from the skill's config. Ask focused questions if unclear
 Identify missing implementation/library/API/codebase knowledge. No gaps → state **"RESEARCH OK — leveraging `[file]`"**. Gaps or multiple possible valid approaches → dispatch an isolated subagent (`model: opus`) per `../agents/research-agent.md` and then read the results.
 
 ## Step 4 — Write the plan
-Instantiate `../templates/plan-template.md` (canonical schema, including the HOW-locks table). Set WORKFLOW STATE: Status, Current Phase, Phases remaining, Research path, Chronicle (TBD — Phase 2), Verification commands.
+Instantiate `../templates/plan-template.md` (canonical schema, including the Global Constraints block and the HOW-locks table). Fill Global Constraints with the project-wide invariants this change must not break, copied verbatim (or `N/A: none`) — Phase 3 scans against them and Phase 4a hands them to the reviewer. Set WORKFLOW STATE: Status, Current Phase, Phases remaining, Research path, Chronicle (TBD — Phase 2), Verification commands.
 
 ## Step 5 — HOW-level locks (MANDATORY)
 Fill the plan-template HOW-locks table, one row each: **edge cases · data shapes · error semantics · contract boundaries · test scope · rollback.** Lock each or write `N/A: reason` — never blank, never guess, pick the simplest answer. Unknowns → display as plain text and STOP (`AskUserQuestion` for a discrete 2-4 pick).

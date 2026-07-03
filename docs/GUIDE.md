@@ -159,7 +159,7 @@ Context is loaded progressively following Anthropic's [just-in-time pattern](htt
 1. No positive claims without fresh verification evidence
 2. Red/Green TDD — every implementation starts with a failing test
 3. Comment the WHY, not the WHAT
-4. No commits without explicit user request
+4. Communicate to be understood — simplest accurate language, no lost information
 5. Every gate must be explicitly passed
 
 **Model Behavior** — maximum honesty (zero accommodation), always-on critical thinking, calibrated criticism (concrete and evidence-based), planning as 90% of the work, data-validated decisions, and persistent knowledge on disk.
@@ -225,8 +225,8 @@ A `PostToolUse` hook automatically formats files when Claude edits them:
 | `align-docs` | `/align-docs` | Align documentation with current project state |
 | `resolve-merge` | `/resolve-merge` | Systematic merge conflict resolution |
 | `update-precommit` | `/update-precommit` | Update pre-commit hooks to latest versions |
-| `update-reqs` | `/update-reqs` | Update requirements.in with latest PyPI versions |
-| `update-reqs-dev` | `/update-reqs-dev` | Update requirements-dev.in with latest PyPI versions |
+| `update-reqs` | `/update-reqs` | Update any requirements `.in` (incl. `requirements-dev.in`) with latest PyPI versions |
+| `plugin-feedback` | `/plugin-feedback produce\|ingest` | Record or apply development-skills plugin feedback, challenged against the Iron Rules |
 | `best-practices` | `/best-practices <topic>` | Deep web research producing structured state-of-the-art report |
 
 ---

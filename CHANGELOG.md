@@ -1,3 +1,26 @@
+## 0.9.2 (2026-07-03)
+
+### Added
+
+- **Workflow: Global Constraints + Pre-Flight Plan Review.** The plan template gains a **Global Constraints** block (project-wide invariants copied verbatim — version floors, dependency limits, naming/copy rules) and a **Pre-Flight Plan Review** section. `phase-1` fills the constraints; `phase-3` runs an adversarial pre-flight scan of the plan against them (and the HOW-locks) before Task 1; `phase-4` hands them to the reviewer as its attention lens.
+- **`staff-reviewer`: `CANNOT_VERIFY` outcome.** A third Stage-1 result for requirements that can't be settled from the diff alone (satisfied or violated only by untouched code) — reported with the exact check the orchestrator must run, distinct from MISSING and clean; does not block Stage 2.
+- **`plugin-feedback`** — consolidated skill (`/plugin-feedback produce | ingest <report-path>`) replacing the separate `ingest-feedback` + `produce-feedback` skills.
+
+### Changed
+
+- **Iron Rules: added "Communicate to be understood" (Principle 12); dropped "No commits without explicit user request".** The AI-attribution-trailer ban now lives solely in the `commit` skill. Count stays 13 principles (0-12) + 1 meta-rule. `AGENTS.md`, `README.md`, `docs/GUIDE.md`, and `align-docs`'s `agents-template.md` updated to match.
+- **Iron Rules / `agents-template`: simplicity principle clarified** — "cut useless words, never necessary information."
+- **`phase-4-review-finalize`**: the reviewer now receives a **review packet** (`git diff --stat` + `git diff -U10`) so context travels with the diff; adds worktree-cleanup guidance for feature branches (detached-HEAD handling, merge-then-remove ordering, remove-only-what-you-created).
+- **`staff-reviewer`**: judges from the packet's `-U10` context instead of re-running git; a documented decision is "context, not immunity."
+- **`align-docs`**: honors free-text project directives (Step 0) and preserves a customized principles block via an `align-docs:principles-customized` marker.
+- **`hooks/auto-format`**: bash fast-path for single-file edits (no subprocess on the hot path); Codex multi-file `apply_patch` still handled via `python3`.
+- **`update-reqs`**: now the single skill for any `.in` file (including `requirements-dev.in`).
+
+### Removed
+
+- **`ingest-feedback`, `produce-feedback`** — merged into `plugin-feedback`.
+- **`update-reqs-dev`** — folded into the generalized `update-reqs`.
+
 ## 0.9.1 (2026-06-25)
 
 ### Changed

@@ -4,8 +4,8 @@ Staff review + finalization. The `staff-reviewer` agent is a subagent with indep
 
 ## 4a — Staff review (MANDATORY, cannot self-approve)
 
-1. `git diff` — if >500 lines, write to a temp file and pass the path; if >2000 lines, split by component (the `## Task Checklist` file list) into separate reviews, all must pass.
-2. Spawn `staff-reviewer` via the Task tool with: task, constraints (from the plan), diff (or path), plan file path, patterns file path(s), Phase 3 verification summary, detected framework.
+1. **Build the review packet** to a temp file — `git diff --stat` then `git diff -U10` (prepend `git log --oneline <base>..HEAD` only when reviewing committed history, e.g. a feature branch). The `-U10` context spares the reviewer from re-opening changed files or re-running git. >2000 lines → split by component (the `## Task Checklist` file list) into separate packets, all must pass.
+2. Spawn `staff-reviewer` via the Task tool with: task, constraints (from the plan, incl. **Global Constraints**), the packet path, plan file path, patterns file path(s), Phase 3 verification summary, detected framework.
 3. Returns `APPROVED` / `SPEC_ISSUES` / `ISSUES` (file:line). Append `## Review Log` to the plan each cycle; fix → re-verify (Phase 3 Step 4) → re-review until APPROVED.
 
 **Gate:** state **"STAFF REVIEW: APPROVED"**.
@@ -26,6 +26,10 @@ Invoke `development-skills:align-docs` and let it run in full — the single dis
 
 Changes on current branch → ask via `AskUserQuestion`: *"Commit now?"* (`Yes, commit now` / `No, I'll handle it (Recommended)`). Commit only on explicit yes, via `development-skills:commit`.
 
-Unmerged worktree branch (rare) → ask how to land: merge locally (checkout base → merge → test → delete branch) · push + `gh pr create` with the plan summary · keep as-is · discard (confirm "discard" first).
+Feature branch to land → ask how: merge locally (checkout base → merge → test → delete branch) · push + `gh pr create` with the plan summary · keep as-is · discard (confirm "discard" first). When the branch lives in a **worktree** (detect: `git rev-parse --git-dir` ≠ `--git-common-dir`), the cleanup is easy to get wrong:
+
+- **Detached HEAD** → the harness owns the workspace: drop the local-merge option, and never remove the workspace.
+- **Clean up only on merge/discard** (keep + PR keep the worktree alive). Order: merge (re-run the verify command — a base merge can break a green branch) → `git worktree remove` → `git branch -d`; deleting the branch first fails while the worktree still references it.
+- **Removal:** `cd` to the main repo root first (remove fails from inside the worktree); remove **only** worktrees you created — path under `.worktrees/`/`worktrees/`; leave harness-owned ones; `git worktree prune` after.
 
 State: **"WORKFLOW COMPLETE"**.
