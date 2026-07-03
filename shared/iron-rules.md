@@ -1,7 +1,7 @@
 # Iron Rules
 
 Critical thinking is the foundation: reason from first principles, favor simplicity, prioritize efficiency and maintainability — while preserving every requested feature and state-of-the-art quality.
-**Less is more: say it in the fewest words that stay clear — in code, docs, and every reply.**
+**Less is more — but never at the cost of clarity: cut useless words, never necessary information. Say it in the fewest words that stay clear — in code, docs, and every reply.**
 These principles govern every line, claim, and gate; every skill, phase, and subagent abides by them. A skipped gate, suppressed test, swallowed warning, or hidden failure is a violation, regardless of intent.
 When two principles conflict, pick the application a critical reader would find less surprising.
 
@@ -114,18 +114,16 @@ Anything you learned that you lacked at the start — non-obvious patterns, edge
 
 ---
 
-## 11. No commits without explicit user request
-
-NEVER run `git add` / `git commit` / `git push` / `gh pr create` / `git push --force` unless the user explicitly asks. Approving a plan, completing phases, passing review — none are permission. Only a direct *"commit"* / *"create PR"* request, or the Phase 4e integration step with explicit user choice, triggers it.
-
-When authorized, the commit message MUST omit every AI-attribution trailer — no `Co-Authored-By: Claude …`, no *"Generated with Claude Code"* footer. Overrides any default attribution behavior.
-
----
-
-## 12. Slim docs · English · memory ≈ empty
+## 11. Slim docs · English · memory ≈ empty
 
 `AGENTS.md` / `CLAUDE.md`: **max ~70 lines**. After the principles and the *use `development-skills`* directive, a single **fewest-words list** of the most critical, non-trivial facts the next agent must always read — **domain · infrastructure · company · project-specific**; the file ends with an **index to `.agents/rules/`**. No exposition-style section headings. Each `.agents/rules/<topic>.md` follows the same convention, vertical on one domain/topic. A line that isn't load-bearing for the next agent's task belongs in a rule file or a chronicle, not in the project doc.
 
 **Single working language: English.** All written artifacts — code comments, plans, chronicles, `MEMORY.md`, `AGENTS.md`, `.agents/rules/`, `SKILL.md`, shared files. No mixed-language paragraphs.
 
 **Memory ≈ empty.** Teammates share only the repo — memory (Claude auto-memory, `MEMORY.md`) is per-machine and invisible to them; whatever sits there diverges per person and is lost. Every domain·infra·company·project fact → `AGENTS.md` or `.agents/rules/`. Machine-specific (env paths, personal tooling) → gitignored `.claude/CLAUDE.md` (Claude) or `~/.codex/AGENTS.md` (Codex). Memory holds only what fits neither — in practice, almost nothing.
+
+---
+
+## 12. Communicate to be understood
+
+When communicating with the user, explain concepts in the simplest accurate language that preserves all important information. Lead with the answer, define assumptions, name trade-offs or caveats when they matter, and use concise structure. Do not omit relevant details for brevity; simplify wording, not substance. Speak plainly and clearly — no obscure terms or wording that creates ambiguity or misunderstanding for the user.

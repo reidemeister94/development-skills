@@ -8,7 +8,7 @@ Research: docs/plans/NNNN__research__{slug}.md
 Chronicle: TBD — decided in Phase 2
 Verification: TBD
 
-**Sections:** WORKFLOW STATE | Brainstorming Summary | Clarifications | Plan | Task Checklist | Implementation Log | Verification Results | Review Log
+**Sections:** WORKFLOW STATE | Brainstorming Summary | Clarifications | Plan | Task Checklist | Pre-Flight Plan Review | Implementation Log | Verification Results | Review Log
 
 ## Brainstorming Summary
 
@@ -37,6 +37,7 @@ Verification: TBD
 ## Plan
 
 - **Assumptions** — [about codebase, requirements, environment]
+- **Global Constraints** — [project-wide binding values every task must honor, copied **verbatim**: version floors, dependency limits, naming/copy rules, other invariants. One line each, or `N/A: none`. Distinct from the HOW-locks *Contract boundaries* (that row scopes THIS change's API) — these are pre-existing invariants the change must not break, and become the reviewer's attention lens.]
 - **Risks** — [what could go wrong, edge cases, side effects]
 - **Unknowns** — [anything unclear — state explicitly, don't guess]
 - **Verification strategy** — [the 0-ambiguity verification procedure that says DONE — see `../definition-of-done.md`; the concrete check phase-3 runs]

@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
-# PostToolUse hook: auto-format the edited file using the best formatter per language.
+# PostToolUse hook: format the edited file(s) with the best per-language formatter.
 # Exits 0 silently if no formatter is found — never blocks the workflow.
+#
+# Hot path (Claude Code Edit / Write / MultiEdit): one tool_input.file_path,
+# pulled with a pure-bash regex — no subprocess, so the per-edit overhead stays
+# in single-digit ms even for files we don't format (e.g. .md).
+# Codex apply_patch carries a multi-file patch whose newlines are JSON-escaped,
+# so there we fall back to python3 to extract every `*** {Add,Update} File:`
+# header. Delete headers are skipped — the file no longer exists.
 #
 # Formatters (chosen for speed + community adoption, 2026):
 #   Python:     ruff        — 30x faster than Black, used by Django/FastAPI/pandas/pydantic
@@ -10,35 +17,33 @@
 #   Swift:      swift-format — official Apple toolchain (Xcode 16+)
 #   Web files:  biome       — same binary handles JSON, CSS, GraphQL
 
-# Read hook input JSON and collect every candidate file path to format.
-# python3 is required by the plugin elsewhere; using it here is robust to
-# pretty-printed JSON, escaped quotes, and the key appearing inside string values.
-# Sources:
-#   - Claude Code Edit / Write / MultiEdit:  tool_input.file_path (single path).
-#   - Codex apply_patch (0.124+):            every `*** {Add,Update} File:` header
-#     in tool_input.command. Delete headers are skipped — the file no longer exists.
-# Multi-file patches yield multiple paths; we format each independently.
 INPUT=$(cat)
-FILE_PATHS=$(printf '%s' "$INPUT" | python3 -c 'import json,re,sys
+paths=()
+
+# Claude Code edit tools carry a single file_path — extract it without spawning
+# a process. Paths never contain a double-quote, so [^"]* is exact.
+file_path_re='"file_path"[[:space:]]*:[[:space:]]*"([^"]*)"'
+if [[ "$INPUT" =~ $file_path_re ]]; then
+  paths+=("${BASH_REMATCH[1]}")
+elif [[ "$INPUT" == *'*** '* ]]; then
+  # Codex apply_patch only. python3 un-escapes the JSON, then MULTILINE matches
+  # each header in the now-real-newline command string.
+  while IFS= read -r p; do
+    [ -n "$p" ] && paths+=("$p")
+  done < <(printf '%s' "$INPUT" | python3 -c 'import json,re,sys
 try:
-    d = json.load(sys.stdin)
+    cmd = (json.load(sys.stdin).get("tool_input") or {}).get("command") or ""
 except Exception:
     sys.exit(0)
-ti = d.get("tool_input") or {}
-paths = []
-fp = ti.get("file_path")
-if fp:
-    paths.append(fp)
-cmd = ti.get("command") or ""
-for m in re.finditer(r"^\*\*\* (?:Add|Update) File:\s*(.+)$", cmd, re.MULTILINE):
-    paths.append(m.group(1).strip())
 seen = set()
-for p in paths:
+for m in re.finditer(r"^\*\*\* (?:Add|Update) File:\s*(.+)$", cmd, re.MULTILINE):
+    p = m.group(1).strip()
     if p and p not in seen:
         seen.add(p)
-        print(p)' 2>/dev/null || true)
+        print(p)' 2>/dev/null)
+fi
 
-[ -z "$FILE_PATHS" ] && exit 0
+[ ${#paths[@]} -eq 0 ] && exit 0
 
 # Find a command in PATH or node_modules/.bin/
 find_cmd() {
@@ -47,13 +52,18 @@ find_cmd() {
   return 1
 }
 
-# Ruff has many possible install locations
+# Locate ruff without assuming any one Python env manager.
+# PATH covers every *activated* env — conda, venv, uv, pyenv, poetry, system —
+# since they all put ruff on PATH. The fallbacks cover the common *non-activated*
+# layouts: $VIRTUAL_ENV (venv/uv/virtualenv/poetry/pdm), $CONDA_PREFIX (conda/
+# mamba/micromamba), a project-local .venv|venv, and tool installs in ~/.local/bin
+# (pipx, `uv tool`, `pip --user`). Not exhaustive — any other manager still works
+# as long as ruff is reachable on PATH.
 find_ruff() {
   command -v ruff 2>/dev/null && return
   for c in "${VIRTUAL_ENV:-_}/bin/ruff" "${CONDA_PREFIX:-_}/bin/ruff" \
-           ".venv/bin/ruff" "venv/bin/ruff" "${HOME}/.local/bin/ruff" \
-           "${HOME}/.cargo/bin/ruff" "${PYENV_ROOT:-${HOME}/.pyenv}/shims/ruff"; do
-    [ -x "$c" ] 2>/dev/null && echo "$c" && return
+           .venv/bin/ruff venv/bin/ruff "${HOME}/.local/bin/ruff"; do
+    [ -x "$c" ] && echo "$c" && return
   done
   return 1
 }
@@ -91,9 +101,8 @@ format_file() {
   esac
 }
 
-while IFS= read -r FILE_PATH; do
-  [ -z "$FILE_PATH" ] && continue
+for FILE_PATH in "${paths[@]}"; do
   format_file "$FILE_PATH"
-done <<< "$FILE_PATHS"
+done
 
 exit 0
