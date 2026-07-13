@@ -1,48 +1,19 @@
-# [Brief Title]
+# [Title]
 
-> Chronicle: NNNN__YYYY-MM-DD__brief-description.md
-> Status: Draft | In Progress | Completed
+> Status: In Progress | Completed
 
-## User Input & Conversation (Always Captured)
+## User intent
 
-### Prompts & relevant messages (chronological)
+[Faithful English paraphrase of the request and later decisions.]
 
-> [in order so evolution is visible — verbatim if critical, else faithful lossless summary]
+## Before
 
-### Q&A (agent ↔ user)
+[Relevant observed state.]
 
-- **Q:** [question] → **A:** [answer — verbatim when it locks a decision]
+## Decisions and discoveries
 
-### How the understanding evolved
+- [Why a choice was made or a non-obvious fact learned.]
 
-[initial ask → what was surfaced → how the user refined it → net result]
+## After
 
-## Context
-
-[Background, project state, technical context.]
-
-**Key references:**
-- `path/to/module/` — [why involved]
-
-## Project State
-
-**Before:** [state before work]
-**After:** [filled during finalization]
-
-## Objective (The WHY)
-
-[WHY this change. Business context, user needs, problems.]
-
-## Affected Areas
-
-- `path/` — [component] — [impact]
-
-## Discoveries & Insights
-
-- **[Date]**: [discovery or insight]
-
----
-
-## Agent doc updates
-
-- [ ] `AGENTS.md` — [what to add/update]
+[Final state, evidence, and remaining limit.]

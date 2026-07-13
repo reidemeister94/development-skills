@@ -175,9 +175,6 @@ def build_agent_command(agent: str, prompt: str, worktree: Path, run_dir: Path) 
             str(worktree),
             prompt,
         ]
-    if agent == "opencode":
-        # Stub — parser captures nothing meaningful yet.
-        return ["bash", "-c", 'echo \'{"type":"opencode_stub","note":"parser not implemented"}\'']
     raise ValueError(f"unknown agent: {agent}")
 
 
@@ -212,7 +209,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--repo", type=Path, required=True)
     ap.add_argument("--config", type=Path, required=True)
-    ap.add_argument("--agent", choices=["claude", "codex", "opencode"], required=True)
+    ap.add_argument("--agent", choices=["claude", "codex"], required=True)
     ap.add_argument("--run", required=True)
     ap.add_argument("--output-base", type=Path)
     ap.add_argument("--skip-pre", action="store_true")
@@ -299,7 +296,7 @@ def main() -> int:
     start_sha = sha.strip()
 
     # Preflight: agent CLI present
-    if not args.skip_agent and args.agent != "opencode" and shutil.which(args.agent) is None:
+    if not args.skip_agent and shutil.which(args.agent) is None:
         append_anomaly(
             repo,
             title="agent CLI missing",

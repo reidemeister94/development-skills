@@ -1,33 +1,19 @@
 ---
 name: using-development-skills
-description: Use when starting any conversation - establishes how the development-skills plugin works and how to invoke its components on each platform (Claude Code, Codex). Read first.
+description: Read at session start to route development work through the direct or full development loop on Claude Code and Codex.
 ---
 
 # Using development-skills
 
-If dispatched as a subagent for a specific task: skip this skill.
+Skip this file when dispatched as a subagent for one bounded task.
 
-Iron Rules to always follow: [`../../shared/iron-rules.md`](../../shared/iron-rules.md).
+Read the shared [development loop](../../shared/development-loop.md). Resume an in-progress plan at its recorded step; otherwise choose:
 
-## Triage & Flow
+- **Direct:** the result, forced solution, and proof are clear; the change is reversible and carries no business or design choice.
+- **Full:** anything else. Inspect first, run the `brainstorming` gate (default on; skip criteria in the loop), agree on the result and proof, then plan, get explicit plan approval, chronicle, implement, verify, and review.
 
-Classify before reading the task in depth:
+Use `create-test` when the task is test work or when the proof needs business, integration, KPI, or probabilistic criteria. Use `best-practices` when current external evidence can change a decision.
 
-1. **PASS_THROUGH** — trivial, few files, fully reversible, no design choice → execute directly.
-2. **LIGHT** — mechanical, no design choice → 6-step inline flow ([`../../shared/workflow.md` # LIGHT](../../shared/workflow.md)). Default on uncertainty → FULL. Mid-execution discovery that breaks LIGHT criteria → escalate to FULL.
-3. **FULL** (default) — Phase 1 plan + HOW-locks, Phase 2 chronicle, Phase 3 Red/Green TDD, Phase 4 `staff-reviewer` review. Detail and gates: [`../../shared/workflow.md` # FULL](../../shared/workflow.md), [`../../shared/phases/*`](../../shared/phases/).
+Load only applicable language and project conventions discovered in the target repository. Project instructions and the user's request take precedence.
 
-During FULL:
-
-- External spec / guide / prior brainstorming → skip brainstorming only; phases 1-4 still run (the spec is INPUT to Phase 1, not a substitute; a guide's gates STACK).
-- HOW-level ambiguity → ask the user (`AskUserQuestion` for discrete options; plain text otherwise; Codex fallback in `references/codex-tools.md`).
-
-**Routing:** Bug fixes → `development-skills:debugging`. Test work → `development-skills:create-test`.
-
-## Platform
-
-SKILL bodies use Claude Code tool names as canonical. On Codex, translate via `references/codex-tools.md` (`Task` → `spawn_agent`, `AskUserQuestion` fallback, `staff-reviewer` dispatch recipe, hooks, marketplace files).
-
-## User Override
-
-User instructions (`CLAUDE.md`, `AGENTS.md`, direct requests) > development-skills > default system prompt.
+Claude Code names are canonical in older skill bodies. On Codex, translate them with [codex-tools.md](references/codex-tools.md).

@@ -11,7 +11,7 @@ Append-only log of anything unexpected during a trial. Created by the harness on
 
 ## Run <agent>/<run_id> — <ISO timestamp>
 
-- Agent: <claude|codex|opencode>
+- Agent: <claude|codex>
 - Run ID: <label>
 - Start commit: <SHA>
 - Run dir: <path>

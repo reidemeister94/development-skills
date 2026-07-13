@@ -1,6 +1,6 @@
 ---
 name: commit
-description: "Use when the user asks to commit changes, create a commit, or run /commit. Use when staged changes need a conventional commits message."
+description: "Create a user-requested Conventional Commit from the staged changes."
 user-invocable: true
 ---
 

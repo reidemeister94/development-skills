@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
-# SessionStart hook for development-skills plugin.
-# inject the full using-development-skills SKILL content as additionalContext so the model
-# has skill-routing rules + anti-rationalization
-# devices (Iron Rule, Red Flags, "1% chance" rule) loaded from token 0.
-#
-# Why: textual rules in SKILL.md are not self-enforcing — they require auto-discovery
-# match. When the match fails (rationalized away), the skill never loads. By injecting
-# the meta-skill body into session context unconditionally, we eliminate the loophole.
+# Inject the small router before the first decision; skill auto-discovery alone may run too late.
 
 set -euo pipefail
 
@@ -19,9 +12,7 @@ else
   using_content="Error: using-development-skills/SKILL.md not found at ${USING_SKILL}"
 fi
 
-# Single-pass parameter substitution — orders of magnitude faster than character-by-
-# character loops. Order matters: backslash first (otherwise added backslashes get
-# re-escaped by subsequent passes).
+# Escape backslashes first so later substitutions do not escape their own output.
 escape_for_json() {
   local s="$1"
   s="${s//\\/\\\\}"

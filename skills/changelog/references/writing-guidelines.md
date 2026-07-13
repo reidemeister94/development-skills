@@ -1,33 +1,33 @@
-# Changelog Writing Guidelines
+# Changelog writing rules
 
-Single source of truth for `/changelog`. This skill's specific rules and policy choices only — not a Keep a Changelog / SemVer primer.
+This file is the policy shared by all `/changelog` actions.
 
-## Entry rules
+## Entries
 
-- ≤15 words. Match the file's existing capitalization/punctuation/ref style — don't add PR/issue refs if the file has none.
-- **Macro-level only.** Document features, breaking changes, noticeable bug/security fixes, API/behavior shifts, AND significant technical changes (major dependency upgrades, architecture refactors, infra/CI shifts, removed modules).
-- **Skip sub-macro noise:** formatting/lint runs, merges, WIP, comment/typo fixes, micro-refactors, patch-level dep bumps, internal doc tweaks, reverts of unshipped or in-branch work.
-- **Aggregate:** commits belonging to one macro change → one entry (a 10–20-commit feature → 1–3 entries).
+- Use an imperative description of at most 15 words. Match existing capitalization, punctuation, and issue/PR-reference style.
+- Record user-visible features, breaking changes, meaningful bug or security fixes, API or behavior changes, and significant dependency, architecture, infrastructure, or CI changes.
+- Skip formatting, lint, merges, WIP, typos, comments, small refactors, patch dependency bumps, internal doc tweaks, and reverts of unshipped work.
+- Aggregate one macro change into one entry; a large feature may need two or three.
 
-## Conventional Commits → category (for `from-commits`)
+## Conventional Commits
 
 | Prefix | Category |
 |---|---|
 | `feat:` | Added |
 | `fix:` | Fixed |
-| `perf:`; `refactor:` (only if architecturally meaningful) | Changed |
-| `revert:` (only if reverting a previously-shipped feature) | Changed |
-| `chore:` `style:` `test:` `docs:` `ci:` `build:` | skip by default |
-| `BREAKING CHANGE:` footer or `<type>!:` | place under its category, prefix the entry `**BREAKING**`, and bump per the table below |
+| `perf:` or architectural `refactor:` | Changed |
+| `revert:` of a shipped feature | Changed |
+| `chore:` `style:` `test:` `docs:` `ci:` `build:` | Skip by default |
+| `BREAKING CHANGE:` or `<type>!:` | Its normal category, prefixed `**BREAKING**` |
 
-## SemVer bump (for `release`)
+## Release bump
 
-| `[Unreleased]` content | ≥1.0.0 | pre-1.0 (0.y.z) |
+| `[Unreleased]` content | 1.0.0 or later | pre-1.0 |
 |---|---|---|
-| Any `**BREAKING**`, or `### Removed` of a public API | MAJOR | MINOR (default) |
-| Any `### Added`/`### Changed` (no breaking) | MINOR | MINOR |
-| Only `### Fixed`/`### Security`/`### Deprecated` | PATCH | PATCH |
+| `**BREAKING**`, or public API under `Removed` | Major | Minor by default |
+| `Added` or `Changed`, without breaking entries | Minor | Minor |
+| Only `Fixed`, `Security`, or `Deprecated` | Patch | Patch |
 
-**Pre-1.0 (0.y.z):** SemVer 2.0.0 section 4 lets anything change in `0.y.z`, so a BREAKING entry does NOT force a major bump. Default to MINOR; offer `1.0.0` only as a deliberate, non-recommended "API now stable" choice.
+SemVer permits incompatible changes before 1.0. Default those to Minor; offer `1.0.0` only when the user deliberately declares the API stable.
 
-Never remove existing `[Unreleased]` entries, modify released sections, or date `[Unreleased]`.
+Never remove an `[Unreleased]` entry, change a released section, or date `[Unreleased]`.

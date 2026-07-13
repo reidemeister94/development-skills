@@ -1,6 +1,6 @@
 ---
 name: changelog
-description: "Use when the user asks to manage a project's CHANGELOG.md — add an entry, derive entries from git commits, or cut a release — or runs /changelog. Follows Keep a Changelog 1.1.0 and Semantic Versioning 2.0.0. Action selected via argument: add | from-commits | release."
+description: "Add CHANGELOG.md entries, derive them from commits, or cut a Keep a Changelog and SemVer release."
 user-invocable: true
 allowed-tools: Read, Edit, Write, Bash, AskUserQuestion
 ---

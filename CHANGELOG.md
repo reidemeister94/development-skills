@@ -1,3 +1,13 @@
+## 0.9.3 (2026-07-12)
+
+### Added
+
+- Synced the current development loop, generic design contracts, and fresh-context benchmark evaluator.
+
+### Changed
+
+- Refined review, planning, testing, and workflow skills.
+
 ## 0.9.2 (2026-07-03)
 
 ### Added

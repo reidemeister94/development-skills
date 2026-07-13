@@ -3,7 +3,6 @@
 Supported agents:
   - claude   : Claude Code stream-json (newline-delimited)
   - codex    : OpenAI Codex `exec --json` (newline-delimited)
-  - opencode : stub (session.jsonl captured, parser not yet implemented)
 
 Modes:
   1. Single-transcript parse:
@@ -699,33 +698,9 @@ def _codex_trajectory(tool_calls: list[dict]) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# OpenCode parser — STUB
-# ---------------------------------------------------------------------------
-
-
-def parse_opencode_stub(path: Path, harness_basenames: set[str] | None = None) -> dict:
-    """Placeholder for OpenCode. Counts raw events so the transcript is preserved and
-    at-least-one signal is exposed. See references/extending-agents.md for how to
-    replace this with a proper parser once the OpenCode event schema is stable.
-    """
-    events = list(_iter_jsonl(path))
-    return {
-        "agent": "opencode",
-        "error": "opencode parser not yet implemented — session.jsonl captured for manual analysis",
-        "raw_event_count": len(events),
-        "tokens": {"input": 0, "output": 0, "cache_read": 0, "cache_creation": 0, "total": 0},
-        "tool_calls": {"total": 0, "by_tool": {}},
-        "skills_used": {},
-        "subagents_used": {},
-        "trajectory": {},
-    }
-
-
 PARSERS = {
     "claude": parse_claude_session,
     "codex": parse_codex_session,
-    "opencode": parse_opencode_stub,
 }
 
 
@@ -1309,7 +1284,7 @@ def render_comparison(comparison: dict) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--agent", choices=["claude", "codex", "opencode"])
+    parser.add_argument("--agent", choices=["claude", "codex"])
     parser.add_argument("--session", type=Path, help="path to session.jsonl (transcript-only mode)")
     parser.add_argument(
         "--run-dir", type=Path, help="aggregate all artifacts in a run_trial.py output directory"

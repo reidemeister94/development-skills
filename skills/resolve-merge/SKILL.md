@@ -1,6 +1,6 @@
 ---
 name: resolve-merge
-description: "Use when the user asks to resolve merge conflicts, fix a failed merge, rebase conflict, or run /resolve-merge. Use when git status shows UU/AA/DD conflicts, when there are <<<<<<< conflict markers, when git merge or git pull failed with CONFLICT, or when numbered docs/plans need renumbering after merge. Triggers on: merge conflict, conflict markers, both modified, git merge failed, rebase conflict, resolve conflicts."
+description: "Resolve an active merge or rebase conflict, including safe renumbering of colliding plans and chronicles."
 user-invocable: true
 allowed-tools: Glob, Grep, Read, Bash, Edit, Write, AskUserQuestion
 ---
