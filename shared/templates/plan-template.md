@@ -1,65 +1,34 @@
 # Implementation Plan: [Title]
 
 ## WORKFLOW STATE
+
 Status: In Progress
-Current Phase: 1 (Research + Plan — approach approved in brainstorming, pending plan approval)
-Phases remaining: 2, 3, 4
-Research: docs/plans/NNNN__research__{slug}.md
-Chronicle: TBD — decided in Phase 2
-Verification: TBD
+Current step: Decide | Express | Implement | Verify | Review
+Research: [path or `Not needed — reason`]
+Chronicle: [path]
+Standards: [paths]
 
-**Sections:** WORKFLOW STATE | Brainstorming Summary | Clarifications | Plan | Task Checklist | Pre-Flight Plan Review | Implementation Log | Verification Results | Review Log
+## Outcome and proof
 
-## Brainstorming Summary
+- Problem and affected user/system:
+- Observable solved state:
+- Facts and sources:
+- Unknowns or assumptions:
+- What would show the approach is wrong:
+- Checks and their limits:
 
-**Task:** [One-sentence restatement]
+## Decisions
 
-**Understanding:**
-- **WHAT:** [Key deliverables]
-- **WHY:** [Business motivation]
+- Scope and constraints:
+- Approach and rejected alternatives:
+- Edge cases, data, errors, boundaries, rollback:
 
-**Approaches considered:**
-1. **[Approach Name]** — [1-2 sentence description] | Complexity: [LOW/MEDIUM/HIGH] | Risk: [brief]
-2. **[Approach Name]** — [1-2 sentence description] | Complexity: [LOW/MEDIUM/HIGH] | Risk: [brief]
+## Tasks
 
-**Recommended: [Name]**
-[2-4 sentence description incorporating evaluation feedback]
+- [ ] [Small result] — [files] — [check]
 
-**Evaluation verdict:** [PROCEED / PROCEED WITH CHANGES / RECONSIDER / STOP]
-[1-sentence rationale]
+## Evidence and review
 
-**Complexity:** [LOW/MEDIUM/HIGH] | **Risk:** [brief]
-
-**Key risks identified:**
-- [Risk 1]
-- [Risk 2]
-
-## Plan
-
-- **Assumptions** — [about codebase, requirements, environment]
-- **Global Constraints** — [project-wide binding values every task must honor, copied **verbatim**: version floors, dependency limits, naming/copy rules, other invariants. One line each, or `N/A: none`. Distinct from the HOW-locks *Contract boundaries* (that row scopes THIS change's API) — these are pre-existing invariants the change must not break, and become the reviewer's attention lens.]
-- **Risks** — [what could go wrong, edge cases, side effects]
-- **Unknowns** — [anything unclear — state explicitly, don't guess]
-- **Verification strategy** — [the 0-ambiguity verification procedure that says DONE — see `../definition-of-done.md`; the concrete check phase-3 runs]
-- **Files to modify** — [specific files and planned changes]
-- **File responsibilities** — [what each touched/new file owns]
-- **Task decomposition** — [smallest buildable slices; each has a test/check]
-
-### HOW-level locks (Phase 1 will fill these in)
-
-| Dimension | Answer |
-|---|---|
-| Edge cases | [decision or N/A: reason] |
-| Data shapes | [decision or N/A: reason] |
-| Error semantics | [decision or N/A: reason] |
-| Contract boundaries | [decision or N/A: reason] |
-| Test scope | [decision or N/A: reason] |
-| Rollback | [decision or N/A: reason] |
-
-### Plan buildability checks
-
-- [ ] No placeholders: no `TBD`, `TODO`, `later`, `similar to above`, or vague "add appropriate..." steps.
-- [ ] Every task has exact file paths or an explicit discovery step that produces them.
-- [ ] New/changed functions, types, fields, routes, and commands are named consistently across tasks.
-- [ ] Tasks are vertical slices: one behavior/check -> minimal implementation -> verification -> next behavior.
-- [ ] Every task has a verification command or manual evidence target.
+- Verification:
+- Independent review:
+- Unobserved boundary:

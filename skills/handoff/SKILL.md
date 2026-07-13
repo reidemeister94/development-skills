@@ -1,8 +1,7 @@
 ---
 name: handoff
-description: Use when the user asks to hand off the current session to a new chat, transfer context, or runs /handoff. Produces a self-contained handoff document in the OS temp directory (NOT in the repo) — works regardless of whether an active plan file exists. Always prints the absolute path so the user can paste it into the new chat.
+description: Use when the user asks to hand off the current session to a new chat, transfer context, or runs /handoff. Creates a self-contained handoff document in the OS temp directory (not the repo) and prints its absolute path.
 argument-hint: "[focus of the next session]"
-disable-model-invocation: true
 ---
 
 # Handoff

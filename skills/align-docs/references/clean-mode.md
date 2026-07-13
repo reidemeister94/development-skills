@@ -1,69 +1,65 @@
-# align-docs — `--clean` deep consolidation
+# `align-docs --clean`
 
-Run **SKILL.md Steps 1-7 first**, then the consolidation below.
+Run the normal `align-docs` inspection first.
 
-**Prime directive — decision records are immutable.** Chronicles are decision records (the WHY). You **never merge, delete, or edit the body** of one. The truth is the full chain, not the latest record. Compression = a generated **index + status-flip + archive dir**, never destruction. Plans (the HOW) go obsolete on ship — those you archive, because their durable WHY already lives in the chronicle.
+Chronicles are immutable decision records: never merge, delete, or edit their body. Plans describe execution and may be archived after the work ships. Cleaning means adding decision metadata, moving files with history, and rebuilding an index.
 
-**Lifecycle vocabulary (introduced by `--clean`).** A chronicle's own `> Status:` (`Draft|In Progress|Completed`) is its *work* state — `--clean` never changes it. Decision *validity* is a separate axis `--clean` annotates via blockquote metadata headers: a superseded decision gets `> Superseded-by: NNNN`, its successor `> Supersedes: NNNN`; a decision that no longer applies but has no successor gets `> Obsolete: <date — reason>`. ATLAS derives `active` (no such marker) / `superseded` / `obsolete` from these. Adding these headers is metadata, never a body edit.
+Chronicle work state (`> Status: Draft | In Progress | Completed`) and decision validity are separate. Do not change work state. Express validity only through blockquote metadata:
 
-## C1 — Gather
+- replaced: add `> Superseded-by: NNNN` and add `> Supersedes: NNNN` to the successor;
+- no longer applicable, with no successor: add `> Obsolete: YYYY-MM-DD - reason`;
+- neither marker: active.
 
-- `Glob` `docs/chronicles/**`, `docs/plans/**`, `docs/reference/**`, `README.md`, `CLAUDE.md`, `AGENTS.md`, `.agents/rules/**`.
-- Read each record's headers: chronicle `> Status:` (blockquote form; pre-template chronicles may lack it → infer state from content/git) + any `> Superseded-by:`/`> Obsolete:` marker; plan `WORKFLOW STATE` `Status:`.
-- Read the codebase enough to judge: which decisions a later chronicle or the current code has **superseded**; which plans are **shipped**.
+## Inspect and classify
 
-## C2 — Classify
+Read `docs/chronicles/**`, `docs/plans/**`, `docs/reference/**`, `docs/ATLAS.md` if present, README, AGENTS.md, CLAUDE.md, `.agents/rules/**`, and enough code to verify what shipped.
 
-| Item | Buckets | Rule |
-|------|---------|------|
-| **Chronicles** | `active` · `superseded` (newer chronicle/code replaced the decision) · `obsolete` (no longer applies, no successor) | Never merge/delete/body-edit. Annotate validity via the metadata headers above + forward-link. |
-| **Plans** | `active` (In Progress) · `archivable` (`Completed` + work shipped) | Archive only the archivable. |
-| **Reference / rules / README** | stale-vs-code · duplicate · linkrot | Fix in place (dedupe, repoint, prune wrong prose). |
+- Chronicles: active, superseded, or obsolete.
+- Plans: active, or archivable when completed and shipped.
+- References, rules, and README: stale, duplicated, or broken.
 
-Duplicate `NNNN` prefixes (merge artifacts) → list them in the proposal; **do not** auto-renumber (that is `resolve-merge`'s job).
+List duplicate `NNNN` prefixes but do not renumber them; `resolve-merge` owns that work.
 
-## C3 — Propose (STOP)
+## Propose, then stop
 
-Build a single proposal listing, per item, the exact action:
-- chronicles to mark superseded/obsolete (+ the `Superseded-by` target);
-- chronicles to move → `docs/chronicles/archive/`;
-- plans to move → `docs/plans/archive/` (+ the chronicle each links to);
-- `docs/ATLAS.md` to (re)generate;
-- reference dedupe / linkrot / stale fixes.
+Present one exact proposal:
 
-Present via `AskUserQuestion`: **Apply (Recommended) / Modify / Cancel**. STOP — mutate nothing until the user approves; all actions are `git`-reversible.
+- validity metadata and archive moves for chronicles;
+- archive moves for plans, including the chronicle that holds each decision;
+- the regenerated `docs/ATLAS.md`;
+- reference, duplication, and link fixes.
 
-## C4 — Apply (only on Apply)
+Ask **Apply (Recommended) / Modify / Cancel**, then stop. Change nothing before approval.
 
-- **Move** with `git mv` (preserves history): superseded/obsolete chronicles → `docs/chronicles/archive/`; archivable plans → `docs/plans/archive/`.
-- **Annotate validity**: add `> Superseded-by: NNNN` to the superseded chronicle and `> Supersedes: NNNN` to its successor (or `> Obsolete: <date — reason>` when there is no successor). Blockquote metadata headers only — **never edit the decision body, never touch the work `> Status:`**.
-- **(Re)generate `docs/ATLAS.md`** (schema below): one row per record, **including archived** (path points into `archive/`).
-- Apply the reference dedupe / linkrot / stale fixes from C3.
+## Apply after approval
 
-## `docs/ATLAS.md` schema
+- Use `git mv` into `docs/chronicles/archive/` and `docs/plans/archive/`.
+- Add only the validity metadata described above; never edit a chronicle body or its work status.
+- Apply the approved documentation fixes.
+- Regenerate `docs/ATLAS.md` with every active and archived record exactly once:
 
 ```markdown
 # Atlas
 
-> Navigable map of project decisions (chronicles) and plans. Generated by `/align-docs --clean`.
+> Decision and plan index generated by `/align-docs --clean`.
 
-## Decisions (chronicles)
-| # | Date | Title | Validity | → |
-|---|------|-------|----------|---|
-| 0055 | 2026-06-08 | Discovery-capture → gate | active | — |
-| 0032 | 2026-06-08 | discovery-capture permeates workflow | superseded | 0055 |
+## Decisions
+| # | Date | Title | Validity | Successor |
+|---|------|-------|----------|-----------|
+| 0055 | 2026-06-08 | Discovery gate | active | - |
+| 0032 | 2026-06-08 | Earlier discovery flow | superseded | 0055 |
 
 ## Plans
-| # | Date | Title | Status | WHY |
-|---|------|-------|--------|-----|
-| 0034 | 2026-06-08 | align-docs capture + --clean | active | 0057 |
+| # | Date | Title | Status | Chronicle |
+|---|------|-------|--------|-----------|
+| 0034 | 2026-06-08 | Documentation cleanup | active | 0057 |
 ```
 
-`→` / `WHY` = forward-link (superseding record / the chronicle holding the rationale). Archived rows keep their entry; link the `archive/` path.
+Link each row's number or title to its current path, including archive paths. `Successor` and `Chronicle` hold the forward record number.
 
-## Invariants (the clean-check — assert before declaring done)
+## Final checks
 
-1. No decision record deleted; no decision **body** edited.
-2. Every superseded chronicle carries `> Superseded-by: NNNN` resolving to an existing successor that back-links it via `> Supersedes:`; every obsolete one carries `> Obsolete:`. The work `> Status:` is never altered.
-3. `ATLAS.md` lists **every** record (active + archived) exactly once.
-4. Every change is reversible via `git` (moves done with `git mv`).
+1. No decision record was deleted or body-edited.
+2. Every superseded pair links both ways; every obsolete record has a dated reason.
+3. `docs/ATLAS.md` lists every plan and chronicle once, including archived records.
+4. Every move used `git mv` and is reversible.

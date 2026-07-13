@@ -1,21 +1,7 @@
 #!/usr/bin/env bash
-# PostToolUse hook: format the edited file(s) with the best per-language formatter.
-# Exits 0 silently if no formatter is found — never blocks the workflow.
-#
-# Hot path (Claude Code Edit / Write / MultiEdit): one tool_input.file_path,
-# pulled with a pure-bash regex — no subprocess, so the per-edit overhead stays
-# in single-digit ms even for files we don't format (e.g. .md).
-# Codex apply_patch carries a multi-file patch whose newlines are JSON-escaped,
-# so there we fall back to python3 to extract every `*** {Add,Update} File:`
-# header. Delete headers are skipped — the file no longer exists.
-#
-# Formatters (chosen for speed + community adoption, 2026):
-#   Python:     ruff        — 30x faster than Black, used by Django/FastAPI/pandas/pydantic
-#   JS/TS:      biome       — 7-100x faster than Prettier, Rust-based, linter+formatter
-#   Java:       google-java-format — standard standalone CLI formatter
-#   Kotlin:     ktfmt       — 40% faster than ktlint, adopted by Square/Block
-#   Swift:      swift-format — official Apple toolchain (Xcode 16+)
-#   Web files:  biome       — same binary handles JSON, CSS, GraphQL
+# Best-effort PostToolUse formatting for changed files; repository verification remains authoritative.
+# Claude edit tools expose one file path. Codex apply_patch embeds multiple paths in escaped patch text,
+# so that branch uses Python only to decode and extract add/update headers.
 
 INPUT=$(cat)
 paths=()
