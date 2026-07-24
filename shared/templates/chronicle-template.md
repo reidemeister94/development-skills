@@ -1,19 +1,29 @@
+---
+type: decision
+description: [One sentence an agent can use to decide whether to open this chronicle.]
+status: active
+archived: false
+work_status: in-progress
+---
+
 # [Title]
 
-> Status: In Progress | Completed
+## Why we did this
 
-## User intent
+[Explain the request, the prior situation, and why the work mattered. Preserve exact user or company wording when it records a decision.]
 
-[Faithful English paraphrase of the request and later decisions.]
+## What we learned
 
-## Before
+[Record the facts and discoveries a future person or agent will need. Explain unfamiliar project details instead of assuming the reader saw the original conversation.]
 
-[Relevant observed state.]
+## What we decided
 
-## Decisions and discoveries
+[Record the important choices, why they were made, and useful alternatives that were not chosen.]
 
-- [Why a choice was made or a non-obvious fact learned.]
+## What changed
 
-## After
+[Explain the final state and how it now works. Keep the exact technical detail needed to maintain or extend it.]
 
-[Final state, evidence, and remaining limit.]
+## Evidence and limits
+
+[State what was checked, what the evidence proves, and what remains unknown.]

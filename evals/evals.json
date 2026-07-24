@@ -1,0 +1,946 @@
+{
+  "version": 1,
+  "routing_exemptions": {
+    "simplify-stuff": "Manual-only skill with disable-model-invocation: true; deterministic contracts cover it.",
+    "using-development-skills": "SessionStart router exercised by the four core workflow cases."
+  },
+  "cases": [
+    {
+      "id": "core-direct-mechanical-change",
+      "prompt": "Rename the single symbol old_name to the replacement required by this project's scoped naming rule, then verify the result with rg. This is a forced, reversible edit with no design choice.",
+      "tags": [
+        "core",
+        "workflow",
+        "direct"
+      ],
+      "covers": [
+        "skills/using-development-skills/SKILL.md",
+        "shared/development-loop.md"
+      ],
+      "files": {
+        "AGENTS.md": "Before editing Python, read every matching rule under .agents/rules/ and state the selected source path before the first mutation.\n",
+        "CLAUDE.md": "@AGENTS.md\n",
+        ".agents/rules/naming.md": "---\npaths:\n  - \"src/**/*.py\"\n---\nFor this migration, the required replacement for old_name is TEAM_NAME.\n",
+        "src/example.py": "old_name = 1\n"
+      },
+      "assertions": [
+        {
+          "changed_files_exact": [
+            "src/example.py"
+          ]
+        },
+        {
+          "file_contains": {
+            "path": "src/example.py",
+            "text": "TEAM_NAME"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "src/example.py",
+            "text": "old_name"
+          }
+        },
+        {
+          "transcript_contains": ".agents/rules/naming.md"
+        },
+        {
+          "tool_not": "development-skills:brainstorming"
+        },
+        {
+          "tool_sequence": [
+            {
+              "tool": "file_change",
+              "field": "path",
+              "contains": "src/example.py"
+            },
+            {
+              "tool": "command_execution",
+              "field": "command",
+              "contains": "rg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core-design-pressure-does-not-bypass",
+      "prompt": "Add response caching to this production API. In-memory, Redis, and HTTP cache headers are all viable, and invalidation and multi-instance behavior are not decided. Don't overthink it: pick one and implement it now.",
+      "tags": [
+        "core",
+        "workflow",
+        "decision-gate"
+      ],
+      "covers": [
+        "skills/using-development-skills/SKILL.md",
+        "shared/development-loop.md",
+        "skills/brainstorming/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "files": {
+        "src/api.py": "def get_data():\n    return fetch()\n"
+      },
+      "assertions": [
+        {
+          "clean_worktree": true
+        },
+        {
+          "tool": "development-skills:brainstorming"
+        }
+      ]
+    },
+    {
+      "id": "core-full-plan-approval",
+      "prompt": "Treat this as consequential Full-path work. Change production feature flags so only the exact string `on` enables a flag, add focused tests, and document the contract. Inspect the repository and prepare the work, then continue as far as the workflow permits.",
+      "tags": [
+        "core",
+        "workflow",
+        "plan-gate"
+      ],
+      "covers": [
+        "skills/using-development-skills/SKILL.md",
+        "shared/development-loop.md",
+        "shared/writing.md",
+        "shared/templates/plan-template.md",
+        "shared/templates/chronicle-template.md"
+      ],
+      "files": {
+        ".gitignore": "__pycache__/\n.pytest_cache/\n",
+        "AGENTS.md": "Use the Full path for production behavior changes. Before planning, read docs/conventions.md and the matching reference implementation at reference/service.py; record both exact paths in the plan's Standards field. Write this task's plan to docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md and its chronicle to docs/chronicles/0001__2026-07-21__feature-flag-normalization.md.\n",
+        "CLAUDE.md": "@AGENTS.md\n",
+        "docs/conventions.md": "Feature flags are enabled only by the exact string `on`.\n",
+        "reference/service.py": "def is_enabled(flag: str) -> bool:\n    return flag == \"on\"\n",
+        "src/feature_flags.py": "def is_enabled(flag: str) -> bool:\n    return bool(flag)\n",
+        "tests/test_feature_flags.py": "from src.feature_flags import is_enabled\n\n\ndef test_current_truthy_contract():\n    assert is_enabled(\"yes\") is True\n"
+      },
+      "assertions": [
+        {
+          "changed_files_exact": [
+            "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md"
+          ]
+        },
+        {
+          "file_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "type: plan"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "docs/conventions.md"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "reference/service.py"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "flag == \"on\""
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "## Why this work matters"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "## How it will work"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "## Working record"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "Observable solved state"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "**"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "Full-path"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "fail closed"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "public function boundary"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "RED"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "GREEN"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "[Explain"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "[Describe"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "[Record"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "[One sentence"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "text": "# [Title]"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "type: decision"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "## Why we did this"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "## What we decided"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "## Evidence and limits"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "flag == \"on\""
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "**"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "Full-path"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "fail closed"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "public function boundary"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "RED"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "GREEN"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "[Explain"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "[Describe"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "[Record"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "[One sentence"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "text": "# [Title]"
+          }
+        },
+        {
+          "tool_sequence": [
+            {
+              "tool": "file_change",
+              "field": "path",
+              "contains": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md"
+            },
+            {
+              "tool": "file_change",
+              "field": "path",
+              "contains": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md"
+            }
+          ]
+        },
+        {
+          "transcript_contains": "Result"
+        },
+        {
+          "transcript_contains": "Checks"
+        },
+        {
+          "transcript_contains": "Out of scope"
+        },
+        {
+          "transcript_contains": "Approach"
+        },
+        {
+          "transcript_contains": "Files"
+        },
+        {
+          "transcript_contains": "Risks"
+        },
+        {
+          "transcript_contains": "Approve"
+        },
+        {
+          "transcript_contains": "Edit"
+        },
+        {
+          "transcript_contains": "Cancel"
+        },
+        {
+          "transcript_contains": "Chat about"
+        }
+      ]
+    },
+    {
+      "id": "core-approved-plan-handoff",
+      "prompt": "The native plan in native-plan.md was explicitly approved and handed control back to implementation. Continue it through completion.",
+      "tags": [
+        "core",
+        "workflow",
+        "handoff",
+        "verification"
+      ],
+      "covers": [
+        "skills/using-development-skills/SKILL.md",
+        "shared/development-loop.md",
+        "hooks/plan-approved"
+      ],
+      "files": {
+        "native-plan.md": "# Approved native plan\n\nNormalize feature flags so only the exact string `on` enables a feature.\n\n1. Record this plan at docs/plans/0001__2026-07-21__implementation_plan__flag-normalization.md and start docs/chronicles/0001__2026-07-21__flag-normalization.md in a separate action.\n2. Add a focused failing test and run it.\n3. Implement the smallest fix and rerun the test.\n4. Verify the final source with rg.\n",
+        "src/feature_flags.py": "def is_enabled(flag: str) -> bool:\n    return bool(flag)\n"
+      },
+      "assertions": [
+        {
+          "changed_files_exact": [
+            "docs/plans/0001__2026-07-21__implementation_plan__flag-normalization.md",
+            "docs/chronicles/0001__2026-07-21__flag-normalization.md",
+            "src/feature_flags.py",
+            "tests/test_feature_flags.py"
+          ]
+        },
+        {
+          "file_contains": {
+            "path": "src/feature_flags.py",
+            "text": "return flag == \"on\""
+          }
+        },
+        {
+          "file_contains": {
+            "path": "tests/test_feature_flags.py",
+            "text": "is_enabled"
+          }
+        },
+        {
+          "tool_sequence": [
+            {
+              "tool": "file_change",
+              "field": "path",
+              "contains": "docs/plans/0001__2026-07-21__implementation_plan__flag-normalization.md"
+            },
+            {
+              "tool": "file_change",
+              "field": "path",
+              "contains": "docs/chronicles/0001__2026-07-21__flag-normalization.md"
+            },
+            {
+              "tool": "file_change",
+              "field": "path",
+              "contains": "tests/test_feature_flags.py"
+            },
+            {
+              "tool": "command_execution",
+              "field": "command",
+              "contains": "pytest"
+            },
+            {
+              "tool": "file_change",
+              "field": "path",
+              "contains": "src/feature_flags.py"
+            },
+            {
+              "tool": "command_execution",
+              "field": "command",
+              "contains": "pytest"
+            },
+            {
+              "tool": "command_execution",
+              "field": "command",
+              "contains": "rg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proof-business-regression-contract",
+      "prompt": "Run development-skills:create-test for checkout reliability. Create verification.md only: define a black-box regression contract with KPI key successful_checkout_rate and a minimum threshold of 99.5%. Do not edit product code.",
+      "tags": [
+        "workflow",
+        "proof",
+        "create-test"
+      ],
+      "covers": [
+        "skills/create-test/SKILL.md"
+      ],
+      "assertions": [
+        {
+          "changed_files_exact": [
+            "verification.md"
+          ]
+        },
+        {
+          "file_contains": {
+            "path": "verification.md",
+            "text": "successful_checkout_rate"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "verification.md",
+            "text": "99.5%"
+          }
+        }
+      ]
+    },
+    {
+      "id": "docs-required-entry-layer",
+      "prompt": "Run development-skills:align-docs on this repository. Keep the existing setup guide, create the required shared entry layer, and do not invent domain documentation.",
+      "tags": [
+        "workflow",
+        "documentation",
+        "align-docs"
+      ],
+      "covers": [
+        "skills/align-docs/SKILL.md"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname = \"sample-service\"\nversion = \"0.1.0\"\n",
+        "docs/setup.md": "# Setup\n\nInstall the project with `uv sync --locked`.\n"
+      },
+      "assertions": [
+        {
+          "changed_files_exact": [
+            "README.md",
+            "AGENTS.md",
+            "CLAUDE.md",
+            ".agents/rules/.gitkeep",
+            ".claude/rules",
+            ".gitignore",
+            "docs/ATLAS.md"
+          ]
+        },
+        {
+          "file_contains": {
+            "path": "CLAUDE.md",
+            "text": "@AGENTS.md"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/ATLAS.md",
+            "text": "setup.md"
+          }
+        }
+      ]
+    },
+    {
+      "id": "docs-normal-task-lifecycle",
+      "prompt": "Complete the documentation step for the migration we just finished by running development-skills:align-docs in normal mode. The queue-worker implementation is verified. Plan 0001 is completed, its durable decision is chronicle 0002, and chronicle 0001 was superseded by 0002. Align only documents affected by this task; do not run --clean.",
+      "tags": [
+        "workflow",
+        "documentation",
+        "lifecycle"
+      ],
+      "covers": [
+        "skills/align-docs/SKILL.md"
+      ],
+      "files": {
+        "README.md": "# Queue service\n\nThe service now uses queue workers.\n",
+        "docs/plans/0001__2026-01-01__implementation_plan__polling-migration.md": "# Polling migration plan\n\n> Status: Completed\n\nThe verified implementation is complete, and chronicle 0002 holds its durable decision.\n",
+        "docs/plans/0099__2025-01-01__implementation_plan__unrelated-history.md": "# Unrelated history\n\n> Status: Completed\n\nThis completed work is unrelated to the current task.\n",
+        "docs/chronicles/0001__2026-01-01__scheduled-polling.md": "# Scheduled polling\n\n> Status: Completed\n> Superseded-by: 0002\n\nUse scheduled polling.\n",
+        "docs/chronicles/0002__2026-02-01__queue-workers.md": "# Queue workers\n\n> Status: Completed\n> Supersedes: 0001\n\nUse queue workers instead of scheduled polling.\n"
+      },
+      "assertions": [
+        {
+          "file_contains": {
+            "path": "docs/plans/archive/0001__2026-01-01__implementation_plan__polling-migration.md",
+            "text": "The verified implementation is complete"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/chronicles/archive/0001__2026-01-01__scheduled-polling.md",
+            "text": "Use scheduled polling."
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/chronicles/0002__2026-02-01__queue-workers.md",
+            "text": "Use queue workers instead"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/chronicles/archive/0002__2026-02-01__queue-workers.md",
+            "text": "Use queue workers instead"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "docs/plans/0099__2025-01-01__implementation_plan__unrelated-history.md",
+            "text": "unrelated to the current task"
+          }
+        },
+        {
+          "file_not_contains": {
+            "path": "docs/plans/archive/0099__2025-01-01__implementation_plan__unrelated-history.md",
+            "text": "unrelated to the current task"
+          }
+        }
+      ]
+    },
+    {
+      "id": "docs-clean-proposal-gate",
+      "prompt": "Run development-skills:align-docs --clean on this legacy repository. Inspect it and prepare the cleanup and archive work. I want it cleaned thoroughly.",
+      "tags": [
+        "workflow",
+        "documentation",
+        "approval-gate"
+      ],
+      "covers": [
+        "skills/align-docs/SKILL.md"
+      ],
+      "files": {
+        "README.md": "# Legacy service\n",
+        "docs/plans/0001__2026-01-01__implementation_plan__old.md": "# Old plan\n\n> Status: Completed\n\nThe work shipped, and chronicle 0002 holds its durable decision.\n",
+        "docs/chronicles/0001__2026-01-01__old-decision.md": "# Old decision\n\n> Status: Completed\n> Superseded-by: 0002\n\nUse scheduled polling.\n",
+        "docs/chronicles/0002__2026-02-01__current-decision.md": "# Current decision\n\n> Status: Completed\n> Supersedes: 0001\n\nUse queue workers instead of scheduled polling.\n"
+      },
+      "assertions": [
+        {
+          "clean_worktree": true
+        },
+        {
+          "transcript_contains": "docs/plans/archive/0001__2026-01-01__implementation_plan__old.md"
+        },
+        {
+          "transcript_contains": "docs/chronicles/archive/0001__2026-01-01__old-decision.md"
+        },
+        {
+          "transcript_contains": "Apply"
+        },
+        {
+          "transcript_contains": "Modify"
+        },
+        {
+          "transcript_contains": "Cancel"
+        }
+      ]
+    },
+    {
+      "id": "explain-diff-comprehension-dialogue",
+      "prompt": "Run development-skills:explain-diff on explanation-packet.md. Treat its verification evidence as current. Continue in chat without a visual, explain the change, and begin the comprehension dialogue.",
+      "tags": [
+        "workflow",
+        "explanation"
+      ],
+      "covers": [
+        "skills/explain-diff/SKILL.md"
+      ],
+      "files": {
+        "explanation-packet.md": "# Verified change packet\n\nA payment worker now writes the durable ledger before publishing its retryable notification. Verification killed the process between both operations and proved the next run republishes without duplicating the ledger entry. Concurrent execution by two workers was not tested.\n"
+      },
+      "assertions": [
+        {
+          "clean_worktree": true
+        },
+        {
+          "transcript_contains": "I don't know"
+        },
+        {
+          "transcript_contains": "Proceed without answering"
+        }
+      ]
+    },
+    {
+      "id": "route-ai-agent-bench",
+      "prompt": "Compare Claude Code and Codex on the same real refactoring task using isolated worktrees, identical checks, transcripts, time, tokens, and cost.",
+      "tags": [
+        "routing",
+        "evaluation"
+      ],
+      "covers": [
+        "skills/ai-agent-bench/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:ai-agent-bench"
+        },
+        {
+          "tool_not": "development-skills:eval-regression"
+        }
+      ]
+    },
+    {
+      "id": "route-align-docs",
+      "prompt": "Our README, AGENTS.md, plans, chronicles, and docs/ATLAS.md disagree. Align the repository documentation without changing product code.",
+      "tags": [
+        "routing",
+        "documentation"
+      ],
+      "covers": [
+        "skills/align-docs/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:align-docs"
+        }
+      ]
+    },
+    {
+      "id": "route-best-practices",
+      "prompt": "Research the current best approach to Python API rate limiting using primary sources, compare the alternatives, and recommend one with trade-offs.",
+      "tags": [
+        "routing",
+        "research"
+      ],
+      "covers": [
+        "skills/best-practices/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:best-practices"
+        }
+      ]
+    },
+    {
+      "id": "route-brainstorming",
+      "prompt": "We need to change tenant isolation, but database-per-tenant, schema-per-tenant, and row-level security are all viable. Help settle the design before planning implementation.",
+      "tags": [
+        "routing",
+        "decision"
+      ],
+      "covers": [
+        "skills/brainstorming/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:brainstorming"
+        }
+      ]
+    },
+    {
+      "id": "route-changelog",
+      "prompt": "Derive the Unreleased CHANGELOG.md entries from the commits since the last release using Keep a Changelog and SemVer.",
+      "tags": [
+        "routing",
+        "release"
+      ],
+      "covers": [
+        "skills/changelog/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:changelog"
+        }
+      ]
+    },
+    {
+      "id": "route-commit",
+      "prompt": "Create a Conventional Commit from the changes I already staged. Do not stage anything else.",
+      "tags": [
+        "routing",
+        "git"
+      ],
+      "covers": [
+        "skills/commit/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:commit"
+        }
+      ]
+    },
+    {
+      "id": "route-create-test",
+      "prompt": "Define a black-box regression proof for checkout reliability, including the business KPI, threshold, failure paths, and what the available evidence will not cover.",
+      "tags": [
+        "routing",
+        "proof"
+      ],
+      "covers": [
+        "skills/create-test/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:create-test"
+        }
+      ]
+    },
+    {
+      "id": "route-eval-regression",
+      "prompt": "Check this development-skills change against its behavioral eval contract. First show the selected cases, model, effort, sessions, and maximum time; do not run anything until I approve the cost.",
+      "tags": [
+        "routing",
+        "evaluation"
+      ],
+      "covers": [
+        "skills/eval-regression/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:eval-regression"
+        },
+        {
+          "tool_not": "development-skills:ai-agent-bench"
+        }
+      ]
+    },
+    {
+      "id": "route-explain-diff",
+      "prompt": "The change is already verified. Explain this diff's retry and idempotency model, then check that I understand it.",
+      "tags": [
+        "routing",
+        "explanation"
+      ],
+      "covers": [
+        "skills/explain-diff/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:explain-diff"
+        }
+      ]
+    },
+    {
+      "id": "route-handoff",
+      "prompt": "Create a self-contained temporary handoff document so I can continue this exact work in a new chat.",
+      "tags": [
+        "routing",
+        "session"
+      ],
+      "covers": [
+        "skills/handoff/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:handoff"
+        }
+      ]
+    },
+    {
+      "id": "route-plugin-feedback",
+      "prompt": "Ingest this development-skills feedback report and apply only changes supported by repeated evidence, preferring deletion and simplification.",
+      "tags": [
+        "routing",
+        "plugin"
+      ],
+      "covers": [
+        "skills/plugin-feedback/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:plugin-feedback"
+        }
+      ]
+    },
+    {
+      "id": "route-resolve-merge",
+      "prompt": "Resolve the active rebase conflicts safely, including the colliding plan and chronicle numbers. Classify mechanical and judgment conflicts before editing.",
+      "tags": [
+        "routing",
+        "git"
+      ],
+      "covers": [
+        "skills/resolve-merge/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:resolve-merge"
+        }
+      ]
+    },
+    {
+      "id": "route-roast-my-code",
+      "prompt": "Roast my current branch aggressively, but keep every criticism technically factual. Do not fix it.",
+      "tags": [
+        "routing",
+        "review"
+      ],
+      "covers": [
+        "skills/roast-my-code/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:roast-my-code"
+        },
+        {
+          "tool_not": "development-skills:staff-review"
+        }
+      ]
+    },
+    {
+      "id": "route-staff-review",
+      "prompt": "Run a factual staff-level review of the current branch. Rank only supported findings and do not edit anything.",
+      "tags": [
+        "routing",
+        "review"
+      ],
+      "covers": [
+        "skills/staff-review/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:staff-review"
+        },
+        {
+          "tool_not": "development-skills:roast-my-code"
+        }
+      ]
+    }
+  ]
+}

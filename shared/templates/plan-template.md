@@ -1,34 +1,38 @@
-# Implementation Plan: [Title]
+---
+type: plan
+description: [One sentence an agent can use to decide whether to open this plan.]
+status: active
+archived: false
+work_status: in-progress
+---
 
-## WORKFLOW STATE
+# [Title]
 
-Status: In Progress
-Current step: Decide | Express | Implement | Verify | Review
+## Why this work matters
+
+[Explain the current situation, who it affects, and why the work is worth doing. Give enough context for a teammate who knows little about the project.]
+
+## What will change
+
+[Describe what will be true when the work is done and what that means in practice. Name anything deliberately left unchanged.]
+
+## How it will work
+
+[Explain the solution before listing tasks. Record the important decisions and their reasons, the useful alternatives not chosen, constraints, edge cases, risks, and how to reverse the change. Keep exact technical names where they matter.]
+
+## Work
+
+- [ ] [Small result] — [exact files] — [check that can expose failure]
+
+## How we will check it
+
+[List the checks and explain what each proves. State what cannot be checked in the available environment.]
+
+## Working record
+
+Current step: Decide | Express | Implement | Verify | Explain diff | Review
 Research: [path or `Not needed — reason`]
 Chronicle: [path]
-Standards: [paths]
-
-## Outcome and proof
-
-- Problem and affected user/system:
-- Observable solved state:
-- Facts and sources:
-- Unknowns or assumptions:
-- What would show the approach is wrong:
-- Checks and their limits:
-
-## Decisions
-
-- Scope and constraints:
-- Approach and rejected alternatives:
-- Edge cases, data, errors, boundaries, rollback:
-
-## Tasks
-
-- [ ] [Small result] — [files] — [check]
-
-## Evidence and review
-
-- Verification:
-- Independent review:
-- Unobserved boundary:
+Standards: [exact paths]
+Decisions that changed the plan: [decision or `None`]
+Review: [result or `Pending`]
