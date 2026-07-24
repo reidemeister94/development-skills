@@ -7,6 +7,6 @@ Use this scale for every review surface:
 - **MEDIUM** — no immediate outage, but reliability, performance, or maintainability is materially worse: missing boundary handling, N+1 query, test gap, poor abstraction, or duplicated logic.
 - **LOW** — readability or codified style only.
 
-CRITICAL and HIGH must be fixed before merge and are the only default auto-fix or inline-PR tiers. MEDIUM and LOW are informational.
+CRITICAL, HIGH and MEDIUM must be fixed before merge and are the only default auto-fix or inline-PR tiers. LOW can be done but it's a nice to have and should be agreed with the user if fix them or not.
 
 For posted review comments use `> **[TIER]** description`, add `> **Why:** impact` for CRITICAL/HIGH, and `> **Suggestion:** fix` except for LOW.
