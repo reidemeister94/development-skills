@@ -25,7 +25,7 @@ description: Use when <triggering condition>. Use when user says <keyword1>, <ke
 
 ## Agent files
 
-Single subagent today: `agents/staff-reviewer.md`. Implementation and verification run in the main thread per `shared/phases/phase-3-implement-verify.md` — do NOT introduce extra named subagents without explicit design discussion.
+Single subagent today: `agents/staff-reviewer.md`. Implementation and verification run in the main thread per `shared/development-loop.md` — do NOT introduce extra named subagents without explicit design discussion.
 
 Agent frontmatter:
 
@@ -41,7 +41,7 @@ Tool list is the agent's allowlist — keep it minimal.
 
 ## What NOT to duplicate
 
-`shared/iron-rules.md` is the canonical Iron Rules. `shared/workflow.md` is the canonical workflow. `shared/phases/*.md` are canonical phase definitions. Skills MUST reference these by path, never restate their content. A skill that copies iron-rule text will drift the moment the canonical version updates.
+`shared/development-loop.md` is the canonical loop and its principles. `shared/writing.md` is the canonical writing contract. Skills MUST reference these by path, never restate their content. A skill that copies loop text will drift the moment the canonical version updates.
 
 ## References subdirectory
 
@@ -53,4 +53,4 @@ A vague description ("helps with code") wastes triggering budget. Concrete trigg
 
 ## Length budget
 
-SKILL.md body: aim for ≤ 200 lines. Anything longer belongs in `references/`. Principle 13 (slim docs) applies recursively — every skill obeys it.
+SKILL.md body: aim for ≤ 200 lines. Anything longer belongs in `references/`. The slim-docs principle applies recursively — every skill obeys it.

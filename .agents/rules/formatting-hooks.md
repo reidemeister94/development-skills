@@ -23,7 +23,7 @@ Changes to this table must propagate to:
 
 - The hook scripts under `hooks/` that invoke these formatters.
 - The user-facing README's "Auto-format on edit" line.
-- Any skill that documents formatter expectations (e.g., `python-dev`, `typescript-dev`).
+- Any skill or doc that documents formatter expectations.
 
 If the table moves out of sync with the hook implementations, the hooks ARE the source of truth — update the table to match.
 

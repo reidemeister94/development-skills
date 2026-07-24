@@ -1,3 +1,27 @@
+## 0.10.0 (2026-07-24)
+
+Realigned the plugin to a single, language-agnostic development methodology, replacing the previous phase-based, multi-language architecture.
+
+### Changed
+
+- **Workflow model** — the three-tier PASS_THROUGH/LIGHT/FULL, 4-phase engine is replaced by the two-path **direct/full** development loop in `shared/development-loop.md`. Principles now live inline in the loop; the writing contract in `shared/writing.md` and the documentation format in `shared/documentation.md`.
+- **`distill` → `simplify-stuff`** — renamed the deep-simplification skill.
+- **Docs realigned** — `README.md`, `docs/GUIDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, and the `.agents/rules/` now describe the two-path loop and the 16-skill set.
+- **Evals** — replaced the fresh-context evaluator with a routing/workflow eval runner (`evals/evals.json`, 23 generic cases, run by `skills/ai-agent-bench/scripts/run_evals.py`).
+
+### Added
+
+- **`explain-diff`** — explains a diff, branch, PR, or review packet when the change teaches a useful concept.
+- **`hooks/plan-approved`** — marks the handoff back into the full path after Plan mode.
+
+### Removed
+
+- **Language skills** (`python-dev`, `typescript-dev`, `java-dev`, `swift-dev`, `frontend-dev`) and the `shared/design/` reference set — the plugin is now language-agnostic and ships no language or framework conventions.
+- **`core-dev`, `debugging`** — folded into the single development loop.
+- **`update-reqs`, `update-precommit`** — stack-specific dependency and pre-commit skills.
+- **Canonical shared files** `iron-rules.md`, `workflow.md`, `phases/`, `definition-of-done.md`, `architectural-depth.md`, `adopting-external-features.md`, and `agents/research-agent.md` — consolidated into `shared/development-loop.md`.
+- The four workflow SVG diagrams are no longer embedded (stale); `docs/GUIDE.md` uses an inline mermaid flowchart.
+
 ## 0.9.3 (2026-07-12)
 
 ### Added

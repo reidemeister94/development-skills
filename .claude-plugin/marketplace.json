@@ -7,8 +7,8 @@
   "plugins": [
     {
       "name": "development-skills",
-      "description": "Three-tier triage (PASS_THROUGH / LIGHT / FULL 4-phase) development workflow with staff-reviewer subagent and multi-language support",
-      "version": "0.9.3",
+      "description": "A disciplined, language-agnostic development workflow: a direct/full loop with plan and chronicle on disk, a staff-reviewer subagent, and auto-format hooks",
+      "version": "0.10.0",
       "source": "./"
     }
   ]

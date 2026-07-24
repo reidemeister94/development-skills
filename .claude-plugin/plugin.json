@@ -1,5 +1,5 @@
 {
   "name": "development-skills",
-  "description": "Use when any coding, development, analysis, debugging, or code-related task is detected. Triggers on: writing code, fixing bugs, adding features, refactoring, architecture decisions, requirements analysis, code review, diff analysis, error investigation, debugging failures, and evaluating approaches. Covers Python, Java, TypeScript, Swift, and frontend projects (React, Next.js, Vue, Svelte, Angular, Raycast, Vite).",
-  "version": "0.9.3"
+  "description": "Use when any coding, development, analysis, debugging, or code-related task is detected. Triggers on: writing code, fixing bugs, adding features, refactoring, architecture decisions, requirements analysis, code review, diff analysis, error investigation, debugging failures, and evaluating approaches. A disciplined, language-agnostic development workflow: a direct/full loop that keeps the plan and chronicle on disk, a staff-reviewer subagent, and auto-format hooks.",
+  "version": "0.10.0"
 }
