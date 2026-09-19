@@ -12,6 +12,7 @@ build/
 *.egg
 .venv/
 venv/
+uv.lock
 
 # IDE
 .idea/

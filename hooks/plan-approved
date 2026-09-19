@@ -7,7 +7,7 @@ cat <<'JSON'
 {
   "hookSpecificOutput": {
     "hookEventName": "PostToolUse",
-    "additionalContext": "Native Plan mode is a permission surface, not the development workflow. The plan was approved; re-enter the Full path at Express. Create or update the repository plan and chronicle in completed tool calls before product or plugin edits; never combine them in one patch. Read the shared development loop, load the recorded standards, and set Current step to Implement. Then continue through Implement, Verify, Explain diff, and Review; plan work packages do not replace those gates."
+    "additionalContext": "The plan is approved. Continue the authorized work without another workflow approval. If the task needs the full path, save or update its repository plan and chronicle before implementation. Continue through Implement, Verify, Review, Explain diff, and Align docs as the shared development loop requires."
   }
 }
 JSON

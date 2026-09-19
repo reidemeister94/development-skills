@@ -1,98 +1,111 @@
 # Development loop
 
-Build the smallest change that reaches an agreed result. Start from evidence, question the premise, and keep facts separate from interpretations.
-
-Never hide failure by skipping a gate, suppressing a test, or swallowing a warning. All natural-language text follows the [writing contract](writing.md). When rules conflict, choose the result a critical reader would find less surprising.
-
-On Claude Code, call `AskUserQuestion` whenever the user must choose among stated options. Printing choices in chat does not satisfy this rule. On Codex, ask one concise question in chat; do not depend on an interactive input tool.
+Complete the requested result with the smallest useful change. Keep project knowledge and operational constraints.
+Use the [writing contract](writing.md) for natural language and the [engineering contract](engineering.md) for code and design.
 
 ## Standards gate
 
-For every codebase task, before the first codebase mutation, read the project's agent instructions and all matching scoped rules. Inspect nearby code for established local patterns, load any conventions the project defines, and state the selected source paths. A Full plan records the same exact paths.
+Before editing, read the project's agent instructions, matching scoped rules, and applicable project conventions.
+Inspect the affected files and their callers. Load references only when their subject applies.
 
-Apply sources in this order: the current explicit user decision; project instructions and scoped rules; shared project conventions and named standards of record; established local patterns; model defaults. Read a named reference project only when the higher sources leave an important choice unresolved. If the target differs from a higher standard, state the effect instead of silently spreading the divergence.
+Apply sources in this order: the current explicit user decision; project rules; standards of record; established local patterns; model defaults.
+Read a named reference project only when these sources leave an important choice unresolved.
+Record selected standards in a plan when one is needed. Otherwise cite them when they explain a decision or conflict.
 
-Normal work changes only the task's files and necessary dependencies. A repository-convergence or standards-alignment task is the explicit exception and may audit and refactor the whole target.
+## Design authority
+
+Respect the user's outcome, constraints, and chosen approach. Challenge an approach when evidence shows a concrete problem.
+Explain the cost and recommend an alternative that preserves the requested result.
+Ask when a consequential choice remains unresolved; reuse explicit decisions and existing authorization.
+Examples include a published contract, authentication behavior, or a data model holding real records.
+Continue independent work while that decision remains open.
+Treat a prescribed implementation as an assumption to check against standards and evidence.
+If that check exposes a problem, resolve the contested approach through `brainstorming` before editing.
+Present the alternative for agreement; do not implement it merely because it appears better.
+A reaffirmed user choice governs; record a material deviation and its consequences.
+
+For a disputed tool or library claim, check official documentation for the version actually in use.
+Check current documentation when a recommendation depends on what is available today.
+Distinguish installed behavior from upgrade advice. Never upgrade a dependency silently.
+
+## Reach agreement
+
+Use `brainstorming` for unresolved goals, business trade-offs, consequential choices, or a contested approach.
+On every path, interview until every branch of the open decision is settled. The number of questions follows the ambiguity.
+Look up discoverable facts. Choose routine, reversible implementation details only after the design decisions are settled.
+A request with nothing open gets no interview questions; the approval question follows Authorization.
+Include a recommended answer and its trade-off with each question.
+Group only independent questions; resolve dependent questions in order.
+The skill owns interview depth, design checks, and the stop before planning while decisions remain open.
+
+Use the platform's available question tool within its limits. Otherwise ask one concise question in chat.
+For tool mappings, read [Codex tools](../skills/using-development-skills/references/codex-tools.md).
+
+### Authorization
+
+The approval unit is a presented plan. A plan exists when `brainstorming` settled open decisions or the full path wrote a plan file.
+When no plan exists, the explicit request to implement authorizes the in-scope edits and their checks.
+When a plan exists, present it in chat before the first implementation edit as a native Plan mode summary.
+Give it four sections: context and why, what changes, how it works with exact files, how it is checked.
+The checks section names the clean-context reviewer.
+Add a section only when it helps the decision, such as decisions taken, risks, or what stays out of scope.
+Keep it readable in one pass: concrete facts the user needs to decide, no template filler, no copy of the plan file.
+Write the presentation with the [writing contract](writing.md).
+Then ask `Approve`, `Edit`, or `Cancel` with the question tool. Without a question tool, ask in chat and wait for the answer.
+Interview answers and the original request do not approve the plan. Do not ask for separate approval before presenting it.
+`Edit` returns to the interview or the plan. `Cancel` keeps the saved records and makes no edit.
+Native Plan mode approval is the same approval, carried by the `plan-approved` hook. Native Plan mode limits still apply.
+Never ask twice for the same presented plan.
+A request for analysis, review, or planning alone authorizes no implementation.
+Approval carries through implementation, checks, required fixes, review, explanation, and document alignment.
+Ask again only for new scope, an unauthorized destructive or external action, or a material unresolved decision.
+Specific project limits on production, publishing, commits, protected branches, and tags still apply.
 
 ## Choose the path
 
-Use the direct path only when the result, solution, and proof are clear, the change is easy to reverse, and no business or design choice remains. Choosing among viable approaches is a design choice. Inspect, change, verify, report.
+The path decides the work record and review. State the path and reason before editing.
 
-Use the full path for everything else. Uncertainty about the path means full.
+- **Direct**: one clear, reversible change in an existing flow. Its tests belong to the same change.
+- **Bounded**: a clear result across several modules, or a change that needs independent review because of its impact.
+- **Full**: decisions need a lasting reason, proof needs design, or work must resume across sessions. Read the [full path](full-path.md).
 
-State the path and why before the first mutation. A requested review or audit ends with findings; edit only after explicit approval. If an approval gate is unreachable, stop rather than downgrading full to direct.
+Authentication, data holding real records, a published contract, or a migration requires at least bounded work and independent review.
+Choose the smallest sufficient path. Change paths when new evidence changes the work needed.
 
-## Full path
+### Direct path
 
-### 1. Decide
+Inspect, edit, run the relevant check, and report the result and unchecked limits. No plan, chronicle, or separate reviewer.
 
-Inspect before asking. State the problem, affected user or system, solved state, constraints, unknowns, and what would show the proposed answer is wrong.
+### Bounded path
 
-Use `brainstorming` to reach a deep and complete agreement with the user about all the aspects of the work, unless the change is easy to reverse, needs little work, has one forced approach, and its reason cannot affect the implementation. A request, spec, or guide supplies inputs but may not settle the approach.
-
-Ask one decision at a time and recommend an answer.
-
-### 2. Define the proof
-
-Agree on what could expose failure. For non-trivial tasks, business flows, KPIs, deep integrations, or probabilistic behavior, use `create-test` to design the regression proof.
-
-### 3. Express
-
-Research only when external evidence or an unanswered question can change the decision. Record the result in `docs/plans/NNNN__research__<slug>.md` only when it will remain useful after the task.
-
-Before product or plugin edits, write a plan that settles the implementation choices at `docs/plans/NNNN__YYYY-MM-DD__implementation_plan__<slug>.md`. Start `docs/chronicles/NNNN__YYYY-MM-DD__<topic>.md` at the same time.
-
-Use the next folder prefix and the [plan](templates/plan-template.md) and [chronicle](templates/chronicle-template.md) templates. A plan first explains why the work matters and how the solution will work, then records exact tasks and checks. A chronicle explains what was learned, what was decided and why, and what changed. Translate the template headings into the repository's documentation language when needed.
-
-Record user intent faithfully. Follow the writing contract's language rule, and keep valuable or specific company, project, and workflow information verbatim.
-
-Present six short parts in the conversation language: result, checks, what is out of scope, approach, files, and risks. Then offer the conversation-language equivalents of `Approve / Edit / Cancel / Chat about` through the platform behavior above. Only `Approve` after this presentation permits implementation; the original task request does not.
-
-### 4. Implement
-
-Work in small slices and run the nearest useful check after each. When a test can prove behavior, observe it fail before the fix and pass afterward. Delete production code written before its test instead of adapting it.
-
-Follow the recorded standards and quality contract. Record discoveries that change the plan.
-
-### 5. Verify
-
-Run fresh outcome checks and repository gates. Recheck changed code against the recorded standards and quality contract. Use checks that could fail if the claim were false. Fix root causes; never weaken, skip, or suppress a check to claim success.
-
-Report pre-existing failures. After three failed fixes, question the approach. Say what was not checked.
-
-### 6. Explain diff
-
-When the change contains a business, architecture, lifecycle, trade-off, or failure-mode concept worth teaching, run `explain-diff` with the request, plan or chronicle, diff, verification, and what was not checked.
-
-Teach the mental model, then ask free-response questions one at a time; zero is valid. A conscious skip remains unverified but does not block Review. If no concept qualifies, state that and continue.
-
-### 7. Review
-
-Give an independent reviewer the request, plan, standards, diff, and what verification did and did not cover. Do not give them quiz answers or `explain-diff` interpretations.
-
-Fix all CRITICAL/HIGH findings and rerun affected checks. If review changes an essential concept, repeat its verification and the part of the explanation that is now stale. Then finalize the plan and chronicle and invoke `align-docs` in normal mode with the current task context; it captures lasting discoveries, aligns docs, and archives documents made obsolete, superseded or historical by this task. Commit only when explicitly requested.
+State the approach, affected files, and checks in chat. Apply the authorization rule above.
+Implement and verify. Use `staff-review` for the impact signals above; otherwise the pull request review supplies independent review.
+No plan file or chronicle is required unless a lasting decision makes the work full.
 
 ## Working rules
 
-- Everything you write or say in natural language, follows the [writing contract](writing.md)
-- Documentation follows the [repository documentation format](documentation.md).
-- Keep code simple, efficient and clear. Functions and methods have one responsibility, no side effects and at most 70 lines. Use simple, descriptive names for files, types, functions, variables, and arguments.
-- Give each behavior one owner. Reuse or extract real duplication; do not abstract coincidental similarity.
-- Choose the lowest practical time and space complexity for the real workload while preserving correctness and clarity. Measure hot paths before adding complex optimizations.
-- For database work, optimize each statement and its access pattern. Profile tables, schemas, queries. Never write single queries inside loop when you can batch them and make them fast and efficient.
-- Remove any line or component whose deletion loses no useful behavior.
-- When refactoring, the objective is to become clearer, more efficient, reliable, or maintainable.
-- Change only what traces to the request; preserve unrelated user work.
-- Comments explain non-obvious functional, business, or technical reasons, not what the code already says.
-- User approval validates proceeding, not the analysis — a wrong analysis still owes a correction. No flattery openers; demonstrate merit with evidence, not adjectives.
-- Say each rule once in its owner. Remove only what the current model already knows or would do unprompted. Keep examples that carry a real requirement and every project- or team-specific fact. Use `simplify-stuff` for deep passes over existing files.
-- Explanations include the intuition, how the change works, trade-offs, and evidence.
-- No material claim without evidence that could have proved it false.
-- A failed proof or new unknown returns to the earliest step it invalidates.
+- Change only the requested scope and necessary dependencies. Preserve unrelated user work.
+- Bring modified behavior up to standard, not the whole file. Avoid a worse hybrid with consistent surrounding code.
+- Report a pre-existing bug or an unrelated improvement as a follow-up. Never start a spontaneous refactor.
+- `refactor` owns an explicitly requested repository convergence audit and selected changes.
+- Edit a file in place. Rewrite it whole only when most of it changes.
+- For behavior changes, observe a relevant regression test fail before the fix and pass after it when practical.
+- A refactor's characterization proof starts green on the unchanged code and must stay green. Never break working behavior for a failure demonstration.
+- Add one focused test per stated behavior. Scratch checks stay out of the suite.
+- Run required project checks. After they pass, repeat only for new changes, failures, or unresolved concerns.
+- Never suppress a failure or weaken proof to claim success. Explain any proposed test removal or replacement before applying it.
 - For large mechanical changes, verify a small pilot before scaling.
-- Skipping, deleting, or re-baselining a test needs explicit user approval.
-- Clean up only worktrees you created and only after merge or discard. Never remove a detached-HEAD harness worktree.
+- Clean up only worktrees you created after merge or discard. Never remove a detached-HEAD harness worktree.
+- Commit only when explicitly requested.
+
+## Finish
+
+Complete requested implementation, relevant checks, required review fixes, and affected documentation before reporting completion.
+If plans, chronicles, rules, or AGENTS files change, invoke `development-skills:align-docs` in normal mode with the current task.
+Also invoke it when documents are created, moved, or removed.
+An edit to code, tests, or the content of an existing document skips it unless those changes invalidate documentation.
+The skill owns archive moves; the [documentation contract](documentation.md) owns lifecycle metadata.
 
 ## Resume
 
-An in-progress plan is the persistent state. Read its current step, standards, chronicle, and verification record; continue there instead of restarting discovery.
+Read an active plan's current step, standards, decisions, and verification record. Continue there instead of restarting discovery.

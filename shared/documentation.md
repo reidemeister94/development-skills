@@ -1,29 +1,32 @@
 # Repository documentation format
 
-Always follow the [writing contract](writing.md)
+Use the [writing contract](writing.md) for documentation.
+Repository knowledge documents use the [Open Knowledge Format](https://raw.githubusercontent.com/GoogleCloudPlatform/knowledge-catalog/refs/heads/main/okf/SPEC.md) fields below.
+Skill files, agent files, scoped rules, and templates retain their own required formats. `docs/ATLAS.md` has no frontmatter.
 
-Apply the [Open Knowledge Format (OKF) v0.1](https://raw.githubusercontent.com/GoogleCloudPlatform/knowledge-catalog/refs/heads/main/okf/SPEC.md) for every documentation file produced in the repository.
+## Metadata
 
-Required on every document:
+- `type`: `entrypoint`, `rule`, `guide`, `explanation`, `reference`, `plan`, `decision`, or `report`.
+- `description`: one meaningful line that helps an agent decide whether to read the document.
 
-- `type`: `entrypoint`, `rule`, `guide`, `explanation`, `reference`, `plan`, `decision`, or `report`;
-- `description`: one meaningful line an agent reads to decide whether to open the file.
+Optional fields are `title`, `tags` with kebab-case values, `timestamp` for the last meaningful change, and `resource` for a canonical URI.
+The H1 supplies the human title. Preserve unknown fields. Add metadata only when it carries useful information.
 
-Optional anywhere: `title` (the H1 owns the human title), `tags` (kebab-case strings), `timestamp` (date of last meaningful content change), `resource` (canonical URI when the document describes a real external asset).
+## Task lifecycle
 
-Plans and chronicles/decisions additionally require lifecycle metadata:
+Plans and chronicles additionally use:
 
 ```yaml
----
-type: plan
-description: One sentence an agent can use to decide whether to open the file.
 status: active        # draft | active | superseded | obsolete
 archived: false       # matches the file's location
-work_status: draft    # draft | in-progress | completed (plans and chronicles)
----
+work_status: draft    # draft | in-progress | completed
 ```
 
-- `status: superseded` requires `superseded_by: <document-id>`; the successor lists the prior document in `supersedes: [<document-id>]`;
-- `status: obsolete` requires `obsolete_reason: <dated reason>`.
-
-When a lifecycle field refers to another document, use its repository-relative path without `.md` as the document ID. Preserve unknown frontmatter fields. Never add placeholder descriptions or speculative metadata.
+Use repository-relative paths without `.md` as document IDs.
+The optional `plan` and `chronicle` fields link paired task records. Update these paths after an archive move.
+`status: superseded` requires `superseded_by`; the successor lists the old ID in `supersedes`.
+Use whole-document supersession only when the entire record is replaced. For partial changes, link the affected decision.
+`status: obsolete` requires a dated `obsolete_reason`.
+Completed chronicle decision prose is immutable; lifecycle metadata and link repairs can change.
+A completed plan can move to `docs/plans/archive/` only when every task item is closed.
+`align-docs` owns archive moves and inbound link repairs.

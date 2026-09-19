@@ -6,51 +6,21 @@ paths:
 
 # Skill and subagent authoring
 
-Conventions for editing files under `skills/` and `agents/`. Triggering, structure, and what NOT to duplicate from `shared/`.
+Apply [`shared/skill-authoring.md`](../../shared/skill-authoring.md).
 
-## SKILL.md frontmatter
+Each skill lives at `skills/<name>/SKILL.md`.
+Its frontmatter needs a matching `name` and a specific `description` that states capability and trigger.
+Preserve supported invocation, effort, and tool fields.
 
-Every skill is a directory under `skills/` with a `SKILL.md` file. Required frontmatter:
+Keep `SKILL.md` focused on shared purpose, workflow, constraints, and reference routing.
+Put substantial optional procedures or examples under `references/` and link them where they become relevant.
+Add scripts only when deterministic execution or reuse justifies them.
+Do not add placeholder directories or auxiliary README files.
 
-```yaml
----
-name: <kebab-case-skill-name>
-description: Use when <triggering condition>. Use when user says <keyword1>, <keyword2>, or <keyword3>.
----
-```
+The single named subagent is `agents/staff-reviewer.md`.
+Its tools remain read-only and minimal.
+Do not add another named subagent without an explicit design decision.
 
-- `name` MUST equal the directory name.
-- `description` is the trigger contract — the platform decides whether to invoke the skill from this string alone. Lead with "Use when …" and list explicit keyword triggers the user might type. Specific > generic.
-- Body is markdown. No mandatory section headings.
-
-## Agent files
-
-Single subagent today: `agents/staff-reviewer.md`. Implementation and verification run in the main thread per `shared/development-loop.md` — do NOT introduce extra named subagents without explicit design discussion.
-
-Agent frontmatter:
-
-```yaml
----
-name: <agent-name>
-description: <one-line role description>
-tools: Read, Grep, Glob, Bash
----
-```
-
-Tool list is the agent's allowlist — keep it minimal.
-
-## What NOT to duplicate
-
-`shared/development-loop.md` is the canonical loop and its principles. `shared/writing.md` is the canonical writing contract. Skills MUST reference these by path, never restate their content. A skill that copies loop text will drift the moment the canonical version updates.
-
-## References subdirectory
-
-Detailed material that a skill points to but does not load by default goes in `skills/<skill>/references/<topic>.md`. The SKILL.md body references it by relative path. Keeps the SKILL.md body short and the auto-loaded surface small.
-
-## Description triggering — be specific
-
-A vague description ("helps with code") wastes triggering budget. Concrete triggers ("Use when user runs /commit, or asks to commit changes, or staged changes need a conventional commits message") fire reliably. The skill `description` is read on every conversation — treat it as a contract.
-
-## Length budget
-
-SKILL.md body: aim for ≤ 200 lines. Anything longer belongs in `references/`. The slim-docs principle applies recursively — every skill obeys it.
+Validate names, frontmatter, links, packaging, and meaningful behavior.
+Routing descriptions must distinguish nearby skills.
+Tests protect outcomes, not exact prose.

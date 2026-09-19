@@ -1,3 +1,17 @@
+## 0.11.0 (2026-09-19)
+
+### Added
+
+- Added a bounded path for clear multi-file or high-impact work that does not need persistent task records.
+- Added the general `bro`, `phone-a-friend`, `refactor`, `rethink`, `ui-design-audit`, `update-deps`, and `wrap-up-branch` skills.
+- Added language-agnostic engineering and full-path contracts, plus a deterministic documentation checker.
+
+### Changed
+
+- Simplified authorization, planning, review, explanation, and documentation lifecycle rules.
+- Moved the behavioral eval runner under `eval-regression` and improved transcript parsing, usage accounting, and trial timeouts.
+- Updated hooks, manifests, repository guidance, and eval cases for the direct, bounded, and full workflow.
+
 ## 0.10.0 (2026-07-24)
 
 Realigned the plugin to a single, language-agnostic development methodology, replacing the previous phase-based, multi-language architecture.

@@ -28,13 +28,20 @@ install-dev: requirements-dev.txt
 setup-dev-env: install-dev commitizen
 	pre-commit install
 
+test:
+	uv run scripts/check_docs.py .
+	uv run skills/eval-regression/scripts/run_evals.py --help >/dev/null
+	uv run python -m json.tool evals/evals.json >/dev/null
+	uv run ruff check scripts skills
+	bash -n hooks/auto-format hooks/plan-approved hooks/session-start
+
 fetch-tags:
 	git fetch --tags
 
 changelog: setup-dev-env
 	cz changelog --unreleased-version $(VERSION)
 
-# this will update the version, changelog, tag and commit
+# These targets update the changelog and version files, commit, and create a tag.
 bump: fetch-tags setup-dev-env
 	cz bump
 

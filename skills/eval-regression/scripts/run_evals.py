@@ -1,3 +1,7 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["pydantic-evals==2.9.*"]
+# ///
 """Plan and run bounded development-skills checks with Pydantic Evals."""
 
 from __future__ import annotations
@@ -10,6 +14,7 @@ import os
 import re
 import select
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -18,10 +23,6 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
-try:
-    import logfire
-except ImportError:  # logfire extra absent: tracing becomes a no-op
-    import logfire_api as logfire
 from pydantic_evals import Case, Dataset
 from pydantic_evals.evaluators import Evaluator, EvaluatorContext
 from pydantic_evals.lifecycle import CaseLifecycle
@@ -100,7 +101,7 @@ def _string_list(item: dict[str, Any], key: str, default: tuple[str, ...]) -> tu
 def load_scenarios(path: Path) -> list[Scenario]:
     data = json.loads(path.read_text())
     if not isinstance(data.get("cases"), list):
-        raise ValueError("cases must be a list")
+        raise TypeError("cases must be a list")
     scenarios: list[Scenario] = []
     identifiers: set[str] = set()
     for item in data["cases"]:
@@ -445,50 +446,73 @@ def run_agent(
     if mode == "routing":
         return _run_routing_agent(command, workdir, transcript, timeout_seconds)
     started = time.monotonic()
+    process = subprocess.Popen(
+        command,
+        cwd=workdir,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=os.name == "posix",
+        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0,
+    )
     try:
-        with logfire.span(
-            "development_skills_eval.agent",
-            agent=agent,
-            model=model,
-            effort=effort,
-            workdir=str(workdir),
-        ):
-            process = subprocess.run(
-                command,
-                cwd=workdir,
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=timeout_seconds,
-            )
-    except subprocess.TimeoutExpired as error:
-        stdout = (
-            error.stdout.decode(errors="replace")
-            if isinstance(error.stdout, bytes)
-            else error.stdout
-        )
-        stderr = (
-            error.stderr.decode(errors="replace")
-            if isinstance(error.stderr, bytes)
-            else error.stderr
-        )
+        stdout, stderr = process.communicate(timeout=timeout_seconds)
+    except subprocess.TimeoutExpired:
+        _terminate_process_tree(process)
+        stdout, stderr = process.communicate()
         transcript.write_text(stdout or "")
         return TrialResult(
             124,
             stdout or "",
             stderr or "timeout",
+            _changed_files(workdir),
             duration_seconds=time.monotonic() - started,
             token_usage=_token_usage(stdout or "", agent),
         )
-    transcript.write_text(process.stdout)
+    except BaseException:
+        _terminate_process_tree(process)
+        raise
+    transcript.write_text(stdout)
     return TrialResult(
         process.returncode,
-        process.stdout,
-        process.stderr,
+        stdout,
+        stderr,
         _changed_files(workdir),
         duration_seconds=time.monotonic() - started,
-        token_usage=_token_usage(process.stdout, agent),
+        token_usage=_token_usage(stdout, agent),
     )
+
+
+def _terminate_process_tree(process: subprocess.Popen, grace_seconds: int = 10) -> None:
+    """Terminate an agent and its subprocesses before evidence collection continues."""
+    if process.poll() is not None:
+        return
+    if os.name == "posix":
+        try:
+            os.killpg(process.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            return
+        deadline = time.monotonic() + grace_seconds
+        while time.monotonic() < deadline:
+            process.poll()
+            try:
+                os.killpg(process.pid, 0)
+            except ProcessLookupError:
+                return
+            time.sleep(0.05)
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait()
+        return
+    subprocess.run(
+        ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    process.wait()
 
 
 def _run_routing_agent(
@@ -505,6 +529,8 @@ def _run_routing_agent(
         stderr=subprocess.PIPE,
         text=True,
         bufsize=1,
+        start_new_session=os.name == "posix",
+        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0,
     )
     lines: list[str] = []
     selected: dict[str, Any] | None = None
@@ -526,19 +552,13 @@ def _run_routing_agent(
             if selected:
                 break
         if process.poll() is None:
-            process.terminate()
-            try:
-                process.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.wait()
+            _terminate_process_tree(process, grace_seconds=2)
         if process.stdout:
             lines.extend(line.rstrip("\n") for line in process.stdout.readlines())
         stderr = process.stderr.read() if process.stderr else ""
     finally:
         if process.poll() is None:
-            process.kill()
-            process.wait()
+            _terminate_process_tree(process, grace_seconds=2)
     rendered = "\n".join(lines)
     selected = selected or _routing_selection(rendered)
     if selected:
@@ -699,6 +719,29 @@ def _tool_names(transcript: str) -> set[str]:
     return names
 
 
+def _assistant_messages(event: Any) -> tuple[str, ...]:
+    if not isinstance(event, dict):
+        return ()
+    if event.get("type") == "assistant":
+        message = event.get("message")
+        content = message.get("content", []) if isinstance(message, dict) else []
+        if isinstance(content, list):
+            return tuple(
+                block["text"]
+                for block in content
+                if isinstance(block, dict)
+                and block.get("type") == "text"
+                and isinstance(block.get("text"), str)
+            )
+    if event.get("type") == "result" and isinstance(event.get("result"), str):
+        return (event["result"],)
+    if event.get("type") == "item.completed":
+        item = event.get("item", {})
+        if item.get("type") == "agent_message" and isinstance(item.get("text"), str):
+            return (item["text"],)
+    return ()
+
+
 def _tool_inputs(transcript: str) -> list[ToolCall]:
     inputs: list[ToolCall] = []
     group = 0
@@ -721,10 +764,17 @@ def _tool_inputs(transcript: str) -> list[ToolCall]:
             event = json.loads(line)
         except json.JSONDecodeError:
             continue
+        for message in _assistant_messages(event):
+            add("assistant_output", {"text": message})
 
         def walk(value: Any) -> None:
             if isinstance(value, dict):
-                tool_input = value.get("tool_input", value.get("input"))
+                tool_input = value.get("tool_input", value.get("input", value.get("arguments")))
+                if value.get("type") == "function_call" and isinstance(tool_input, str):
+                    try:
+                        tool_input = json.loads(tool_input)
+                    except json.JSONDecodeError:
+                        pass
                 tool_name = value.get("tool_name", value.get("name"))
                 if isinstance(tool_name, str) and tool_input is not None:
                     add(tool_name, tool_input)
@@ -782,24 +832,7 @@ def _assistant_text(transcript: str) -> str:
             event = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if not isinstance(event, dict):
-            continue
-        if event.get("type") == "assistant":
-            content = event.get("message", {}).get("content", [])
-            if isinstance(content, list):
-                texts.extend(
-                    block["text"]
-                    for block in content
-                    if isinstance(block, dict)
-                    and block.get("type") == "text"
-                    and isinstance(block.get("text"), str)
-                )
-        elif event.get("type") == "result" and isinstance(event.get("result"), str):
-            texts.append(event["result"])
-        elif event.get("type") == "item.completed":
-            item = event.get("item", {})
-            if item.get("type") == "agent_message" and isinstance(item.get("text"), str):
-                texts.append(item["text"])
+        texts.extend(_assistant_messages(event))
     return "\n".join(texts)
 
 
@@ -1129,10 +1162,10 @@ def compare_reports(baseline: dict[str, Any], candidate: dict[str, Any]) -> dict
     metadata_keys = {"agent", "model", "effort"}
     baseline_metadata = baseline.get("metadata")
     candidate_metadata = candidate.get("metadata")
-    if not isinstance(baseline_metadata, dict) or not isinstance(candidate_metadata, dict):
-        inconclusive_reasons.append("agent, model, and effort metadata are required")
-    elif (
-        not metadata_keys <= baseline_metadata.keys()
+    if (
+        not isinstance(baseline_metadata, dict)
+        or not isinstance(candidate_metadata, dict)
+        or not metadata_keys <= baseline_metadata.keys()
         or not metadata_keys <= candidate_metadata.keys()
     ):
         inconclusive_reasons.append("agent, model, and effort metadata are required")
@@ -1273,7 +1306,6 @@ def main() -> None:
     if not selected:
         parser.error("no supported cases matched the selection")
 
-    logfire.configure(send_to_logfire="if-token-present", service_name="development-skills-evals")
     report = evaluate(
         selected,
         agent=args.agent,

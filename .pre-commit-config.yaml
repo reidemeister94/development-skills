@@ -19,6 +19,15 @@ repos:
       - id: commitizen
         stages: [commit-msg]
 
+  - repo: local
+    hooks:
+      - id: check-docs
+        name: check document links and lifecycle
+        entry: uv run scripts/check_docs.py .
+        language: unsupported
+        pass_filenames: false
+        always_run: true
+
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: 'v0.15.6'
     hooks:

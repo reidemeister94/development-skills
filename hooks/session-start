@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
-# Inject the small router before the first decision; skill auto-discovery alone may run too late.
+# Inject the router and writing contract before the first decision.
+# Skill auto-discovery alone may run too late, and Codex has no output styles.
 
 set -euo pipefail
 
 PLUGIN_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 USING_SKILL="${PLUGIN_ROOT}/skills/using-development-skills/SKILL.md"
+WRITING="${PLUGIN_ROOT}/shared/writing.md"
 
 if [ -f "$USING_SKILL" ]; then
   using_content=$(cat "$USING_SKILL")
+  # Injected context has no file location, so relative links need absolute paths.
+  using_content="${using_content//](..\/..\//](${PLUGIN_ROOT}/}"
+  using_content="${using_content//](references\//](${PLUGIN_ROOT}/skills/using-development-skills/references/}"
 else
   using_content="Error: using-development-skills/SKILL.md not found at ${USING_SKILL}"
+fi
+
+if [ -f "$WRITING" ]; then
+  voice_content=$(awk 'BEGIN{fm=0} /^---$/ && fm<2 {fm++; next} fm>=2 {print}' "$WRITING")
+else
+  voice_content="Error: shared/writing.md not found at ${WRITING}"
 fi
 
 # Escape backslashes first so later substitutions do not escape their own output.
@@ -24,8 +35,9 @@ escape_for_json() {
 }
 
 using_escaped=$(escape_for_json "$using_content")
+voice_escaped=$(escape_for_json "$voice_content")
 
-session_context="<EXTREMELY-IMPORTANT>\nThe development-skills plugin is active.\n\n**Below is the full content of your 'development-skills:using-development-skills' skill — your introduction to using skills. For all other skills, use the 'Skill' tool:**\n\n${using_escaped}\n</EXTREMELY-IMPORTANT>"
+session_context="<DEVELOPMENT-SKILLS>\nThe development-skills:using-development-skills router follows.\n\n${using_escaped}\n</DEVELOPMENT-SKILLS>\n\n<WRITING-CONTRACT>\n${voice_escaped}\n</WRITING-CONTRACT>"
 
 printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
 
