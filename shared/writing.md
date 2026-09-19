@@ -1,59 +1,47 @@
+---
+name: Plain language
+description: Plain writing for people and agents, with necessary facts preserved.
+keep-coding-instructions: true
+force-for-plugin: true
+---
+
 # Writing
 
-Every natural-language text written or edited must help a person understand and an agent act.
+Every natural-language text must help a person understand and an agent act.
+This includes chat, documentation, comments, docstrings, help text, errors, commits, and pull requests.
+Apply ASD-STE100 plain-language principles in the language of the text.
 
-The rule covers:
+- **Purpose.** Keep words that explain the result, reason, decision, constraint, or next action. Delete repetition, filler, and generic advice.
+- **Order.** Lead with the result. Follow with evidence, limits, and the next action. Put conditions before instructions.
+- **Sentences.** Use one idea per sentence, at most 20 words, active voice, and present indicative where accurate.
+- **Words.** Use common, literal words. Explain necessary technical terms once. Keep the same term for the same thing.
+- **Precision.** Write requirements with `must`, options with `can`, and uncertainty with `might`. Address the reader as `you`. Name yourself as `I`.
+- **Relations.** State cause, contrast, and sequence explicitly. Follow `this` and `that` with the noun they name when the reference is unclear.
+- **Facts.** Keep exact technical facts, names, paths, commands, values, constraints, edge cases, and decisions. Support claims with evidence.
+- **Sources.** Reword sources in your own words. Mark a copied phrase as a quotation with its source.
+- **Form.** Use short paragraphs, parallel lists, and tables for comparisons. Add headings only when they help navigation.
+- **Notation.** Use code formatting for literal paths, commands, names, and values. Write link text that names the target.
+- **Punctuation.** Use straight quotes and apostrophes. Write ranges with `to`. End statements with a period. Use dashes only inside hyphenated words.
+- **Language.** Write in the language of the file you edit. New text uses the repository's documentation language, otherwise the conversation language.
 
-- chat, documentation, plans, chronicles, research, reports, README files, and AGENTS files;
-- comments, docstrings, help text, and error messages;
-- changelogs, commit text, and pull request text.
+## Documents and code text
 
-And every other type of natural language text, written or spoken to the user.
+Give a document the length its substance needs. Explain what happens, why it matters, and the details needed to continue safely.
+Give each fact one owner and link to it. Preserve project knowledge and examples that clarify a real requirement.
+Anchor a time claim to a version, a date, or a commit. Summarize logs unless exact text matters.
+Keep workflow labels in working records; use plain descriptions in user-facing explanations.
 
-## Serve both readers
+Introduce a command with the result it produces.
+An error message names what failed, the relevant value, and the fix. Keep secrets out of errors.
+A docstring states what the signature cannot show: meaningful defaults, returns, errors, and behavior choices.
+Comments explain reasons that the code cannot show.
 
-Start with the explanation a teammate with little project knowledge needs:
+A progress line says what you do next. The final reply reports results, evidence limits, and remaining work.
+Question timing follows the development loop.
 
-- what is happening and why it matters;
-- how the relevant part of the system works;
-- what was learned or decided, with the reason;
-- what changed and what that means.
+Before finishing, read the text as a reader without the conversation. Remove anything whose deletion loses no useful information.
 
-Then give the working detail an agent needs:
+## Non-English text
 
-- Keep exact technical facts, names, paths, commands, constraints, edge cases, and checks.
-- Connect each piece of evidence to what it proves. Summarize raw logs unless their exact text matters.
-- State uncertainty and remaining limits. Do not hide them behind process labels.
-
-Human-first does not mean summary-only. Remove noise, not substance.
-
-## Write naturally
-
-- Use common, concrete words. Explain an uncommon technical or company term when it first matters.
-- Prefer a direct explanation over labels such as “observable solved state”, “semantic boundary”, or “operative owner”.
-- Workflow names are instructions for the agent, not explanations for the reader. Keep an exact workflow name only where a status field, command, or working record needs it. Everywhere else, translate `Full`, `Direct`, `RED`, and `GREEN` into ordinary language: say what work will happen, that a test fails before the fix, or that it passes afterward.
-- Do the same for technical shorthand such as “truthy”, “fail closed”, or “boundary”. Use common words, or explain the term where it adds necessary precision.
-- Keep one main idea in a sentence or list item. Split a sentence when its parts need different explanations.
-- State what happened instead of narrating the agent’s process. Keep conversation history only when it records a decision that is not preserved elsewhere.
-- Give each fact one owner. Link to that owner instead of repeating the same rule in several files.
-- Keep an example only when it carries a real requirement or corrects an observed failure.
-
-## Use formatting to aid reading
-
-- Use paragraphs by default. Add headings when they help the reader navigate and lists when the content is truly a list.
-- Do not use bold or italics only to add emphasis. Use code formatting only for literal names, values, paths, commands, or code.
-- Use a table only for a real comparison or repeated mapping. Do not use one to make ordinary prose look structured.
-- Remove empty sections, filler introductions, repeated conclusions, and template fields that add no information.
-
-## Match the language
-
-Keep the language already used by the file. For new text, follow the repository’s established documentation language. When none exists, use the language of the conversation. Preserve exact wording when it records a user, company, or domain decision.
-
-## Check the result
-
-Before finishing, read the text as a teammate who knows little about the project:
-
-- Can they understand the subject, the reason, and the result without reconstructing the conversation?
-- Can an agent find every detail needed to continue the work safely?
-- Does each paragraph teach or record something useful?
-- Would removing a sentence lose information, or only generated noise?
+Do not translate English technical terms when the translation sounds unnatural. Keep the established English term instead.
+Avoid literal translations that are grammatical but obscure the real action or component.

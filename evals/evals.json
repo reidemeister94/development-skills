@@ -1,8 +1,11 @@
 {
   "version": 1,
   "routing_exemptions": {
+    "phone-a-friend": "Manual-only skill with disable-model-invocation: true; its cross-model run requires explicit invocation.",
+    "refactor": "Manual-only skill with disable-model-invocation: true; its read-only audit has a workflow case.",
     "simplify-stuff": "Manual-only skill with disable-model-invocation: true; deterministic contracts cover it.",
-    "using-development-skills": "SessionStart router exercised by the four core workflow cases."
+    "using-development-skills": "SessionStart router is exercised by the core workflow cases.",
+    "wrap-up-branch": "Manual-only skill with disable-model-invocation: true; branch mutation and merge require explicit invocation."
   },
   "cases": [
     {
@@ -20,7 +23,7 @@
       "files": {
         "AGENTS.md": "Before editing Python, read every matching rule under .agents/rules/ and state the selected source path before the first mutation.\n",
         "CLAUDE.md": "@AGENTS.md\n",
-        ".agents/rules/naming.md": "---\npaths:\n  - \"src/**/*.py\"\n---\nFor this migration, the required replacement for old_name is TEAM_NAME.\n",
+        ".agents/rules/naming.md": "---\npaths:\n  - \"src/**/*.py\"\n---\nFor this migration, the required replacement for old_name is PROJECT_NAME.\n",
         "src/example.py": "old_name = 1\n"
       },
       "assertions": [
@@ -32,7 +35,7 @@
         {
           "file_contains": {
             "path": "src/example.py",
-            "text": "TEAM_NAME"
+            "text": "PROJECT_NAME"
           }
         },
         {
@@ -74,6 +77,7 @@
       "covers": [
         "skills/using-development-skills/SKILL.md",
         "shared/development-loop.md",
+        "shared/full-path.md",
         "skills/brainstorming/SKILL.md"
       ],
       "agents": [
@@ -108,7 +112,7 @@
       ],
       "files": {
         ".gitignore": "__pycache__/\n.pytest_cache/\n",
-        "AGENTS.md": "Use the Full path for production behavior changes. Before planning, read docs/conventions.md and the matching reference implementation at reference/service.py; record both exact paths in the plan's Standards field. Write this task's plan to docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md and its chronicle to docs/chronicles/0001__2026-07-21__feature-flag-normalization.md.\n",
+        "AGENTS.md": "Use the Full path for production behavior changes. Before planning, read docs/conventions.md and the matching reference implementation at reference/service.py; record both exact paths in the plan's Standards field. Write this task's plan to docs/plans/2026-07-21__feature-flag-normalization.md and its chronicle to docs/chronicles/2026-07-21__feature-flag-normalization.md.\n",
         "CLAUDE.md": "@AGENTS.md\n",
         "docs/conventions.md": "Feature flags are enabled only by the exact string `on`.\n",
         "reference/service.py": "def is_enabled(flag: str) -> bool:\n    return flag == \"on\"\n",
@@ -118,217 +122,217 @@
       "assertions": [
         {
           "changed_files_exact": [
-            "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
-            "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md"
+            "docs/plans/2026-07-21__feature-flag-normalization.md",
+            "docs/chronicles/2026-07-21__feature-flag-normalization.md"
           ]
         },
         {
           "file_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "type: plan"
           }
         },
         {
           "file_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "docs/conventions.md"
           }
         },
         {
           "file_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "reference/service.py"
           }
         },
         {
           "file_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "flag == \"on\""
           }
         },
         {
           "file_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
-            "text": "## Why this work matters"
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
+            "text": "## What will change"
           }
         },
         {
           "file_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "## How it will work"
           }
         },
         {
           "file_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "## Working record"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "Observable solved state"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "**"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "Full-path"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "fail closed"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "public function boundary"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "RED"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "GREEN"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "[Explain"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "[Describe"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "[Record"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "[One sentence"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md",
+            "path": "docs/plans/2026-07-21__feature-flag-normalization.md",
             "text": "# [Title]"
           }
         },
         {
           "file_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "type: decision"
           }
         },
         {
           "file_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
-            "text": "## Why we did this"
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
+            "text": "## The request"
           }
         },
         {
           "file_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
-            "text": "## What we decided"
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
+            "text": "## Decisions"
           }
         },
         {
           "file_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
-            "text": "## Evidence and limits"
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
+            "text": "## Why this work matters"
           }
         },
         {
           "file_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "flag == \"on\""
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "**"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "Full-path"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "fail closed"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "public function boundary"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "RED"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "GREEN"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "[Explain"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "[Describe"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "[Record"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "[One sentence"
           }
         },
         {
           "file_not_contains": {
-            "path": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md",
+            "path": "docs/chronicles/2026-07-21__feature-flag-normalization.md",
             "text": "# [Title]"
           }
         },
@@ -337,32 +341,26 @@
             {
               "tool": "file_change",
               "field": "path",
-              "contains": "docs/plans/0001__2026-07-21__implementation_plan__feature-flag-normalization.md"
+              "contains": "docs/plans/2026-07-21__feature-flag-normalization.md"
             },
             {
               "tool": "file_change",
               "field": "path",
-              "contains": "docs/chronicles/0001__2026-07-21__feature-flag-normalization.md"
+              "contains": "docs/chronicles/2026-07-21__feature-flag-normalization.md"
             }
           ]
         },
         {
-          "transcript_contains": "Result"
+          "transcript_contains": "Context"
         },
         {
-          "transcript_contains": "Checks"
+          "transcript_contains": "What changes"
         },
         {
-          "transcript_contains": "Out of scope"
+          "transcript_contains": "How it works"
         },
         {
-          "transcript_contains": "Approach"
-        },
-        {
-          "transcript_contains": "Files"
-        },
-        {
-          "transcript_contains": "Risks"
+          "transcript_contains": "How it is checked"
         },
         {
           "transcript_contains": "Approve"
@@ -372,15 +370,12 @@
         },
         {
           "transcript_contains": "Cancel"
-        },
-        {
-          "transcript_contains": "Chat about"
         }
       ]
     },
     {
       "id": "core-approved-plan-handoff",
-      "prompt": "The native plan in native-plan.md was explicitly approved and handed control back to implementation. Continue it through completion.",
+      "prompt": "The native plan in native-plan.md was explicitly approved, including implementation and the required clean-context development-skills:staff-reviewer. Continue it through completion.",
       "tags": [
         "core",
         "workflow",
@@ -390,19 +385,27 @@
       "covers": [
         "skills/using-development-skills/SKILL.md",
         "shared/development-loop.md",
+        "shared/full-path.md",
         "hooks/plan-approved"
       ],
       "files": {
-        "native-plan.md": "# Approved native plan\n\nNormalize feature flags so only the exact string `on` enables a feature.\n\n1. Record this plan at docs/plans/0001__2026-07-21__implementation_plan__flag-normalization.md and start docs/chronicles/0001__2026-07-21__flag-normalization.md in a separate action.\n2. Add a focused failing test and run it.\n3. Implement the smallest fix and rerun the test.\n4. Verify the final source with rg.\n",
+        "native-plan.md": "# Approved native plan\n\nNormalize feature flags so only the exact string `on` enables a feature.\n\n1. Record this plan at docs/plans/2026-07-21__flag-normalization.md and start docs/chronicles/2026-07-21__flag-normalization.md in a separate action.\n2. Add a focused failing test and run it.\n3. Implement the smallest fix and rerun the test.\n4. Verify the final source with rg.\n",
         "src/feature_flags.py": "def is_enabled(flag: str) -> bool:\n    return bool(flag)\n"
       },
       "assertions": [
         {
           "changed_files_exact": [
-            "docs/plans/0001__2026-07-21__implementation_plan__flag-normalization.md",
-            "docs/chronicles/0001__2026-07-21__flag-normalization.md",
+            "docs/plans/archive/2026-07-21__flag-normalization.md",
+            "docs/chronicles/2026-07-21__flag-normalization.md",
             "src/feature_flags.py",
-            "tests/test_feature_flags.py"
+            "tests/test_feature_flags.py",
+            "README.md",
+            "AGENTS.md",
+            "CLAUDE.md",
+            ".gitignore",
+            ".agents/rules/.gitkeep",
+            ".claude/rules",
+            "docs/ATLAS.md"
           ]
         },
         {
@@ -422,12 +425,12 @@
             {
               "tool": "file_change",
               "field": "path",
-              "contains": "docs/plans/0001__2026-07-21__implementation_plan__flag-normalization.md"
+              "contains": "docs/plans/2026-07-21__flag-normalization.md"
             },
             {
               "tool": "file_change",
               "field": "path",
-              "contains": "docs/chronicles/0001__2026-07-21__flag-normalization.md"
+              "contains": "docs/chronicles/2026-07-21__flag-normalization.md"
             },
             {
               "tool": "file_change",
@@ -627,7 +630,7 @@
     },
     {
       "id": "explain-diff-comprehension-dialogue",
-      "prompt": "Run development-skills:explain-diff on explanation-packet.md. Treat its verification evidence as current. Continue in chat without a visual, explain the change, and begin the comprehension dialogue.",
+      "prompt": "Run development-skills:explain-diff on explanation-packet.md. Treat its verification evidence as current. Explain the change and begin an optional comprehension dialogue. Tell me I can skip a question.",
       "tags": [
         "workflow",
         "explanation"
@@ -643,10 +646,7 @@
           "clean_worktree": true
         },
         {
-          "transcript_contains": "I don't know"
-        },
-        {
-          "transcript_contains": "Proceed without answering"
+          "transcript_contains": "skip"
         }
       ]
     },
@@ -939,6 +939,134 @@
         },
         {
           "tool_not": "development-skills:roast-my-code"
+        }
+      ]
+    },
+    {
+      "id": "core-bounded-design-in-chat",
+      "prompt": "Add a limit query parameter to GET /items: default 50, maximum 200, and reject larger values with HTTP 422. Put validation in src/params.py and cover both bounds. Project rules settle the approach.",
+      "tags": [
+        "core",
+        "workflow",
+        "bounded"
+      ],
+      "covers": [
+        "shared/development-loop.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "files": {
+        "AGENTS.md": "Query parameter helpers live in src/params.py. Tests use pytest with the client fixture.\n",
+        "src/params.py": "def offset_param(value: int = 0) -> int:\n    if value < 0:\n        raise ValueError('offset')\n    return value\n",
+        "src/api.py": "def list_items(offset: int = 0):\n    return ITEMS[offset:offset + 50]\n",
+        "tests/test_items.py": "def test_negative_offset_is_rejected(client):\n    assert client.get('/items?offset=-1').status_code == 422\n"
+      },
+      "assertions": [
+        {
+          "changed_files_exact": [
+            "src/api.py",
+            "src/params.py",
+            "tests/test_items.py"
+          ]
+        },
+        {
+          "file_contains": {
+            "path": "src/params.py",
+            "text": "200"
+          }
+        },
+        {
+          "file_contains": {
+            "path": "tests/test_items.py",
+            "text": "422"
+          }
+        }
+      ]
+    },
+    {
+      "id": "refactor-audit-writes-nothing",
+      "prompt": "/refactor",
+      "tags": [
+        "workflow",
+        "refactor"
+      ],
+      "covers": [
+        "skills/refactor/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "files": {
+        "AGENTS.md": "Project standards apply.\n",
+        "src/orders.py": "def get(conn, ids):\n    return [conn.query('select * from orders where id = ' + str(i)) for i in ids]\n"
+      },
+      "assertions": [
+        {
+          "clean_worktree": true
+        },
+        {
+          "transcript_contains": "effort"
+        }
+      ]
+    },
+    {
+      "id": "route-bro",
+      "prompt": "Your last answer was too technical and full of jargon. Restate it in plain language without losing important facts.",
+      "tags": [
+        "routing",
+        "communication"
+      ],
+      "covers": [
+        "skills/bro/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:bro"
+        }
+      ]
+    },
+    {
+      "id": "route-rethink",
+      "prompt": "The export-service proposal is over-engineered. Rethink it from first principles and return the simplest design that meets the goals.",
+      "tags": [
+        "routing",
+        "design"
+      ],
+      "covers": [
+        "skills/rethink/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:rethink"
+        }
+      ]
+    },
+    {
+      "id": "route-update-deps",
+      "prompt": "Update this Python project's dependencies and pre-commit hooks while preserving its pin style. Report manual Git dependency updates separately.",
+      "tags": [
+        "routing",
+        "dependencies"
+      ],
+      "covers": [
+        "skills/update-deps/SKILL.md"
+      ],
+      "agents": [
+        "claude"
+      ],
+      "mode": "routing",
+      "assertions": [
+        {
+          "tool": "development-skills:update-deps"
         }
       ]
     }

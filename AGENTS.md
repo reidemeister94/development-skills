@@ -1,33 +1,34 @@
 # Development skills
 
-This repo IS the source of the `development-skills` plugin: a direct/full development loop plus skills, hooks, and a single `staff-reviewer` subagent, distributed to Claude Code and Codex CLI.
+This repository is the source of the `development-skills` plugin for Claude Code and Codex CLI.
 
-0. **Don't pander · be critical.** Challenge assumptions, push back on bad ideas. No flattery openers. User confirmation validates the decision, not the analysis.
-1. **Think before coding.** State assumptions explicitly. Ask when unclear. Don't guess, don't hide confusion.
-2. **Plan before implementing.** Explore → plan → lock the HOW (edge cases · data shapes · error semantics · contract boundaries · test scope · rollback) → code.
-3. **Simplicity by default.** Minimum code that solves the problem. Three filters before adding anything: existing mechanism covers >50%? · can this be one fewer file / abstraction / config / dependency? · would removing it cause a real failure? A refactor must measurably improve one of: clear · descriptive · efficient · performant · reliable · robust · maintainable.
-4. **Surgical changes.** Every changed line traces to the request. No refactoring of adjacent code. No error handling for impossible scenarios. Clean up only your own mess.
-5. **All signal, zero noise.** No dead branches, no defensive try/catch on safe paths, no wrapper-for-nothing functions, no unused imports. No filler openers, no trailing summaries when the diff is the answer.
-6. **Comments explain WHY, not WHAT.** Non-obvious business logic, hidden constraints, workarounds — yes. Restating what the next line does — no.
-7. **TDD: Red → Green → Refactor.** No production code without a failing test first. One test = one cycle. Wrote production code before the test? Delete it. Untestable (UI-heavy / infrastructure / config-only) → closest automated check + documented WHY + manual evidence.
-8. **No claim without fresh evidence.** IDENTIFY → RUN → READ → VERIFY → CLAIM. *"I'm confident"* is not a step. Skipping any step = lying, not verifying.
-9. **Root cause, not symptoms.** Fix the underlying error, never suppress it. `# type: ignore`, swallowed exceptions, disabled tests, `--no-verify` are admissions the bug is winning.
-10. **Document every discovery** (anything you lacked at the start — non-obvious, domain·infrastructure·company·project-specific). WHY → `docs/chronicles/`, HOW → `docs/plans/`; a critical always-read fact → one line in the `AGENTS.md` list; a topic with depth → `.agents/rules/<topic>.md` (same convention), indexed from `AGENTS.md`. Fewest words. Pay investigation costs once.
-11. **Slim docs · English · memory ≈ empty.** `AGENTS.md` ≤ 70 lines: principles → *use development-skills* → single fewest-words list of the most critical, non-trivial domain·infra·company·project facts → index to `.agents/rules/`; no section headings. Each rules file: same convention, vertical per topic. English only across all artifacts. Teammates share only the repo — memory is per-machine and invisible to them: project facts live in `AGENTS.md` / `.agents/rules/`, never in memory; machine-specific facts → gitignored `.claude/CLAUDE.md` / `~/.codex/AGENTS.md`; memory stays ≈ empty.
-12. **Communicate to be understood.** Explain in the simplest accurate language that preserves all important information — lead with the answer, name assumptions and trade-offs when they matter, simplify wording not substance. No obscure terms, no ambiguity.
+1. Challenge unsupported assumptions. Evidence validates a decision; agreement alone does not.
+2. Use the smallest useful change. Every changed line must trace to the request.
+3. Follow [`shared/development-loop.md`](shared/development-loop.md) for scope, authorization, checks, and completion.
+4. Follow [`shared/writing.md`](shared/writing.md) for every natural-language artifact.
+5. Follow [`shared/engineering.md`](shared/engineering.md) for code and design.
+6. Test new behavior with a failing proof when practical. Keep refactor characterization proof green before and after.
+7. Never suppress a failing check or weaken proof to claim success.
+8. Preserve user work and inspect callers before removing or moving files.
+9. Store durable reasons in chronicles and resumable execution state in plans.
+10. Commit only when explicitly requested. Never add AI attribution or `Co-Authored-By` trailers.
 
-- The canonical development loop and its principles live in `shared/development-loop.md`; the writing contract in `shared/writing.md`. Skills reference them by path — never restate their content, in skills, AGENTS.md, README, or chronicles.
-- Versioning is automated via `make bump-version-{minor,major,patch}` (commitizen): `cz bump` atomically updates `[tool.commitizen] version` in `pyproject.toml`, `VERSION`, `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, and `.claude-plugin/marketplace.json`, then creates the annotated git tag `$version`. Never bump version files manually.
-- Only one named subagent ships: `staff-reviewer`. Implementation and verification run in the main thread per `shared/development-loop.md` — do not introduce extra subagents without explicit design discussion.
-- Hooks in `hooks/` run natively on Claude Code and on Codex 0.131+ (auto-loaded); Codex 0.128–0.130 needs `[features] plugin_hooks = true` in `~/.codex/config.toml`. Document the manual fallback whenever a hook is added.
-- `pyproject.toml` exists for plugin-internal scripts (lint helpers) — the plugin is markdown-first and not distributed as a PyPI package.
-- Personal per-machine context: `.claude/CLAUDE.md` (Claude) or `~/.codex/AGENTS.md` (Codex). Both must stay gitignored; never commit either.
+- Skills and agents reference canonical files under `shared/`; they do not copy those contracts.
+- One named subagent ships: `staff-reviewer`. Implementation and verification stay in the main context.
+- The plugin is language-agnostic and ships no organization, language, framework, or product conventions.
+- `pyproject.toml` exists for repository tools. The plugin is not a Python package.
+- Use `uv` for Python commands.
+- Hooks run on Claude Code and supported Codex versions. Document a manual fallback for a new hook.
+- Personal machine facts stay in ignored `.claude/CLAUDE.md` or global Codex instructions.
 
-| Rule | Scope (`paths:`) | Topic |
-|------|------------------|-------|
-| `.agents/rules/skill-authoring.md` | `skills/**`, `agents/**` | SKILL.md / subagent frontmatter, references/ subdirs, what NOT to duplicate from `shared/` |
-| `.agents/rules/shared-canonical.md` | `shared/**` | Canonical shared-file inventory (development loop, writing, documentation, review-categories, skill-authoring, templates) and editing rules |
-| `.agents/rules/plugin-packaging.md` | `.claude-plugin/**`, `.codex-plugin/**`, `.agents/plugins/**`, `VERSION`, `CHANGELOG.md`, `pyproject.toml` | Version sync (4 files + pyproject), dual manifest, dual marketplace catalog, marketplace-only install, changelog format |
-| `.agents/rules/formatting-hooks.md` | `hooks/**` | Auto-format command table, hook authoring conventions, Codex parity |
+Version files are `VERSION`, `pyproject.toml`, both plugin manifests, and `.claude-plugin/marketplace.json`.
+Use Commitizen to update them together.
+Use `--files-only` when a tag or automatic commit is not authorized.
+Create or move a tag only after explicit confirmation.
 
-Local machine instructions: Claude → `.claude/CLAUDE.md` (gitignored). Codex → `~/.codex/AGENTS.md` (user-global) — avoid in-repo `AGENTS.override.md` because Codex loads one file per directory and an override fully replaces this file rather than merging.
+| Rule | Scope | Topic |
+|---|---|---|
+| [`.agents/rules/skill-authoring.md`](.agents/rules/skill-authoring.md) | `skills/**`, `agents/**` | Skill and subagent structure. |
+| [`.agents/rules/shared-canonical.md`](.agents/rules/shared-canonical.md) | `shared/**` | Canonical workflow files. |
+| [`.agents/rules/plugin-packaging.md`](.agents/rules/plugin-packaging.md) | Manifests, catalogs, versions, changelog | Packaging and releases. |
+| [`.agents/rules/formatting-hooks.md`](.agents/rules/formatting-hooks.md) | `hooks/**` | Formatting and hook behavior. |

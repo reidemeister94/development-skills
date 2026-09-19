@@ -1,5 +1,6 @@
 {
   "name": "development-skills",
-  "description": "Use when any coding, development, analysis, debugging, or code-related task is detected. Triggers on: writing code, fixing bugs, adding features, refactoring, architecture decisions, requirements analysis, code review, diff analysis, error investigation, debugging failures, and evaluating approaches. A disciplined, language-agnostic development workflow: a direct/full loop that keeps the plan and chronicle on disk, a staff-reviewer subagent, and auto-format hooks.",
-  "version": "0.10.0"
+  "description": "Use for coding, debugging, refactoring, design, test strategy, code review, documentation alignment, and development research. A language-agnostic direct, bounded, or full workflow with persistent decisions and independent review.",
+  "version": "0.11.0",
+  "outputStyles": "./shared/writing.md"
 }

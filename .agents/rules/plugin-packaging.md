@@ -14,7 +14,7 @@ Files in this scope control how the plugin is installed, listed, and version-tra
 
 ## Version — single source of truth
 
-Five locations carry the plugin version. `cz bump` (invoked via `make bump-version-{minor,major,patch}`) keeps them in sync atomically — never bump manually.
+Five locations carry the plugin version. Commitizen keeps them in sync. Use `make bump-version-{minor,major,patch}` only when its commit and tag are authorized. Otherwise run `uv run cz bump --increment <LEVEL> --files-only` and review the files before committing.
 
 | Location | Role |
 |----------|------|
@@ -40,7 +40,7 @@ All five values must match exactly. If they diverge, the divergence is the bug �
 
 | File | Purpose |
 |------|---------|
-| `.claude-plugin/plugin.json` | Claude Code plugin manifest. Minimal: `name`, `description`, `version`. |
+| `.claude-plugin/plugin.json` | Claude Code manifest and writing output-style registration. |
 | `.codex-plugin/plugin.json` | Codex plugin manifest. Same `name`/`version`/`description` + richer `interface{}` block (`displayName`, `shortDescription`, `longDescription`, `developerName`, `category`, `capabilities[]`, `defaultPrompt`, `brandColor`) for Codex's `/plugins` UI. |
 
 Both required for marketplace install on the respective CLI. Edit them together; never let descriptions drift.

@@ -4,25 +4,26 @@ description: [One sentence an agent can use to decide whether to open this plan.
 status: active
 archived: false
 work_status: in-progress
+chronicle: [Repository-relative chronicle path without .md.]
 ---
 
 # [Title]
 
-## Why this work matters
-
-[Explain the current situation, who it affects, and why the work is worth doing. Give enough context for a teammate who knows little about the project.]
+Reasons and rejected alternatives: [chronicle](../chronicles/YYYY-MM-DD__slug.md).
 
 ## What will change
 
-[Describe what will be true when the work is done and what that means in practice. Name anything deliberately left unchanged.]
+[Describe the result and scope. Include the context needed to understand the result.]
 
 ## How it will work
 
-[Explain the solution before listing tasks. Record the important decisions and their reasons, the useful alternatives not chosen, constraints, edge cases, risks, and how to reverse the change. Keep exact technical names where they matter.]
+[Describe the design, exact paths and contracts, constraints, edge cases, risks, and reversal steps needed to resume safely. Link reasons in the chronicle. Keep changed design facts current.]
 
 ## Work
 
-- [ ] [Small result] — [exact files] — [check that can expose failure]
+[Use one checkbox per verifiable task result, with exact files and a check. Cover all task-specific work. Fixed workflow gates stay in Current step. Mark completed items with [x]. Close dropped work as `- [x] ~~item~~. Dropped: reason.`]
+
+- [ ] [Result]. Files: [exact paths]. Check: [check that can expose failure].
 
 ## How we will check it
 
@@ -30,9 +31,10 @@ work_status: in-progress
 
 ## Working record
 
-Current step: Decide | Express | Implement | Verify | Explain diff | Review
-Research: [path or `Not needed — reason`]
-Chronicle: [path]
-Standards: [exact paths]
-Decisions that changed the plan: [decision or `None`]
-Review: [result or `Pending`]
+Current step: Decide | Express | Implement | Verify | Review | Explain diff | Align docs | Complete.
+Research: [path, or Not needed with its reason].
+Standards: [exact paths].
+Decisions that changed the plan: [chronicle section link, or None].
+Contested design decisions: [chronicle section link, or None].
+Verification: [results, evidence paths, and unchecked limits].
+Review: [result, or Pending].

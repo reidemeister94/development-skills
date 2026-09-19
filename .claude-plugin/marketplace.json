@@ -7,8 +7,8 @@
   "plugins": [
     {
       "name": "development-skills",
-      "description": "A disciplined, language-agnostic development workflow: a direct/full loop with plan and chronicle on disk, a staff-reviewer subagent, and auto-format hooks",
-      "version": "0.10.0",
+      "description": "Language-agnostic development workflows with direct, bounded, and full paths, persistent decisions, focused proof, and independent review",
+      "version": "0.11.0",
       "source": "./"
     }
   ]
