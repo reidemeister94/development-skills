@@ -54,12 +54,12 @@ Approved work continues through implementation, verification, independent review
 
 ## Included capabilities
 
-The plugin ships 23 skills:
+The plugin ships 22 skills:
 
 | Area | Skills |
 |---|---|
 | Core workflow | `using-development-skills`, `brainstorming`, `create-test`, `explain-diff` |
-| Review and improvement | `staff-review`, `roast-my-code`, `refactor`, `simplify-stuff`, `ui-design-audit`, `rethink` |
+| Review and improvement | `staff-review`, `roast-my-code`, `refactor`, `simplify-stuff`, `rethink` |
 | Documentation and Git | `align-docs`, `changelog`, `commit`, `handoff`, `resolve-merge`, `wrap-up-branch` |
 | Research and evaluation | `best-practices`, `ai-agent-bench`, `eval-regression`, `phone-a-friend`, `plugin-feedback` |
 | Communication and maintenance | `bro`, `update-deps` |

@@ -3,7 +3,7 @@
 ### Added
 
 - Added a bounded path for clear multi-file or high-impact work that does not need persistent task records.
-- Added the general `bro`, `phone-a-friend`, `refactor`, `rethink`, `ui-design-audit`, `update-deps`, and `wrap-up-branch` skills.
+- Added the general `bro`, `phone-a-friend`, `refactor`, `rethink`, `update-deps`, and `wrap-up-branch` skills.
 - Added language-agnostic engineering and full-path contracts, plus a deterministic documentation checker.
 
 ### Changed

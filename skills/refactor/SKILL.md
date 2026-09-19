@@ -29,7 +29,6 @@ Record the source paths you selected.
 Use focused owners where their signal exists:
 
 - `align-docs` in inspection-only mode for repository context and documentation;
-- `ui-design-audit` for rendered UI;
 - `staff-review` for code quality inside the scope.
 
 Then inspect what these owners do not cover.

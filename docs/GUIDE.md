@@ -95,7 +95,6 @@ MEDIUM and LOW findings remain visible for the author to decide.
 | `roast-my-code` | Present the same factual review with aggressive humor. |
 | `refactor` | Audit first, then apply selected behavior-preserving tranches. |
 | `simplify-stuff` | Remove content that carries no useful behavior or knowledge. |
-| `ui-design-audit` | Report visual consistency and WCAG 2.2 AA findings. |
 | `rethink` | Rebuild a weak proposal from first principles. |
 | `align-docs` | Repair documentation owners, routes, metadata, and lifecycle. |
 | `changelog` | Add or derive Keep a Changelog entries. |

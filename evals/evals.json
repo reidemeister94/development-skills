@@ -1031,27 +1031,6 @@
       ]
     },
     {
-      "id": "route-ui-design-audit",
-      "prompt": "Audit this dashboard screenshot and its UI code for visual consistency and WCAG 2.2 AA. Return a severity-ranked report and do not edit files.",
-      "tags": [
-        "routing",
-        "design",
-        "review"
-      ],
-      "covers": [
-        "skills/ui-design-audit/SKILL.md"
-      ],
-      "agents": [
-        "claude"
-      ],
-      "mode": "routing",
-      "assertions": [
-        {
-          "tool": "development-skills:ui-design-audit"
-        }
-      ]
-    },
-    {
       "id": "route-rethink",
       "prompt": "The export-service proposal is over-engineered. Rethink it from first principles and return the simplest design that meets the goals.",
       "tags": [
