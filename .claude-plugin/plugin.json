@@ -1,6 +1,6 @@
 {
   "name": "development-skills",
   "description": "Use for coding, debugging, refactoring, design, test strategy, code review, documentation alignment, and development research. A language-agnostic direct, bounded, or full workflow with persistent decisions and independent review.",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "outputStyles": "./shared/writing.md"
 }

@@ -1,3 +1,10 @@
+## 0.11.1 (2026-09-20)
+
+### Changed
+
+- Expanded the writing contract with direct-language, evidence, rhythm, formatting, and final-review rules for human-readable output.
+- Namespaced cross-skill calls from the full path and `rethink` to avoid ambiguous routing.
+
 ## 0.11.0 (2026-09-19)
 
 ### Added

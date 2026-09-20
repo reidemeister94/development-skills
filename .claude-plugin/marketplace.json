@@ -8,7 +8,7 @@
     {
       "name": "development-skills",
       "description": "Language-agnostic development workflows with direct, bounded, and full paths, persistent decisions, focused proof, and independent review",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "source": "./"
     }
   ]

@@ -11,7 +11,7 @@ Identify assumptions, remove those that evidence does not support, and test the 
 
 Compare genuinely different approaches.
 State each approach's costs, failure modes, reversibility, and proof needs.
-Use `best-practices` when current external evidence can change the choice.
+Use `development-skills:best-practices` when current external evidence can change the choice.
 
 Recommend the simplest consistent design that meets the outcome.
 Explain why it is better than the current proposal and what evidence would overturn the recommendation.

@@ -51,7 +51,7 @@ Ask when a finding conflicts with an approved decision, requires new authority, 
 
 ## 7. Explain diff
 
-Use `explain-diff` when the final change introduces a useful business, design, lifecycle, or failure concept.
+Use `development-skills:explain-diff` when the final change introduces a useful business, design, lifecycle, or failure concept.
 Give it the request, plan, final diff, verification, review verdict, and unchecked limits.
 An explanation does not delay completion for a mandatory comprehension interview.
 If new evidence invalidates the work, return to the affected step. Changed code repeats verification and review.
