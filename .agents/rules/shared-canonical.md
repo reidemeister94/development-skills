@@ -16,13 +16,14 @@ paths:
 | `shared/documentation.md` | Knowledge metadata and lifecycle. |
 | `shared/review-categories.md` | Review severity definitions. |
 | `shared/skill-authoring.md` | Skill instruction reduction and validation. |
+| `shared/unattended-runs.md` | Authorization and reporting for autonomous loops. |
 | `shared/templates/plan-template.md` | `YYYY-MM-DD__<slug>.md` plan skeleton. |
 | `shared/templates/chronicle-template.md` | `YYYY-MM-DD__<slug>.md` decision skeleton. |
 
 Skills, agents, README files, and guides link to these owners instead of copying their instructions.
 Treat the development loop as a stable interface because each workflow depends on it.
 
-Preserve legacy plan and chronicle names. New files use date and slug without a sequence number.
+New files use date and slug without a sequence number. Clean mode can rename legacy records after review.
 Use no emoji. Keep Markdown direct and factual.
 
 Project-specific examples, installation instructions, changelog history, and language conventions do not belong under `shared/`.

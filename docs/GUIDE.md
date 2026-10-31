@@ -67,6 +67,7 @@ It prefers black-box and integration proof over mocks and internal call assertio
 New behavior normally starts with a focused failing test.
 A refactor starts with a passing characterization baseline and keeps it passing.
 A performance claim needs comparable measurements before and after the change.
+For an autonomous loop, agree on a proven regression gate and the definition of done before starting.
 
 Every report states what the evidence proves and what remains unchecked.
 
@@ -94,6 +95,8 @@ MEDIUM and LOW findings remain visible for the author to decide.
 | `staff-review` | Run an independent specification and quality review. |
 | `roast-my-code` | Present the same factual review with aggressive humor. |
 | `refactor` | Audit first, then apply selected behavior-preserving tranches. |
+| `refactor-loop` | Refactor autonomously while preserving observable behavior. |
+| `evolve-loop` | Develop evidence-backed improvements that can change behavior. |
 | `simplify-stuff` | Remove content that carries no useful behavior or knowledge. |
 | `rethink` | Rebuild a weak proposal from first principles. |
 | `align-docs` | Repair documentation owners, routes, metadata, and lifecycle. |
@@ -112,7 +115,7 @@ MEDIUM and LOW findings remain visible for the author to decide.
 
 ## Hooks
 
-`session-start` injects the router and writing contract.
+`session-start` injects the router, writing contract, development loop, and engineering contract.
 `auto-format` runs a formatter when one is available.
 `plan-approved` records that the current plan already has approval.
 

@@ -1,3 +1,20 @@
+## 0.11.2 (2026-10-31)
+
+### Added
+
+- Added explicit autonomous refactoring and evolution loops with agreed regression gates.
+- Added startup context and model pricing selection checks.
+- Added a preview and apply tool for renaming legacy numbered task records.
+- Added native routing cases for the core decision and verification skills.
+
+### Changed
+
+- Injected the development loop and engineering contract at session start.
+- Clarified definitions of done, evidence, design review, and regression gates.
+- Preserved legacy document classification after date-only renames.
+- Selected the longest matching model prefix when estimating trial costs.
+- Documented the existing eval runner's dependence on the operator's settings.
+
 ## 0.11.1 (2026-09-20)
 
 ### Changed

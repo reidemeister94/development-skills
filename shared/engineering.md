@@ -1,6 +1,13 @@
 # Engineering
 
 Preserve useful behavior and project constraints. Prefer deleting unnecessary code, then simplifying, then optimizing, then automating.
+Use `rethink` before choosing or changing a design. Revisit the choice when evidence reveals a weakness.
+
+## Reasoning
+
+Start with the real goal and domain facts. Treat each proposed solution as a hypothesis.
+Compare practical alternatives and test them against normal and failing cases before implementation.
+Challenge a weak proposal with a concrete failure, its consequence, and an alternative.
 
 ## Design and data
 
@@ -19,6 +26,9 @@ Before removing a component, inspect its callers. Remove it when its deletion re
 Choose the lowest practical time and space cost for the real workload while keeping the code clear and correct.
 Measure a performance claim with the same workload before and after the change.
 Batch database work when possible. Inspect query access paths; add indexes for actual filters or joins.
+Use representative data and execution evidence to test query assumptions when access permits.
+Compare alternatives with the same workload, including transfer and conversion costs when relevant.
+Propose schema and index changes with evidence and follow project authorization.
 Add a cache, queue, worker, or service only for an established requirement. State the need it serves.
 
 Before adding a dependency, check existing language, framework, and project capabilities.

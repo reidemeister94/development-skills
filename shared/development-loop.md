@@ -23,6 +23,8 @@ Treat a prescribed implementation as an assumption to check against standards an
 If that check exposes a problem, resolve the contested approach through `brainstorming` before editing.
 Present the alternative for agreement; do not implement it merely because it appears better.
 A reaffirmed user choice governs; record a material deviation and its consequences.
+If the chosen design introduces a CRITICAL or HIGH defect, stop and propose an alternative.
+Proceed only when an authorized decision maker explicitly approves an exception, and record the decision.
 
 For a disputed tool or library claim, check official documentation for the version actually in use.
 Check current documentation when a recommendation depends on what is available today.
@@ -96,11 +98,14 @@ No plan file or chronicle is required unless a lasting decision makes the work f
 - Never suppress a failure or weaken proof to claim success. Explain any proposed test removal or replacement before applying it.
 - For large mechanical changes, verify a small pilot before scaling.
 - Clean up only worktrees you created after merge or discard. Never remove a detached-HEAD harness worktree.
-- Commit only when explicitly requested.
+- Commit only when explicitly requested or authorized by an explicitly invoked skill.
 
 ## Finish
 
 Complete requested implementation, relevant checks, required review fixes, and affected documentation before reporting completion.
+Investigate open claims and required checks using the relevant code, data, logs, and accessible systems.
+Follow project access recovery steps when a required source is unavailable.
+Report any remaining gap and ask the person who can resolve it for the missing fact, access, or decision.
 If plans, chronicles, rules, or AGENTS files change, invoke `development-skills:align-docs` in normal mode with the current task.
 Also invoke it when documents are created, moved, or removed.
 An edit to code, tests, or the content of an existing document skips it unless those changes invalidate documentation.

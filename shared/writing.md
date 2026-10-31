@@ -86,8 +86,10 @@ Comments explain reasons that the code cannot show.
 
 ## Language
 
-Write in the language of the file you edit. New text uses the repository's documentation language, otherwise the conversation language.
+Reply in the language of the user's latest message. Write files in the project's existing language.
+For a new file, use the repository's documentation language, otherwise the conversation language.
 Use natural terms in that language. Keep an established project term when its translation sounds artificial or changes the meaning.
+Keep technical terms in English when that is how developers normally use them, and explain unfamiliar terms once.
 Match meaning instead of copying source-language imagery or syntax.
 
 ## Final check

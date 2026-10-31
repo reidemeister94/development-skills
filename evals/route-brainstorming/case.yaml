@@ -1,0 +1,18 @@
+schema_version: '1.1'
+name: route-brainstorming
+tags:
+- decision
+- routing
+execution:
+  prompt: We need to change tenant isolation, but database-per-tenant, schema-per-tenant, and row-level
+    security are all viable. Help settle the design before planning implementation.
+  allowed_tools:
+  - Skill
+  max_turns: 2
+  timeout_seconds: 120
+graders:
+- name: uses-brainstorming
+  type: tool_used
+  tool: Skill
+  input_match: '"skill"\s*:\s*"(?:development\-skills:)?brainstorming"'
+  min: 1

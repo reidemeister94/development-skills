@@ -1,0 +1,18 @@
+schema_version: '1.1'
+name: route-create-test
+tags:
+- proof
+- routing
+execution:
+  prompt: Define a black-box regression proof for checkout reliability, including the business KPI, threshold,
+    failure paths, and what the available evidence will not cover.
+  allowed_tools:
+  - Skill
+  max_turns: 2
+  timeout_seconds: 120
+graders:
+- name: uses-create-test
+  type: tool_used
+  tool: Skill
+  input_match: '"skill"\s*:\s*"(?:development\-skills:)?create\-test"'
+  min: 1

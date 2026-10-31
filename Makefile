@@ -30,6 +30,7 @@ setup-dev-env: install-dev commitizen
 
 test:
 	uv run scripts/check_docs.py .
+	uv run python -m unittest discover -s scripts -p 'test_*.py'
 	uv run skills/eval-regression/scripts/run_evals.py --help >/dev/null
 	uv run python -m json.tool evals/evals.json >/dev/null
 	uv run ruff check scripts skills

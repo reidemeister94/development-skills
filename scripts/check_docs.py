@@ -20,6 +20,7 @@ from markdown_it.token import Token
 
 MARKDOWN = MarkdownIt().enable(["table", "strikethrough"])
 NUMBERED = re.compile(r"^(\d{4})__(?:(\d{4}-\d{2}-\d{2})__|research(?:__|\.md$))")
+DATED = re.compile(r"^(\d{4}-\d{2}-\d{2})__")
 
 
 def read_document(path: Path) -> tuple[dict, str]:
@@ -48,13 +49,19 @@ def read_document(path: Path) -> tuple[dict, str]:
 
 
 def legacy_name(path: Path, cutoff: date | None) -> bool:
-    match = NUMBERED.match(path.name)
-    if not match or cutoff is None:
+    """Keep the legacy cutoff after a numbered record is renamed."""
+    if cutoff is None:
         return False
-    if match[2] is None:
-        return True
+    if match := NUMBERED.match(path.name):
+        day = match[2]
+        if day is None:
+            return True
+    elif match := DATED.match(path.name):
+        day = match[1]
+    else:
+        return False
     try:
-        return date.fromisoformat(match[2]) < cutoff
+        return date.fromisoformat(day) < cutoff
     except ValueError:
         return False
 

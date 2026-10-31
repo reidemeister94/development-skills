@@ -11,7 +11,7 @@ This repository is the source of the `development-skills` plugin for Claude Code
 7. Never suppress a failing check or weaken proof to claim success.
 8. Preserve user work and inspect callers before removing or moving files.
 9. Store durable reasons in chronicles and resumable execution state in plans.
-10. Commit only when explicitly requested. Never add AI attribution or `Co-Authored-By` trailers.
+10. Commit only when explicitly requested or authorized by an explicitly invoked skill. Never add AI attribution or `Co-Authored-By` trailers.
 
 - Skills and agents reference canonical files under `shared/`; they do not copy those contracts.
 - One named subagent ships: `staff-reviewer`. Implementation and verification stay in the main context.

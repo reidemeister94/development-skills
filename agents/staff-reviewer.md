@@ -30,12 +30,14 @@ Name the absent requirement, unrequested change, or exact evidence needed. Then 
 
 Review quality against the [engineering contract](../shared/engineering.md), [development loop](../shared/development-loop.md), and applicable project conventions.
 Check reachable failures, security, data integrity, concurrency, relevant performance, unnecessary complexity, and meaningful test coverage.
+Check the evidence against the [agreed result](../skills/create-test/SKILL.md#definition-of-done), including whether changed tests still verify it.
 Check that changed prose preserves necessary facts and that each document keeps its proper role.
 Duplicated rationale in a plan or missing reasons in a chronicle can obscure a decision.
 
 Use the [severity scale](../shared/review-categories.md). Support each finding with `file:line` and reproducible evidence.
 For CRITICAL, HIGH, or MEDIUM, show the entry point, concrete input, and impact.
-For LOW, name the violated rule. Put an undemonstrated concern under `CANNOT_VERIFY` with the missing check.
+For LOW, name the violated rule. Run reachable read-only checks before calling a concern undemonstrated.
+Put a concern that remains undemonstrated under `CANNOT_VERIFY` with the missing check.
 In a diff review, a problem in code the change did not touch is not a finding.
 Exclude tool-detectable lint errors, preferences, and sound documented choices.
 An empty finding list is valid; never invent one. State what you did not check.

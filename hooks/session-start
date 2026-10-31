@@ -1,27 +1,17 @@
 #!/usr/bin/env bash
-# Inject the router and writing contract before the first decision.
-# Skill auto-discovery alone may run too late, and Codex has no output styles.
+# Inject the workflow before the first decision; skill auto-discovery alone may
+# run too late, and Codex has no output styles.
+# Claude Code caps each additionalContext at 10,000 characters and replaces a
+# longer one with a 2,000-character preview, so hooks.json runs this script once per part:
+#   session-start               the router and the writing contract
+#   session-start loop          the development loop
+#   session-start engineering   the engineering contract
 
 set -euo pipefail
 
 PLUGIN_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 USING_SKILL="${PLUGIN_ROOT}/skills/using-development-skills/SKILL.md"
 WRITING="${PLUGIN_ROOT}/shared/writing.md"
-
-if [ -f "$USING_SKILL" ]; then
-  using_content=$(cat "$USING_SKILL")
-  # Injected context has no file location, so relative links need absolute paths.
-  using_content="${using_content//](..\/..\//](${PLUGIN_ROOT}/}"
-  using_content="${using_content//](references\//](${PLUGIN_ROOT}/skills/using-development-skills/references/}"
-else
-  using_content="Error: using-development-skills/SKILL.md not found at ${USING_SKILL}"
-fi
-
-if [ -f "$WRITING" ]; then
-  voice_content=$(awk 'BEGIN{fm=0} /^---$/ && fm<2 {fm++; next} fm>=2 {print}' "$WRITING")
-else
-  voice_content="Error: shared/writing.md not found at ${WRITING}"
-fi
 
 # Escape backslashes first so later substitutions do not escape their own output.
 escape_for_json() {
@@ -34,10 +24,48 @@ escape_for_json() {
   printf '%s' "$s"
 }
 
-using_escaped=$(escape_for_json "$using_content")
-voice_escaped=$(escape_for_json "$voice_content")
+# Inject one shared contract whole. One base path keeps the loop under the cap;
+# absolutizing every link would not.
+shared_context() {
+  local file="${PLUGIN_ROOT}/shared/$1" tag="$2" intro="$3" content
+  if [ -f "$file" ]; then
+    content=$(cat "$file")
+  else
+    content="Error: shared/$1 not found at ${file}"
+  fi
+  printf '<%s>\\n%s Its relative links resolve against %s/shared/.\\n\\n%s\\n</%s>' \
+    "$tag" "$intro" "$PLUGIN_ROOT" "$(escape_for_json "$content")" "$tag"
+}
 
-session_context="<DEVELOPMENT-SKILLS>\nThe development-skills:using-development-skills router follows.\n\n${using_escaped}\n</DEVELOPMENT-SKILLS>\n\n<WRITING-CONTRACT>\n${voice_escaped}\n</WRITING-CONTRACT>"
+if [ "${1:-}" = "loop" ]; then
+  session_context=$(shared_context development-loop.md DEVELOPMENT-LOOP "Follow this development loop for project work.")
+elif [ "${1:-}" = "engineering" ]; then
+  session_context=$(shared_context engineering.md ENGINEERING-CONTRACT "Apply this engineering contract to every design and code change.")
+else
+  if [ -f "$USING_SKILL" ]; then
+    using_content=$(cat "$USING_SKILL")
+    # Absolutize the router's relative links: injected context has no file location,
+    # so a relative link would leave the agent guessing the plugin root (and possibly
+    # reading a stale cached version).
+    using_content="${using_content//](..\/..\//](${PLUGIN_ROOT}/}"
+    using_content="${using_content//](references\//](${PLUGIN_ROOT}/skills/using-development-skills/references/}"
+  else
+    using_content="Error: using-development-skills/SKILL.md not found at ${USING_SKILL}"
+  fi
+
+  # The writing contract is one file: Claude Code loads it as the plugin output
+  # style through the manifest; Codex has no output styles, so the hook injects
+  # its body here, without the frontmatter.
+  if [ -f "$WRITING" ]; then
+    voice_content=$(awk 'BEGIN{fm=0} /^---$/ && fm<2 {fm++; next} fm>=2 {print}' "$WRITING")
+  else
+    voice_content="Error: shared/writing.md not found at ${WRITING}"
+  fi
+
+  using_escaped=$(escape_for_json "$using_content")
+  voice_escaped=$(escape_for_json "$voice_content")
+  session_context="<DEVELOPMENT-SKILLS>\nThe development-skills:using-development-skills router follows.\n\n${using_escaped}\n</DEVELOPMENT-SKILLS>\n\n<WRITING-CONTRACT>\n${voice_escaped}\n</WRITING-CONTRACT>"
+fi
 
 printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
 
